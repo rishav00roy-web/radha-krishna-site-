@@ -10,11 +10,10 @@ export default {
       colors: {
         marble: { DEFAULT: v("marble"), 2: v("marble-2"), 3: v("marble-3") },
         ink: { DEFAULT: v("ink"), soft: v("ink-soft") },
-        night: { DEFAULT: v("night"), 2: v("night-2") },
+        night: v("night"),
         mist: v("mist"),
         gold: { DEFAULT: v("gold"), bright: v("gold-bright"), pale: v("gold-pale") },
         forest: { DEFAULT: v("forest"), 2: v("forest-2"), ink: v("forest-ink"), soft: v("forest-soft") },
-        peacock: v("peacock"),
         lotus: v("lotus"),
         line: v("line"),
       },

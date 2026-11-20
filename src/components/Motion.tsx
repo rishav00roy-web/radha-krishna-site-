@@ -23,7 +23,10 @@ export function Motion() {
       ]);
       if (cancelled) return;
       gsap.registerPlugin(ScrollTrigger);
+      // Phones resize the viewport as the address bar hides; don't recalculate every trigger for that.
+      ScrollTrigger.config({ ignoreMobileResize: true });
 
+      // One clock for everything: Lenis advances on GSAP's ticker and tells ScrollTrigger when it moves.
       const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
       lenis.on("scroll", ScrollTrigger.update);
       const tick = (time: number) => lenis.raf(time * 1000);
@@ -90,7 +93,8 @@ export function Motion() {
             {
               y: () => travel(),
               ease: "none",
-              scrollTrigger: { trigger: section, start: isHero ? "top top" : "top bottom", end: "bottom top", scrub: 0.6, invalidateOnRefresh: true },
+              // scrub: true follows Lenis exactly; a numeric scrub would smooth twice and feel laggy.
+              scrollTrigger: { trigger: section, start: isHero ? "top top" : "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
             },
           );
         });
@@ -113,7 +117,20 @@ export function Motion() {
         }
       });
 
+      // Pause the CSS loops (petals, birds, rays, mist, diya) in scenes that are off screen.
+      const scenes = new Set<HTMLElement>();
+      document.querySelectorAll<HTMLElement>(".petal, .bird, .rays-sway, .mist-drift, .diya-swing").forEach((el) => {
+        const scene = el.closest<HTMLElement>("section");
+        if (scene) scenes.add(scene);
+      });
+      const io = new IntersectionObserver((entries) => {
+        entries.forEach((e) => e.target.toggleAttribute("data-offscreen", !e.isIntersecting));
+      }, { rootMargin: "100px 0px" });
+      scenes.forEach((s) => io.observe(s));
+
       cleanup = () => {
+        io.disconnect();
+        scenes.forEach((s) => s.removeAttribute("data-offscreen"));
         ctx.revert();
         gsap.ticker.remove(tick);
         lenis.destroy();

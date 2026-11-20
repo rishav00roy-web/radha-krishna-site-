@@ -16,7 +16,7 @@ export type GalleryViewItem = {
   photo: Photo | null;
 };
 
-export const categoryIcon: Record<GalleryCategory, IconKey> = {
+const categoryIcon: Record<GalleryCategory, IconKey> = {
   architecture: "temple", art: "flute", worship: "diya", masterplan: "kalash", sarovar: "water", gaushala: "cow",
   bamboo: "bamboo", medicinal: "herb", fruit: "fruit", updates: "book",
 };

@@ -1,7 +1,7 @@
 import type { Localized } from "@/i18n/config";
 
 export type FacilityStatus = "proposed" | "under_construction" | "completed";
-export type MilestoneStatus = "planned" | "in_progress" | "completed";
+type MilestoneStatus = "planned" | "in_progress" | "completed";
 
 export const galleryCategories = [
   "architecture",
