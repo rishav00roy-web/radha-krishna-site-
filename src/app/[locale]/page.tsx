@@ -2,16 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { isLocale, t, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
-import { getFacilities, getMilestones } from "@/lib/data";
-import { photos } from "@/lib/content";
+import { getEvents, getFacilities, getMilestones } from "@/lib/data";
+import { formatDate } from "@/lib/view";
 import { href } from "@/lib/routes";
 import { pageMetadata } from "@/lib/seo";
-import { TempleIllustration } from "@/components/TempleIllustration";
 import { Petals } from "@/components/Petals";
 import { Icon } from "@/components/Icon";
-import { PhotoFigure } from "@/components/PhotoFigure";
+import { Birds, Hill, Leaves, Mist, Ornament, Rays } from "@/components/home/art";
 import { StatusTag } from "@/components/ProposedTag";
-import type { IconKey } from "@/lib/types";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -22,8 +20,6 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata(locale, "", `${d.meta.siteName} | ${d.meta.tagline}`, d.meta.description);
 }
 
-const centreIcons: IconKey[] = ["diya", "hands", "book", "kalash", "gathering", "meditate"];
-
 export default async function Home({ params }: Props) {
   const { locale: raw } = await params;
   const locale = raw as Locale;
@@ -31,109 +27,187 @@ export default async function Home({ params }: Props) {
   const facilities = getFacilities();
   const milestones = getMilestones();
 
+  const next = getEvents().find((e) => new Date(e.ends_at ?? e.starts_at).getTime() >= Date.now());
+  const h = d.home;
+
   return (
     <>
-      {/* Hero: the temple is the identity */}
-      <section data-hero className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-forest text-forest-ink">
-        <div className="absolute inset-0 -z-10">
-          <div className="absolute inset-x-0 top-0 h-[54svh] lg:inset-y-0 lg:left-auto lg:h-auto lg:w-[70%]">
-            <TempleIllustration className="h-full w-full" title={d.common.conceptArt} />
+      {/* 1. Night hero: Radha-Krishna artwork, light rays, foreground leaves, mist */}
+      <section data-hero data-parallax className="relative isolate overflow-hidden bg-night text-forest-ink">
+        <div className="relative min-h-[100svh]">
+          {/* Painted artwork. Right-aligned on wide screens, top band on phones. */}
+          <div data-speed="0.35" className="absolute inset-x-0 top-0 h-[68svh] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(100%,calc(100svh*1.18))]">
+            {/* eslint-disable-next-line @next/next/no-img-element -- local art, no optimiser needed */}
+            <img
+              src="/art/hero-radha-krishna.jpg"
+              alt={h.heroArt}
+              width={1704}
+              height={1440}
+              fetchPriority="high"
+              data-hero-art
+              className="h-full w-full object-cover object-[72%_18%] lg:object-[100%_0%]"
+              style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 18%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
+            />
           </div>
-          {/* Scrims keep the text readable: a bottom wash on small screens, a left fade on wide ones. */}
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(13_36_28/0.5)_0%,rgb(13_36_28/0)_18%,rgb(13_36_28/0)_34%,var(--forest)_54svh,var(--forest)_100%)] lg:bg-[linear-gradient(90deg,var(--forest)_0%,var(--forest)_30%,rgb(23_48_31/0.6)_42%,rgb(23_48_31/0)_58%),linear-gradient(0deg,rgb(13_36_28/0.85)_0%,rgb(13_36_28/0)_30%)]" />
+          <Rays className="absolute inset-0 h-full w-full mix-blend-screen" />
+          <div data-speed="-0.25" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] blur-[3px] lg:w-[42vw]">
+            <Leaves className="h-auto w-full opacity-90" />
+          </div>
+          <Petals />
+
+          {/* Copy */}
+          <div data-speed="0.5" data-hero-copy className="container-x relative z-10 flex min-h-[100svh] flex-col justify-end pb-40 pt-[52svh] lg:justify-center lg:pb-36 lg:pt-28">
+            <div className="max-w-[30rem] text-center lg:ml-[4%]">
+              <Ornament className="mb-6" />
+              <h1 data-hero-line className="display-xl text-balance drop-shadow-[0_2px_18px_rgb(0_0_0/0.45)]">{h.headline.replace("-", "\u2011")}</h1>
+              <p data-hero-line className="mx-auto mt-5 max-w-[26ch] font-display text-2xl italic leading-snug text-gold-pale">{d.meta.tagline}</p>
+              <p data-hero-line className="mx-auto mt-3 max-w-[34ch] text-forest-soft">{h.subhead}</p>
+              <nav data-hero-line aria-label={h.headline} className="mt-8 flex flex-wrap justify-center gap-2.5">
+                <Link href={href(locale, "temple")} className="btn btn-primary !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaExplore}</Link>
+                <Link href="#vision" className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaVision}</Link>
+                <Link href={href(locale, "masterPlan")} className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaPlan}</Link>
+                <Link href={href(locale, "activities")} className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaActivities}</Link>
+              </nav>
+              <a data-hero-line href="#vision" className="mx-auto mt-10 flex w-max flex-col items-center gap-3 text-sm text-forest-soft no-underline hover:text-gold-pale">
+                <span aria-hidden className="h-10 w-px bg-[linear-gradient(transparent,currentColor)]" />
+                {h.scroll}
+                <span aria-hidden className="grid h-8 w-5 justify-center rounded-full border border-current pt-1.5">
+                  <span className="scroll-wheel block h-1.5 w-0.5 rounded-full bg-current" />
+                </span>
+              </a>
+            </div>
+          </div>
         </div>
-        <Petals />
+        {/* Mist melts the night into the cream section below. */}
+        <div data-speed="-0.15" className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[34svh]">
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(241_220_196/0.55)_55%,var(--mist)_100%)]" />
+          <Mist className="absolute inset-x-0 bottom-0 h-full w-full" />
+        </div>
+        <p className="absolute bottom-3 right-4 z-30 max-w-[60ch] text-right text-xs text-ink-soft">{h.heroArt}</p>
+      </section>
 
-        <div className="container-x relative pb-10 pt-[46svh] md:pb-14 lg:pt-32">
-          <p data-hero-line className="font-display text-xl text-gold-pale md:text-2xl">{d.meta.tagline}</p>
-          <h1 data-hero-line className="display-xl mt-3 max-w-[14ch]">{d.home.headline.replace("-", "\u2011")}</h1>
-          <p data-hero-line className="lede mt-5 max-w-[34ch] !text-forest-ink">{d.home.subhead}</p>
-
-          <div data-hero-line className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
-            <Link href={href(locale, "temple")} className="btn btn-primary">
-              {d.home.ctaExplore}
+      {/* 2. About the temple: concept temple among trees */}
+      <section id="vision" data-parallax className="relative isolate scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,var(--mist)_0%,#ead2b6_100%)] pb-0">
+        <Birds />
+        <div className="container-x relative grid items-end gap-10 pt-16 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-24">
+          <div className="pb-10 md:pb-48">
+            <p data-reveal className="flex items-center gap-3 font-display text-xl text-gold">
+              <span aria-hidden className="h-px w-10 bg-gold" />
+              {h.aboutLabel}
+            </p>
+            <h2 data-reveal className="display-lg mt-4">{h.aboutTitle}</h2>
+            <p data-reveal className="lede measure mt-6 !text-ink-soft">{h.aboutBody}</p>
+            <p data-reveal className="mt-4 font-display text-2xl text-gold">{d.meta.brandMessage}</p>
+            <Link data-reveal href={href(locale, "temple")} className="group mt-8 inline-flex items-center gap-3 border-b border-gold pb-1 font-display text-xl text-ink no-underline">
+              {d.common.learnMore}
+              <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
             </Link>
-            <Link href="#vision" className="btn btn-quiet">{d.home.ctaVision}</Link>
-            <Link href={href(locale, "masterPlan")} className="btn btn-quiet">{d.home.ctaPlan}</Link>
-            <Link href={href(locale, "activities")} className="btn btn-quiet">{d.home.ctaActivities}</Link>
           </div>
+          <figure className="relative -mr-[var(--gutter,1rem)] md:-mr-10">
+            <div data-speed="0.18">
+              {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
+              <img
+                src="/art/temple-concept.jpg"
+                alt={h.templeArt}
+                width={984}
+                height={1040}
+                loading="lazy"
+                className="ml-auto h-auto w-full max-w-[640px]"
+                style={{ maskImage: "radial-gradient(120% 95% at 70% 62%, #000 55%, transparent 78%)" }}
+              />
+            </div>
+            <figcaption className="absolute right-2 top-2 rounded-full bg-[rgb(241_220_196/0.8)] px-3 py-1 text-xs text-ink-soft">{d.common.conceptArt}</figcaption>
+          </figure>
+        </div>
+        <div data-speed="-0.12" className="pointer-events-none absolute inset-x-0 bottom-[90px] h-40 opacity-80">
+          <Mist className="h-full w-full" color="#efd9bf" />
+        </div>
+        <Hill className="relative z-10 -mt-24 block h-[120px] w-full md:-mt-32 md:h-[180px]" />
+      </section>
 
-          <dl data-hero-line className="mt-12 grid gap-6 border-t border-[rgb(243_236_220/0.2)] pt-6 text-[0.95rem] sm:grid-cols-[minmax(0,1fr)_minmax(0,1fr)_auto]">
-            <div>
-              <dt className="text-forest-soft">{d.common.location}</dt>
-              <dd>{d.common.locationValue}</dd>
+      {/* 3. Festivals: hanging diya */}
+      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#141a21_0%,var(--night-2)_100%)] text-forest-ink">
+        <div className="container-x relative grid items-center gap-10 pb-20 pt-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:pb-28">
+          <div>
+            <p data-reveal className="flex items-center gap-3 font-display text-xl text-gold-bright">
+              <span aria-hidden className="h-px w-10 bg-gold-bright" />
+              {next ? h.upcomingLabel : h.festivalsLabel}
+            </p>
+            <h2 data-reveal className="display-lg mt-4">{next ? t(next.title, locale) : h.festivalName}</h2>
+            {next ? (
+              <p data-reveal className="mt-4 flex items-center gap-3 text-lg">
+                <Icon name="kalash" size={22} className="text-gold-bright" />
+                <time dateTime={next.starts_at} className="tabular">{formatDate(next.starts_at, locale)}</time>
+              </p>
+            ) : null}
+            <p data-reveal className="lede measure mt-5">{next ? t(next.description, locale) : h.festivalBody}</p>
+            {!next ? <p data-reveal className="mt-3 text-sm text-forest-soft">{h.festivalNote}</p> : null}
+            <Link data-reveal href={href(locale, "activities")} className="group mt-8 inline-flex items-center gap-3 border-b border-gold-bright pb-1 font-display text-xl text-forest-ink no-underline">
+              {h.viewActivities}
+              <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
+            </Link>
+          </div>
+          <div data-speed="-0.2" aria-hidden className="relative mx-auto -mt-28 w-[min(70vw,300px)] md:-mt-48">
+            <div className="diya-swing relative">
+              <span className="flame-glow absolute left-[21%] top-[48%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)] mix-blend-screen" />
+              {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
+              <img
+                src="/art/hanging-diya.jpg"
+                alt=""
+                width={480}
+                height={580}
+                loading="lazy"
+                className="relative h-auto w-full mix-blend-lighten"
+                style={{ maskImage: "radial-gradient(75% 80% at 55% 55%, #000 50%, transparent 80%)" }}
+              />
             </div>
-            <div>
-              <dt className="text-forest-soft">{d.common.implementedBy}</dt>
-              <dd>{d.common.orgName}</dd>
-            </div>
-            <dd className="self-end text-sm text-forest-soft">{d.common.conceptArt}</dd>
-          </dl>
+          </div>
         </div>
       </section>
 
-      {/* Vision */}
-      <section id="vision" className="section scroll-mt-20">
-        <div className="container-x grid items-center gap-12 md:grid-cols-[minmax(0,1.1fr)_minmax(0,1fr)] md:gap-20">
-          <div data-reveal>
-            <h2 className="display-lg">{d.home.visionTitle}</h2>
-            <p className="lede measure mt-6">{d.home.visionBody}</p>
-            <p className="mt-6 font-display text-2xl text-gold">{d.meta.brandMessage}</p>
-          </div>
-          <PhotoFigure
-            data-reveal
-            photo={photos.radhaKrishnaStatues}
-            locale={locale}
-            credit={d.common.photoCredit}
-            aspect="aspect-[4/5]"
-            sizes="(min-width: 768px) 45vw, 100vw"
+      {/* 4. Closing verse: peacock feather */}
+      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,var(--night-2)_0%,#24272b_100%)] text-forest-ink">
+        <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute -bottom-6 -left-10 w-[min(70vw,520px)] opacity-90 md:-left-4">
+          {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
+          <img
+            src="/art/peacock-feather.jpg"
+            alt=""
+            width={640}
+            height={552}
+            loading="lazy"
+            className="h-auto w-full mix-blend-lighten"
+            style={{ maskImage: "radial-gradient(85% 85% at 40% 55%, #000 45%, transparent 78%)" }}
           />
         </div>
-      </section>
-
-      {/* What the temple is for */}
-      <section className="section bg-marble-2 !pt-0 md:!pt-0">
-        <div className="container-x pt-16 md:pt-24">
-          <div className="ornament-rule mb-12" aria-hidden>
-            <Icon name="lotus" size={36} />
-          </div>
-          <h2 data-reveal className="display-lg max-w-[20ch]">{d.home.pillarsTitle}</h2>
-          <ul className="mt-12 grid gap-x-16 md:grid-cols-2">
-            {d.temple.centres.map((c, i) => (
-              <li key={c.title} data-reveal className="flex gap-5 border-t border-line py-7">
-                <Icon name={centreIcons[i]} size={44} className="shrink-0 text-gold" />
-                <div>
-                  <h3 className="text-2xl">{c.title}</h3>
-                  <p className="mt-1 text-ink-soft">{c.body}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <Link href={href(locale, "temple")} className="mt-10 inline-block text-gold underline hover:text-ink">
-            {d.common.learnMore}: {d.nav.temple}
-          </Link>
-        </div>
+        <figure className="container-x relative py-24 text-center md:py-36">
+          <p data-reveal lang="sa" className="font-sanskrit text-xl text-gold-pale/80">{h.quoteSanskrit}</p>
+          <blockquote data-reveal className="mx-auto mt-5 max-w-[30ch] font-display text-3xl italic leading-snug md:text-[2.6rem]">
+            &ldquo;{h.quote}&rdquo;
+          </blockquote>
+          <figcaption data-reveal className="mt-5 text-forest-soft">{h.quoteSource}</figcaption>
+          <Ornament className="mt-8" />
+        </figure>
       </section>
 
       {/* Campus */}
-      <section className="section on-dark">
+      <section className="section">
         <div className="container-x">
           <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-end">
             <h2 data-reveal className="display-lg max-w-[16ch]">{d.home.campusTitle}</h2>
             <p data-reveal className="lede measure">{d.home.campusBody}</p>
           </div>
-          <ol className="mt-14 grid gap-px overflow-hidden rounded bg-[rgb(243_236_220/0.12)] sm:grid-cols-2 lg:grid-cols-4">
+          <ol className="mt-14 grid gap-px overflow-hidden rounded border border-line bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
             {facilities.map((f, i) => (
-              <li key={f.id} className={`bg-forest p-7 ${f.code === "A" ? "sm:col-span-2 lg:row-span-2 lg:p-10" : ""} ${i === facilities.length - 1 && facilities.length % 2 === 0 ? "sm:col-span-2" : ""}`}>
+              <li key={f.id} className={`bg-marble p-7 ${f.code === "A" ? "sm:col-span-2 lg:row-span-2 lg:p-10" : ""} ${i === facilities.length - 1 && facilities.length % 2 === 0 ? "sm:col-span-2" : ""}`}>
                 <Link href={`${href(locale, "masterPlan")}#${f.slug}`} className="group block no-underline">
                   <div className="flex items-start justify-between gap-4">
-                    <Icon name={f.icon} size={f.code === "A" ? 72 : 44} className="text-gold-bright" />
+                    <Icon name={f.icon} size={f.code === "A" ? 72 : 44} className="text-gold" />
                     <StatusTag status={f.status} dict={d} />
                   </div>
-                  <h3 className={`mt-6 ${f.code === "A" ? "display-md" : "text-2xl"} transition-colors duration-200 group-hover:text-gold-bright`}>
+                  <h3 className={`mt-6 ${f.code === "A" ? "display-md" : "text-2xl"} transition-colors duration-200 group-hover:text-gold`}>
                     {t(f.name, locale)}
                   </h3>
-                  <p className="mt-2 text-forest-soft">{t(f.summary, locale)}</p>
+                  <p className="mt-2 text-ink-soft">{t(f.summary, locale)}</p>
                 </Link>
               </li>
             ))}
@@ -145,7 +219,7 @@ export default async function Home({ params }: Props) {
       </section>
 
       {/* Journey */}
-      <section className="section">
+      <section className="section bg-marble-2">
         <div className="container-x">
           <h2 data-reveal className="display-lg">{d.home.journeyTitle}</h2>
           <p data-reveal className="lede measure mt-5">{d.home.journeyBody}</p>
@@ -167,7 +241,7 @@ export default async function Home({ params }: Props) {
       </section>
 
       {/* Join */}
-      <section className="bg-marble-2">
+      <section className="bg-marble">
         <div className="container-x flex flex-col items-start gap-8 py-16 md:flex-row md:items-center md:justify-between md:py-20">
           <div data-reveal>
             <h2 className="display-md">{d.home.visitTitle}</h2>

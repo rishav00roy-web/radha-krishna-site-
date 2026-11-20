@@ -14,6 +14,9 @@
   --gold: #a87a26;
   --gold-bright: #d4a949;
   --gold-pale: #efdcab;
+  --night: #0f1318;
+  --night-2: #1a2028;
+  --mist: #f1dcc4;
   --forest: #17301f;
   --forest-2: #1f3b2c;
   --forest-ink: #f3ecdc;
@@ -257,7 +260,26 @@
   100% { transform: translate3d(var(--drift, 40px), 105vh, 0) rotate(540deg); opacity: 0; }
 }
 
+/* Homepage scene motion (decorative; all disabled for reduced motion below). */
+.rays-sway { animation: rays-sway 12s ease-in-out infinite alternate; }
+@keyframes rays-sway { from { transform: rotate(-2.5deg); opacity: 0.85; } to { transform: rotate(2.5deg); opacity: 1; } }
+.mist-drift { animation: mist-drift 22s ease-in-out infinite alternate; }
+.mist-drift--slow { animation-duration: 34s; animation-direction: alternate-reverse; }
+@keyframes mist-drift { from { transform: translateX(-60px); } to { transform: translateX(60px); } }
+.bird { position: absolute; left: -40px; animation: bird-fly linear infinite; }
+.bird-wing { animation: wing-flap 0.9s ease-in-out infinite; transform-origin: 20px 9px; }
+@keyframes bird-fly { from { transform: translate(0, 0); } to { transform: translate(calc(100vw + 80px), -60px); } }
+@keyframes wing-flap { 0%, 100% { transform: scaleY(1); } 50% { transform: scaleY(0.35); } }
+.diya-swing { animation: diya-swing 6s ease-in-out infinite; transform-origin: 50% 0; }
+@keyframes diya-swing { 0%, 100% { transform: rotate(-1.6deg); } 50% { transform: rotate(1.6deg); } }
+.flame-glow { animation: flame-glow 2.4s ease-in-out infinite; }
+@keyframes flame-glow { 0%, 100% { opacity: 0.75; transform: scale(1); } 45% { opacity: 1; transform: scale(1.08); } 70% { opacity: 0.85; transform: scale(0.97); } }
+.scroll-wheel { animation: scroll-wheel 1.8s ease-in-out infinite; }
+@keyframes scroll-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
+
 @media (prefers-reduced-motion: reduce) {
+  .rays-sway, .mist-drift, .bird, .bird-wing, .diya-swing, .flame-glow, .scroll-wheel { animation: none !important; }
+  .bird { display: none; }
   *,
   *::before,
   *::after {

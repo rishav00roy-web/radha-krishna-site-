@@ -10,8 +10,11 @@ const sansBn = Noto_Sans_Bengali({ subsets: ["bengali", "latin"], variable: "--f
 const serifDeva = Noto_Serif_Devanagari({ subsets: ["devanagari", "latin"], weight: ["400", "500", "600"], variable: "--font-display", display: "swap" });
 const mukta = Mukta({ subsets: ["devanagari", "latin"], weight: ["400", "500", "600"], variable: "--font-sans", display: "swap" });
 
+// Sanskrit verse on the homepage, in every locale. Loaded lazily (no preload).
+const sanskrit = Noto_Serif_Devanagari({ subsets: ["devanagari"], weight: ["400"], variable: "--font-sanskrit", display: "swap", preload: false });
+
 export const fontClasses: Record<Locale, string> = {
-  en: `${cormorant.variable} ${figtree.variable}`,
-  as: `${serifBn.variable} ${sansBn.variable}`,
-  hi: `${serifDeva.variable} ${mukta.variable}`,
+  en: `${cormorant.variable} ${figtree.variable} ${sanskrit.variable}`,
+  as: `${serifBn.variable} ${sansBn.variable} ${sanskrit.variable}`,
+  hi: `${serifDeva.variable} ${mukta.variable} ${sanskrit.variable}`,
 };
