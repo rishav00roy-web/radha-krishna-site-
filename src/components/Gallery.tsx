@@ -49,6 +49,20 @@ export function Gallery({
   const dialogRef = useRef<HTMLDivElement>(null);
   const lastFocus = useRef<HTMLElement | null>(null);
 
+  const gridRef = useRef<HTMLUListElement>(null);
+  // Tiles reveal on scroll the first time; after a filter change, show every tile at once.
+  const firstFilter = useRef(true);
+  useEffect(() => {
+    if (firstFilter.current) {
+      firstFilter.current = false;
+      return;
+    }
+    gridRef.current?.querySelectorAll<HTMLElement>("li").forEach((li) => {
+      li.style.opacity = "1";
+      li.style.transform = "none";
+    });
+  }, [filter]);
+
   const used = useMemo(() => (Object.keys(categories) as GalleryCategory[]).filter((c) => items.some((i) => i.category === c)), [categories, items]);
   const visible = useMemo(() => (filter === "all" ? items : items.filter((i) => i.category === filter)), [filter, items]);
   const current = index === null ? null : visible[index];
@@ -110,7 +124,7 @@ export function Gallery({
       {visible.length === 0 ? (
         <p className="text-ink-soft">{strings.empty}</p>
       ) : (
-        <ul className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4 md:gap-6">
+        <ul ref={gridRef} className="grid grid-cols-[repeat(auto-fill,minmax(min(100%,300px),1fr))] gap-4 md:gap-6">
           {visible.map((item, i) => (
             <li key={item.id}>
               <button
@@ -139,7 +153,7 @@ export function Gallery({
                 {item.media_type === "video" ? (
                   <span className="absolute left-4 top-4 rounded-full bg-forest px-3 py-1 text-sm text-forest-ink">{strings.video}</span>
                 ) : null}
-                <span className="absolute inset-x-0 bottom-0 bg-[linear-gradient(0deg,rgb(13_36_28/0.85),transparent)] p-4 pt-10 text-forest-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
+                <span className="absolute inset-x-0 bottom-0 bg-[linear-gradient(0deg,rgb(20_27_36/0.85),transparent)] p-4 pt-10 text-forest-ink opacity-0 transition-opacity duration-300 group-hover:opacity-100 group-focus-visible:opacity-100">
                   {item.title}
                 </span>
               </button>
@@ -155,7 +169,7 @@ export function Gallery({
           aria-modal="true"
           aria-label={current.title}
           tabIndex={-1}
-          className="fixed inset-0 z-[70] flex flex-col bg-[rgb(10_22_16/0.96)] text-forest-ink outline-none"
+          className="fixed inset-0 z-[70] flex flex-col bg-[rgb(12_16_22/0.96)] text-forest-ink outline-none"
         >
           <div className="flex items-center justify-between gap-4 px-4 py-3 md:px-8">
             <p className="tabular text-sm text-forest-soft">

@@ -36,7 +36,7 @@ export default async function Home({ params }: Props) {
       <section data-hero data-parallax className="relative isolate overflow-hidden bg-night text-forest-ink">
         <div className="relative min-h-[100svh]">
           {/* Painted artwork. Right-aligned on wide screens, top band on phones. */}
-          <div data-speed="0.35" className="absolute inset-x-0 top-0 h-[68svh] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(100%,calc(100svh*1.18))]">
+          <div data-speed="0.18" className="absolute inset-x-0 top-0 h-[68svh] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(100%,calc(100svh*1.18))]">
             {/* eslint-disable-next-line @next/next/no-img-element -- local art, no optimiser needed */}
             <img
               src="/art/hero-radha-krishna.jpg"
@@ -46,7 +46,7 @@ export default async function Home({ params }: Props) {
               fetchPriority="high"
               data-hero-art
               className="h-full w-full object-cover object-[72%_18%] lg:object-[100%_0%]"
-              style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 18%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
+              style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 30%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
             />
           </div>
           <Rays className="absolute inset-0 h-full w-full mix-blend-screen" />
@@ -56,7 +56,7 @@ export default async function Home({ params }: Props) {
           <Petals />
 
           {/* Copy */}
-          <div data-speed="0.5" data-hero-copy className="container-x relative z-10 flex min-h-[100svh] flex-col justify-end pb-40 pt-[52svh] lg:justify-center lg:pb-36 lg:pt-28">
+          <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[24svh] pt-[50svh] lg:justify-center lg:pb-[22svh] lg:pt-28">
             <div className="max-w-[30rem] text-center lg:ml-[4%]">
               <Ornament className="mb-6" />
               <h1 data-hero-line className="display-xl text-balance drop-shadow-[0_2px_18px_rgb(0_0_0/0.45)]">{h.headline.replace("-", "\u2011")}</h1>
@@ -68,7 +68,7 @@ export default async function Home({ params }: Props) {
                 <Link href={href(locale, "masterPlan")} className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaPlan}</Link>
                 <Link href={href(locale, "activities")} className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaActivities}</Link>
               </nav>
-              <a data-hero-line href="#vision" className="mx-auto mt-10 flex w-max flex-col items-center gap-3 text-sm text-forest-soft no-underline hover:text-gold-pale">
+              <a data-hero-line href="#vision" className="mx-auto mt-8 flex w-max flex-col items-center gap-3 text-sm text-forest-soft no-underline hover:text-gold-pale">
                 <span aria-hidden className="h-10 w-px bg-[linear-gradient(transparent,currentColor)]" />
                 {h.scroll}
                 <span aria-hidden className="grid h-8 w-5 justify-center rounded-full border border-current pt-1.5">
@@ -79,11 +79,11 @@ export default async function Home({ params }: Props) {
           </div>
         </div>
         {/* Mist melts the night into the cream section below. */}
-        <div data-speed="-0.15" className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[34svh]">
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-20 h-[26svh]">
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(241_220_196/0.55)_55%,var(--mist)_100%)]" />
           <Mist className="absolute inset-x-0 bottom-0 h-full w-full" />
         </div>
-        <p className="absolute bottom-3 right-4 z-30 max-w-[60ch] text-right text-xs text-ink-soft">{h.heroArt}</p>
+        <p className="absolute bottom-2 left-4 right-4 z-30 text-right text-[0.7rem] leading-snug text-ink-soft md:text-xs">{h.heroArt}</p>
       </section>
 
       {/* 2. About the temple: concept temple among trees */}
@@ -103,8 +103,8 @@ export default async function Home({ params }: Props) {
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
             </Link>
           </div>
-          <figure className="relative -mr-[var(--gutter,1rem)] md:-mr-10">
-            <div data-speed="0.18">
+          <figure className="relative -mr-[var(--gutter,1rem)] translate-y-10 md:-mr-10 md:translate-y-24">
+            <div data-speed="0.08" className="relative ml-auto w-full max-w-[640px]">
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img
                 src="/art/temple-concept.jpg"
@@ -112,22 +112,28 @@ export default async function Home({ params }: Props) {
                 width={984}
                 height={1040}
                 loading="lazy"
-                className="ml-auto h-auto w-full max-w-[640px]"
-                style={{ maskImage: "radial-gradient(120% 95% at 70% 62%, #000 55%, transparent 78%)" }}
+                className="h-auto w-full"
+                style={{
+                  maskImage: "linear-gradient(90deg, transparent 0%, #000 22%, #000 80%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 16%)",
+                  maskComposite: "intersect",
+                  WebkitMaskComposite: "source-in",
+                }}
               />
+              {/* Trees darken into the hill below. */}
+              <span aria-hidden className="absolute inset-x-0 bottom-0 h-1/4 bg-[linear-gradient(180deg,transparent,#141b24)]" style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%, #000 80%, transparent 100%)" }} />
             </div>
             <figcaption className="absolute right-2 top-2 rounded-full bg-[rgb(241_220_196/0.8)] px-3 py-1 text-xs text-ink-soft">{d.common.conceptArt}</figcaption>
           </figure>
         </div>
-        <div data-speed="-0.12" className="pointer-events-none absolute inset-x-0 bottom-[90px] h-40 opacity-80">
+        <div data-speed="-0.12" className="pointer-events-none absolute inset-x-0 bottom-[110px] z-[5] h-40 opacity-70">
           <Mist className="h-full w-full" color="#efd9bf" />
         </div>
-        <Hill className="relative z-10 -mt-24 block h-[120px] w-full md:-mt-32 md:h-[180px]" />
+        <Hill className="relative z-10 -mt-20 block h-[130px] w-full md:-mt-36 md:h-[200px]" />
       </section>
 
       {/* 3. Festivals: hanging diya */}
-      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#141a21_0%,var(--night-2)_100%)] text-forest-ink">
-        <div className="container-x relative grid items-center gap-10 pb-20 pt-6 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:pb-28">
+      <section data-parallax className="relative isolate overflow-hidden bg-[#141b24] text-forest-ink">
+        <div className="container-x relative grid items-center gap-6 pb-16 pt-2 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:gap-10 md:pb-20">
           <div>
             <p data-reveal className="flex items-center gap-3 font-display text-xl text-gold-bright">
               <span aria-hidden className="h-px w-10 bg-gold-bright" />
@@ -140,14 +146,14 @@ export default async function Home({ params }: Props) {
                 <time dateTime={next.starts_at} className="tabular">{formatDate(next.starts_at, locale)}</time>
               </p>
             ) : null}
-            <p data-reveal className="lede measure mt-5">{next ? t(next.description, locale) : h.festivalBody}</p>
+            <p data-reveal className="lede measure mt-5 !text-forest-soft">{next ? t(next.description, locale) : h.festivalBody}</p>
             {!next ? <p data-reveal className="mt-3 text-sm text-forest-soft">{h.festivalNote}</p> : null}
             <Link data-reveal href={href(locale, "activities")} className="group mt-8 inline-flex items-center gap-3 border-b border-gold-bright pb-1 font-display text-xl text-forest-ink no-underline">
               {h.viewActivities}
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
             </Link>
           </div>
-          <div data-speed="-0.2" aria-hidden className="relative mx-auto -mt-28 w-[min(70vw,300px)] md:-mt-48">
+          <div data-speed="-0.2" aria-hidden className="relative order-first mx-auto w-[min(56vw,260px)] md:order-none md:-mt-48 md:w-[300px]">
             <div className="diya-swing relative">
               <span className="flame-glow absolute left-[21%] top-[48%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)] mix-blend-screen" />
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
@@ -157,8 +163,8 @@ export default async function Home({ params }: Props) {
                 width={480}
                 height={580}
                 loading="lazy"
-                className="relative h-auto w-full mix-blend-lighten"
-                style={{ maskImage: "radial-gradient(75% 80% at 55% 55%, #000 50%, transparent 80%)" }}
+                className="relative h-auto w-full"
+                style={{ maskImage: "radial-gradient(closest-side at 52% 52%, #000 55%, transparent 100%)" }}
               />
             </div>
           </div>
@@ -166,8 +172,8 @@ export default async function Home({ params }: Props) {
       </section>
 
       {/* 4. Closing verse: peacock feather */}
-      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,var(--night-2)_0%,#24272b_100%)] text-forest-ink">
-        <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute -bottom-6 -left-10 w-[min(70vw,520px)] opacity-90 md:-left-4">
+      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#141b24_0%,#22262c_100%)] text-forest-ink">
+        <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute bottom-16 -left-10 w-[min(70vw,520px)] opacity-90 md:-left-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img
             src="/art/peacock-feather.jpg"
@@ -175,11 +181,12 @@ export default async function Home({ params }: Props) {
             width={640}
             height={552}
             loading="lazy"
-            className="h-auto w-full mix-blend-lighten"
-            style={{ maskImage: "radial-gradient(85% 85% at 40% 55%, #000 45%, transparent 78%)" }}
+            className="h-auto w-full"
+            style={{ maskImage: "radial-gradient(closest-side at 45% 52%, #000 50%, transparent 100%)" }}
           />
         </div>
-        <figure className="container-x relative py-24 text-center md:py-36">
+        <Petals />
+        <figure className="container-x relative pb-36 pt-20 text-center md:pb-48 md:pt-28">
           <p data-reveal lang="sa" className="font-sanskrit text-xl text-gold-pale/80">{h.quoteSanskrit}</p>
           <blockquote data-reveal className="mx-auto mt-5 max-w-[30ch] font-display text-3xl italic leading-snug md:text-[2.6rem]">
             &ldquo;{h.quote}&rdquo;
@@ -187,6 +194,10 @@ export default async function Home({ params }: Props) {
           <figcaption data-reveal className="mt-5 text-forest-soft">{h.quoteSource}</figcaption>
           <Ornament className="mt-8" />
         </figure>
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:h-36">
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(251_248_242/0.3)_60%,var(--marble)_100%)]" />
+          <Mist className="absolute inset-0 h-full w-full" color="#fbf8f2" />
+        </div>
       </section>
 
       {/* Campus */}
