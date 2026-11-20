@@ -23,10 +23,10 @@ export function Ornament({ className = "" }: { className?: string }) {
 /** Soft god-rays falling from the upper left. */
 export function Rays({ className = "" }: { className?: string }) {
   const beams = [
-    { x: 300, w: 70, o: 0.22 },
-    { x: 380, w: 40, o: 0.16 },
-    { x: 450, w: 110, o: 0.12 },
-    { x: 560, w: 50, o: 0.1 },
+    { x: 300, w: 70, o: 0.34 },
+    { x: 380, w: 40, o: 0.26 },
+    { x: 450, w: 110, o: 0.2 },
+    { x: 560, w: 50, o: 0.16 },
   ];
   return (
     <svg aria-hidden viewBox="0 0 1200 900" preserveAspectRatio="xMidYMin slice" className={className}>
@@ -91,7 +91,7 @@ export function Mist({ className = "", color = "#f1dcc4" }: { className?: string
 }
 
 /** A few birds crossing the sky. */
-export function Birds({ className = "" }: { className?: string }) {
+export function Birds({ className = "", tone = "#5b4d3d" }: { className?: string; tone?: string }) {
   const birds = [
     { top: "18%", delay: "0s", dur: "26s", s: 1 },
     { top: "26%", delay: "-9s", dur: "31s", s: 0.75 },
@@ -102,7 +102,7 @@ export function Birds({ className = "" }: { className?: string }) {
       {birds.map((b, i) => (
         <span key={i} className="bird" style={{ top: b.top, animationDelay: b.delay, animationDuration: b.dur, scale: String(b.s) }}>
           <svg viewBox="0 0 40 16" width="26" height="11">
-            <path className="bird-wing" d="M2 10 Q11 2 20 9 Q29 2 38 10" fill="none" stroke="#5b4d3d" strokeWidth="2" strokeLinecap="round" />
+            <path className="bird-wing" d="M2 10 Q11 2 20 9 Q29 2 38 10" fill="none" stroke={tone} strokeWidth="2" strokeLinecap="round" />
           </svg>
         </span>
       ))}
@@ -110,21 +110,30 @@ export function Birds({ className = "" }: { className?: string }) {
   );
 }
 
-/** Dark hill with tree line that carries the cream section into the night one. */
-export function Hill({ className = "", tone = "#141a21" }: { className?: string; tone?: string }) {
+/** Canopy outline: many overlapping leaf-clumps along a ridge, so the edge reads as foliage, not shapes. */
+function canopy(seed0: number, base: number, amp: number, step: number) {
+  let seed = seed0;
+  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
+  let d = `M0 ${base}`;
+  for (let x = 0; x <= 1600; x += step) {
+    const h = base - amp * (0.35 + rnd() * 0.65) * (0.6 + 0.4 * Math.sin(x / 210 + seed0));
+    d += ` Q${x + step / 2} ${h - rnd() * 18} ${x + step} ${base - amp * 0.3 * rnd()}`;
+  }
+  return `${d} V220 H0Z`;
+}
+
+/** Dark ground with a soft, painterly tree line that carries the cream section into the night one. */
+export function Hill({ className = "", tone = "#141b24" }: { className?: string; tone?: string }) {
   return (
     <svg aria-hidden viewBox="0 0 1600 220" preserveAspectRatio="none" className={className}>
-      <path d="M0 120 C220 70 420 60 640 92 C840 120 1000 70 1200 66 C1380 62 1500 90 1600 110 V220 H0Z" fill={tone} />
-      <g fill={tone}>
-        {[[180, 92, 34], [214, 84, 26], [470, 76, 30], [500, 70, 22], [1290, 70, 38], [1336, 64, 28]].map(([x, y, r], i) => (
-          <g key={i}>
-            <circle cx={x} cy={y - r} r={r} />
-            <circle cx={x + r * 0.7} cy={y - r * 0.6} r={r * 0.75} />
-            <circle cx={x - r * 0.7} cy={y - r * 0.5} r={r * 0.7} />
-            <rect x={x - 3} y={y - r * 0.4} width="6" height={r * 0.8} />
-          </g>
-        ))}
-      </g>
+      <defs>
+        <filter id="hillSoft" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="2.2" /></filter>
+        <filter id="hillFar" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="4" /></filter>
+      </defs>
+      <path d={canopy(3, 120, 70, 46)} fill="#5a5450" opacity="0.35" filter="url(#hillFar)" />
+      <path d={canopy(11, 150, 60, 30)} fill={tone} opacity="0.75" filter="url(#hillSoft)" />
+      <path d="M0 150 C220 118 420 110 640 128 C840 146 1000 118 1200 114 C1380 110 1500 128 1600 140 V220 H0Z" fill={tone} filter="url(#hillSoft)" />
+      <rect x="0" y="180" width="1600" height="40" fill={tone} />
     </svg>
   );
 }

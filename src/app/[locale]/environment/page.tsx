@@ -30,7 +30,7 @@ export default async function EnvironmentPage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.environment.title} intro={d.environment.intro} icon="cow" />
+      <PageIntro title={d.environment.title} intro={d.environment.intro} icon="cow" birds />
       <section className="section">
         <div className="container-x grid gap-16 md:gap-24">
           {d.environment.sections.map((s, i) => {

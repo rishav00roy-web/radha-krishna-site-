@@ -17,8 +17,9 @@
   --night: #0f1318;
   --night-2: #1a2028;
   --mist: #f1dcc4;
-  --forest: #17301f;
-  --forest-2: #1f3b2c;
+  /* "forest" tokens now carry the night-blue of Rishav's mockup (names kept so classes stay stable). */
+  --forest: #141b24;
+  --forest-2: #1f2733;
   --forest-ink: #f3ecdc;
   --forest-soft: #c9c0a8;
   --peacock: #0e5c63;

@@ -59,7 +59,7 @@ export function EventsCalendar({ events, strings, langTag }: { events: CalendarE
   };
 
   return (
-    <div className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
+    <div data-reveal className="grid gap-10 lg:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)]">
       <div className="rounded border border-line bg-marble p-5 md:p-7">
         <div className="mb-5 flex items-center justify-between gap-3">
           <button type="button" onClick={() => shift(-1)} aria-label={strings.prevMonth} className="grid h-11 w-11 place-items-center rounded-full border border-line transition-colors duration-150 hover:border-gold">

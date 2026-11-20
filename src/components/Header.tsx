@@ -89,25 +89,25 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <Link
             href={href(locale, "donate")}
             aria-current={isActive("donate") ? "page" : undefined}
-            className="ml-auto hidden min-h-[44px] items-center whitespace-nowrap rounded-full bg-gold px-4 text-[0.95rem] text-[#fffaf0] no-underline transition-colors duration-200 hover:bg-[#8f6620] sm:flex xl:ml-2"
+            className="ml-auto flex min-h-[40px] shrink-0 items-center whitespace-nowrap rounded-full bg-gold px-3 text-sm text-[#fffaf0] no-underline transition-colors duration-200 hover:bg-[#8f6620] sm:min-h-[44px] sm:px-4 sm:text-[0.95rem] xl:ml-2"
           >
             {dict.nav.donate}
           </Link>
 
-          <div className="relative ml-auto sm:ml-0">
+          <div className="relative shrink-0">
             <button
               type="button"
               onClick={() => setLangOpen((v) => !v)}
               aria-expanded={langOpen}
               aria-haspopup="true"
               aria-label={`${dict.nav.language}: ${localeNames[locale]}`}
-              className="flex min-h-[44px] items-center gap-2 rounded-full border border-current px-3 text-[0.95rem] transition-colors duration-200 hover:text-gold"
+              className="flex min-h-[40px] min-w-[40px] items-center justify-center gap-2 rounded-full border border-current px-2.5 text-[0.95rem] transition-colors duration-200 hover:text-gold sm:min-h-[44px] sm:px-3"
             >
               <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" />
               </svg>
-              <span>{localeNames[locale]}</span>
+              <span className="hidden sm:inline">{localeNames[locale]}</span>
             </button>
             {langOpen ? (
               <ul className="absolute right-0 top-[calc(100%+8px)] min-w-[160px] overflow-hidden rounded-sm border border-line bg-marble py-1 text-ink shadow-[0_12px_32px_-12px_rgb(42_33_24/0.3)]">

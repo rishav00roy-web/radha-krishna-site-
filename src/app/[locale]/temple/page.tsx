@@ -25,7 +25,7 @@ export default async function TemplePage({ params }: Props) {
   const d = getDictionary(locale);
   return (
     <>
-      <PageIntro title={d.temple.title} intro={d.temple.intro} icon="lotus" />
+      <PageIntro title={d.temple.title} intro={d.temple.intro} icon="lotus" birds />
 
       <section className="section">
         <div className="container-x grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20">
