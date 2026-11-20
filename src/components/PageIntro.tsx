@@ -22,7 +22,7 @@ export function PageIntro({
 }) {
   return (
     <section data-parallax className="on-dark relative isolate overflow-hidden pb-24 pt-[calc(72px+4.5rem)] md:pb-28">
-      <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-60 mix-blend-screen" />
+      <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-50" />
       <svg data-speed="0.25" aria-hidden viewBox="0 0 600 600" className="pointer-events-none absolute -right-24 top-6 h-[520px] w-[520px] text-gold-bright opacity-[0.08]">
         {[0, 30, 60, 90, 120, 150].map((r) => (
           <ellipse key={r} cx="300" cy="300" rx="280" ry="90" transform={`rotate(${r} 300 300)`} fill="none" stroke="currentColor" />

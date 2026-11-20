@@ -20,7 +20,10 @@ export function Ornament({ className = "" }: { className?: string }) {
   );
 }
 
-/** Soft god-rays falling from the upper left. */
+/**
+ * Soft god-rays falling from the upper left. The sway animates the whole <svg> (an HTML-level
+ * transform the GPU can move), never the blurred group inside it, which would re-blur every frame.
+ */
 export function Rays({ className = "" }: { className?: string }) {
   const beams = [
     { x: 300, w: 70, o: 0.34 },
@@ -29,7 +32,7 @@ export function Rays({ className = "" }: { className?: string }) {
     { x: 560, w: 50, o: 0.16 },
   ];
   return (
-    <svg aria-hidden viewBox="0 0 1200 900" preserveAspectRatio="xMidYMin slice" className={className}>
+    <svg aria-hidden viewBox="0 0 1200 900" preserveAspectRatio="xMidYMin slice" className={`rays-sway ${className}`}>
       <defs>
         <linearGradient id="ray" x1="0" y1="0" x2="0" y2="1">
           <stop offset="0" stopColor="#ffdca0" stopOpacity="1" />
@@ -38,7 +41,7 @@ export function Rays({ className = "" }: { className?: string }) {
         </linearGradient>
         <filter id="rayBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14" /></filter>
       </defs>
-      <g className="rays-sway" filter="url(#rayBlur)" style={{ transformOrigin: "260px -40px" }}>
+      <g filter="url(#rayBlur)">
         {beams.map((b) => (
           <polygon key={b.x} points={`${b.x - 30},-40 ${b.x + 30},-40 ${b.x + 260 + b.w},900 ${b.x + 260},900`} fill="url(#ray)" opacity={b.o} />
         ))}
@@ -48,7 +51,8 @@ export function Rays({ className = "" }: { className?: string }) {
 }
 
 /** Deterministic leaf cluster silhouette, for out-of-focus foreground branches. */
-export function Leaves({ className = "", tone = "#06090c", flip = false }: { className?: string; tone?: string; flip?: boolean }) {
+/** `blur` softens them inside the SVG (painted once), cheaper than a CSS filter on a moving layer. */
+export function Leaves({ className = "", tone = "#06090c", flip = false, blur = false }: { className?: string; tone?: string; flip?: boolean; blur?: boolean }) {
   const leaves: { x: number; y: number; r: number; s: number }[] = [];
   let seed = 7;
   const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
@@ -58,35 +62,39 @@ export function Leaves({ className = "", tone = "#06090c", flip = false }: { cla
   }
   return (
     <svg aria-hidden viewBox="0 0 520 360" className={className} style={flip ? { transform: "scaleX(-1)" } : undefined}>
+      {blur ? <defs><filter id="leafBlur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.6" /></filter></defs> : null}
+      <g filter={blur ? "url(#leafBlur)" : undefined}>
       <path d="M-10 40 C120 70 260 120 470 250" stroke={tone} strokeWidth="7" fill="none" strokeLinecap="round" />
       <path d="M150 85 C190 60 230 50 280 52 M260 150 C300 170 330 200 350 240" stroke={tone} strokeWidth="4" fill="none" strokeLinecap="round" />
       {leaves.map((l, i) => (
         <path key={i} d="M0 0 C10 -12 30 -12 40 0 C30 12 10 12 0 0Z" fill={tone} transform={`translate(${l.x} ${l.y}) rotate(${l.r}) scale(${l.s})`} />
       ))}
+      </g>
     </svg>
   );
 }
 
-/** Drifting mist bands. */
+/**
+ * Drifting mist bands, drawn with soft radial gradients instead of an SVG blur filter, so nothing
+ * has to be re-blurred while the bands slide (the drift itself is a compositor-only transform).
+ */
+type Puff = [cx: number, cy: number, rx: number, ry: number, opacity: number];
+const farPuffs: Puff[] = [[12, 63, 26, 33, 0.75], [48, 70, 30, 37, 0.65], [84, 62, 27, 34, 0.75]];
+const nearPuffs: Puff[] = [[31, 83, 35, 33, 0.9], [72, 85, 36, 34, 0.9]];
+
+function puffs(list: Puff[], color: string) {
+  return list
+    .map(([cx, cy, rx, ry, o]) => `radial-gradient(${rx}% ${ry}% at ${cx}% ${cy}%, color-mix(in srgb, ${color} ${o * 100}%, transparent) 35%, transparent 100%)`)
+    .join(", ");
+}
+
 export function Mist({ className = "", color = "#f1dcc4" }: { className?: string; color?: string }) {
   return (
-    <svg aria-hidden viewBox="0 0 1600 300" preserveAspectRatio="none" className={className}>
-      <defs>
-        <filter id="mistBlur" x="-10%" y="-50%" width="120%" height="200%"><feGaussianBlur stdDeviation="28" /></filter>
-      </defs>
-      <g filter="url(#mistBlur)" fill={color}>
-        <g className="mist-drift">
-          <ellipse cx="200" cy="190" rx="360" ry="70" opacity="0.75" />
-          <ellipse cx="760" cy="210" rx="420" ry="80" opacity="0.65" />
-          <ellipse cx="1350" cy="185" rx="380" ry="72" opacity="0.75" />
-        </g>
-        <g className="mist-drift mist-drift--slow">
-          <ellipse cx="500" cy="250" rx="500" ry="70" opacity="0.9" />
-          <ellipse cx="1150" cy="255" rx="520" ry="74" opacity="0.9" />
-        </g>
-        <rect x="-100" y="262" width="1800" height="80" opacity="1" />
-      </g>
-    </svg>
+    <div aria-hidden className={`pointer-events-none overflow-hidden ${className.includes("absolute") ? "" : "relative"} ${className}`}>
+      <div className="mist-drift absolute inset-y-0 -left-[5%] w-[110%]" style={{ background: puffs(farPuffs, color) }} />
+      <div className="mist-drift mist-drift--slow absolute inset-y-0 -left-[5%] w-[110%]" style={{ background: puffs(nearPuffs, color) }} />
+      <div className="absolute inset-0" style={{ background: `linear-gradient(180deg, transparent 68%, ${color} 92%)` }} />
+    </div>
   );
 }
 

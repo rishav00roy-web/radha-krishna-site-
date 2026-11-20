@@ -4,7 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import type { FacilityStatus, IconKey } from "@/lib/types";
 
-export type PlanFacility = {
+type PlanFacility = {
   id: string;
   code: string;
   slug: string;

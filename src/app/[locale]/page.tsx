@@ -49,9 +49,9 @@ export default async function Home({ params }: Props) {
               style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 30%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
             />
           </div>
-          <Rays className="absolute inset-0 h-full w-full mix-blend-screen" />
-          <div data-speed="-0.25" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] blur-[3px] lg:w-[42vw]">
-            <Leaves className="h-auto w-full opacity-90" />
+          <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
+          <div data-speed="-0.25" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] lg:w-[42vw]">
+            <Leaves blur className="h-auto w-full opacity-90" />
           </div>
           <Petals />
 
@@ -125,7 +125,7 @@ export default async function Home({ params }: Props) {
             <figcaption className="absolute right-2 top-2 rounded-full bg-[rgb(241_220_196/0.8)] px-3 py-1 text-xs text-ink-soft">{d.common.conceptArt}</figcaption>
           </figure>
         </div>
-        <div data-speed="-0.12" className="pointer-events-none absolute inset-x-0 bottom-[110px] z-[5] h-40 opacity-70">
+        <div data-speed="-0.12" className="pointer-events-none absolute inset-x-0 bottom-[110px] z-[5] h-40 opacity-70 [mask-image:linear-gradient(180deg,#000_55%,transparent)]">
           <Mist className="h-full w-full" color="#efd9bf" />
         </div>
         <Hill className="relative z-10 -mt-20 block h-[130px] w-full md:-mt-36 md:h-[200px]" />

@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-export type CalendarEvent = { id: string; title: string; description: string; starts_at: string; ends_at: string | null; venue: string | null };
+type CalendarEvent = { id: string; title: string; description: string; starts_at: string; ends_at: string | null; venue: string | null };
 
 type Strings = { noEvents: string; upcoming: string; prevMonth: string; nextMonth: string; today: string };
 
