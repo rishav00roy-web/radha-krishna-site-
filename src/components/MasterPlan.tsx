@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Icon } from "./Icon";
 import type { FacilityStatus, IconKey } from "@/lib/types";
@@ -78,7 +77,7 @@ function Schematic({ facilities }: { facilities: PlanFacility[] }) {
   );
 }
 
-export function MasterPlan({ facilities, image, strings }: { facilities: PlanFacility[]; image: string | null; strings: Strings }) {
+export function MasterPlan({ facilities, strings }: { facilities: PlanFacility[]; strings: Strings }) {
   const [scale, setScale] = useState(1);
   const [pos, setPos] = useState({ x: 0, y: 0 });
   const [selected, setSelected] = useState<string | null>(null);
@@ -155,7 +154,7 @@ export function MasterPlan({ facilities, image, strings }: { facilities: PlanFac
             className="absolute inset-0 origin-center transition-transform duration-300 ease-out will-change-transform"
             style={{ transform: `translate3d(${pos.x}px, ${pos.y}px, 0) scale(${scale})` }}
           >
-            {image ? <Image src={image} alt="" fill sizes="(min-width: 1024px) 60vw, 100vw" className="object-contain" /> : <Schematic facilities={facilities} />}
+            <Schematic facilities={facilities} />
             {facilities.map((f) => (
               <button
                 key={f.id}

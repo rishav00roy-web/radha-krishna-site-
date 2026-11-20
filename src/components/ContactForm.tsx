@@ -1,96 +1,90 @@
 "use client";
 
-import { useActionState } from "react";
-import { submitEnquiry, type ContactState } from "@/app/[locale]/contact/actions";
+import { useRef, useState, type FormEvent } from "react";
+import { lines, mailtoHref, mobilePattern, whatsappHref } from "@/lib/compose";
+import { SendButtons } from "./SendButtons";
 
 type Strings = {
-  name: string; email: string; mobile: string; subject: string; message: string; submit: string; sending: string;
-  success: string; error: string; notConfigured: string; required: string; invalidEmail: string; invalidMobile: string;
+  name: string; email: string; mobile: string; subject: string; message: string;
+  sendEmail: string; sendWhatsApp: string; howEmail: string; howWhatsApp: string;
+  required: string; invalidMobile: string;
 };
+type Field = "name" | "mobile" | "subject" | "message";
 
-export function ContactForm({ strings, locale }: { strings: Strings; locale: string }) {
-  const [state, action, pending] = useActionState<ContactState, FormData>(submitEnquiry, { status: "idle" });
-  const v = state.values ?? {};
-  const err = (k: keyof NonNullable<ContactState["errors"]>) => {
-    const e = state.errors?.[k];
-    return e === "email" ? strings.invalidEmail : e === "mobile" ? strings.invalidMobile : e ? strings.required : null;
-  };
+export function ContactForm({ strings, to, whatsapp }: { strings: Strings; to: string | null; whatsapp: string }) {
+  const [errors, setErrors] = useState<Partial<Record<Field, string>>>({});
+  const via = useRef<"email" | "whatsapp">(to ? "email" : "whatsapp");
 
-  if (state.status === "success") {
-    return (
-      <div role="status" className="rounded border border-gold bg-marble-2 p-8">
-        <svg aria-hidden viewBox="0 0 48 48" width="48" height="48" fill="none" stroke="var(--gold)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
-          <circle cx="24" cy="24" r="20" /><path d="M15 24.5l6 6 12-13" />
-        </svg>
-        <p className="mt-4 text-lg">{strings.success}</p>
-      </div>
-    );
+  function onSubmit(e: FormEvent<HTMLFormElement>) {
+    e.preventDefault();
+    const f = new FormData(e.currentTarget);
+    const v = (k: string) => String(f.get(k) ?? "").trim();
+    const next: Partial<Record<Field, string>> = {};
+    (["name", "mobile", "subject", "message"] as Field[]).forEach((k) => { if (!v(k)) next[k] = strings.required; });
+    if (v("mobile") && !mobilePattern.test(v("mobile"))) next.mobile = strings.invalidMobile;
+    setErrors(next);
+    const first = Object.keys(next)[0];
+    if (first) {
+      document.getElementById(`c-${first}`)?.focus();
+      return;
+    }
+    const body = lines([["Name", v("name")], ["Mobile", v("mobile")], ["Email", v("email")], ["Message", "\n" + v("message")]]);
+    const subject = `Website enquiry: ${v("subject")}`;
+    window.location.href = via.current === "email" && to ? mailtoHref(to, subject, body) : whatsappHref(whatsapp, `${subject}\n\n${body}`);
   }
 
-  const field = (name: "name" | "email" | "mobile" | "subject", label: string, type = "text", extra: Record<string, string> = {}) => {
-    const e = err(name);
+  const input = (name: Field | "email", label: string, type = "text", extra: Record<string, string> = {}) => {
+    const err = name === "email" ? undefined : errors[name];
     return (
       <div>
-        <label htmlFor={`f-${name}`} className="label">{label}</label>
+        <label htmlFor={`c-${name}`} className="label">{label}</label>
         <input
-          id={`f-${name}`}
+          id={`c-${name}`}
           name={name}
           type={type}
-          required
-          defaultValue={v[name]}
-          aria-invalid={e ? "true" : undefined}
-          aria-describedby={e ? `e-${name}` : undefined}
+          required={name !== "email"}
+          aria-invalid={err ? "true" : undefined}
+          aria-describedby={err ? `ce-${name}` : undefined}
           className="field"
           {...extra}
         />
-        {e ? <p id={`e-${name}`} className="mt-1.5 text-sm text-[#b3261e]">{e}</p> : null}
+        {err ? <p id={`ce-${name}`} className="mt-1.5 text-sm text-[#b3261e]">{err}</p> : null}
       </div>
     );
   };
 
   return (
-    <form action={action} noValidate className="grid gap-5">
-      <input type="hidden" name="locale" value={locale} />
-      <div aria-hidden className="absolute -left-[9999px] h-0 w-0 overflow-hidden">
-        <label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label>
+    <form onSubmit={onSubmit} noValidate className="grid gap-5">
+      <div className="grid gap-5 sm:grid-cols-2">
+        {input("name", strings.name, "text", { autoComplete: "name", maxLength: "120" })}
+        {input("mobile", strings.mobile, "tel", { autoComplete: "tel", inputMode: "tel", maxLength: "16" })}
       </div>
       <div className="grid gap-5 sm:grid-cols-2">
-        {field("name", strings.name, "text", { autoComplete: "name", maxLength: "120" })}
-        {field("email", strings.email, "email", { autoComplete: "email", maxLength: "200" })}
-      </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        {field("mobile", strings.mobile, "tel", { autoComplete: "tel", inputMode: "tel", maxLength: "16" })}
-        {field("subject", strings.subject, "text", { maxLength: "200" })}
+        {input("email", strings.email, "email", { autoComplete: "email", maxLength: "200" })}
+        {input("subject", strings.subject, "text", { maxLength: "200" })}
       </div>
       <div>
-        <label htmlFor="f-message" className="label">{strings.message}</label>
+        <label htmlFor="c-message" className="label">{strings.message}</label>
         <textarea
-          id="f-message"
+          id="c-message"
           name="message"
           required
           rows={6}
-          maxLength={4000}
-          defaultValue={v.message}
-          aria-invalid={err("message") ? "true" : undefined}
-          aria-describedby={err("message") ? "e-message" : undefined}
+          maxLength={2000}
+          aria-invalid={errors.message ? "true" : undefined}
+          aria-describedby={errors.message ? "ce-message" : undefined}
           className="field resize-y"
         />
-        {err("message") ? <p id="e-message" className="mt-1.5 text-sm text-[#b3261e]">{err("message")}</p> : null}
+        {errors.message ? <p id="ce-message" className="mt-1.5 text-sm text-[#b3261e]">{errors.message}</p> : null}
       </div>
-
-      {state.status === "error" && !state.errors ? <p role="alert" className="text-[#b3261e]">{strings.error}</p> : null}
-      {state.status === "not_configured" ? <p role="alert" className="text-ink-soft">{strings.notConfigured}</p> : null}
-
-      <div>
-        <button type="submit" disabled={pending} aria-disabled={pending} className="btn btn-primary">
-          {pending ? (
-            <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" className="animate-spin" fill="none" stroke="currentColor" strokeWidth="2">
-              <path d="M12 3a9 9 0 1 0 9 9" strokeLinecap="round" />
-            </svg>
-          ) : null}
-          {pending ? strings.sending : strings.submit}
-        </button>
-      </div>
+      <SendButtons
+        email={to}
+        sendEmail={strings.sendEmail}
+        sendWhatsApp={strings.sendWhatsApp}
+        howEmail={strings.howEmail}
+        howWhatsApp={strings.howWhatsApp}
+        onSend={(w) => { via.current = w; }}
+      />
     </form>
   );
 }

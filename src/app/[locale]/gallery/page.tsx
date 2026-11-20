@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function GalleryPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const items = await getGallery();
+  const items = getGallery();
   return (
     <>
       <PageIntro title={d.gallery.title} intro={d.gallery.intro} icon="feather" />

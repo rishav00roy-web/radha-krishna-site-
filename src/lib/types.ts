@@ -2,11 +2,11 @@ import type { Localized } from "@/i18n/config";
 
 export type FacilityStatus = "proposed" | "under_construction" | "completed";
 export type MilestoneStatus = "planned" | "in_progress" | "completed";
-export type Role = "super_admin" | "admin" | "editor" | "viewer";
 
 export const galleryCategories = [
   "architecture",
   "art",
+  "worship",
   "masterplan",
   "sarovar",
   "gaushala",
@@ -34,7 +34,7 @@ export type Facility = {
   icon: IconKey;
   pos_x: number;
   pos_y: number;
-  image_url: string | null;
+  photo: Photo | null;
   sort: number;
 };
 
@@ -61,9 +61,9 @@ export type GalleryItem = {
   title: Localized;
   caption: Localized;
   media_type: "image" | "video";
+  /** An Unsplash photo, or null when `url` points at a video or an official image. */
+  photo: Photo | null;
   url: string | null;
-  thumbnail_url: string | null;
-  is_placeholder: boolean;
   sort: number;
 };
 
@@ -83,7 +83,6 @@ export type ProjectUpdate = {
   title: Localized;
   excerpt: Localized;
   body: Localized;
-  cover_url: string | null;
   published_at: string;
 };
 
@@ -98,6 +97,8 @@ export type Organisation = {
   address: string;
   phone: string;
   email: string | null;
+  /** Country code + number, digits only, for wa.me links. */
+  whatsapp: string;
   leader_name: string;
   leader_title: string;
 };
@@ -109,8 +110,9 @@ export type LocationInfo = {
   landmarks: Localized[];
 };
 
-export type SiteMedia = {
-  hero_image: string | null;
-  masterplan_image: string | null;
-  logo: string | null;
+/** An illustrative stock photo from Unsplash, credited to its photographer. */
+export type Photo = {
+  id: string;
+  alt: Localized;
+  credit: { name: string; username: string };
 };

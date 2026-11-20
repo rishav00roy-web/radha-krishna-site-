@@ -22,7 +22,8 @@ const icons: IconKey[] = ["diya", "book", "book", "flute", "feather", "drum", "g
 export default async function ActivitiesPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const [events, announcements] = await Promise.all([getEvents(), getAnnouncements()]);
+  const events = getEvents();
+  const announcements = getAnnouncements();
 
   return (
     <>

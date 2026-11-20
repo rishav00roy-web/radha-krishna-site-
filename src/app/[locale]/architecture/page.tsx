@@ -22,7 +22,7 @@ const icons: IconKey[] = ["temple", "kalash", "diya", "gathering", "drum", "lotu
 export default async function ArchitecturePage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const items = (await getGallery()).filter((g) => g.category === "architecture");
+  const items = (getGallery()).filter((g) => g.category === "architecture");
 
   return (
     <>

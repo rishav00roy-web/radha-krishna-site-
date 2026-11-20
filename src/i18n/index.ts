@@ -1,4 +1,3 @@
-import "server-only";
 import type { Locale } from "./config";
 import { en, type Dictionary } from "./dictionaries/en";
 import { as } from "./dictionaries/as";

@@ -11,7 +11,7 @@ import { BrandMark } from "./BrandMark";
 const primary: RouteKey[] = ["temple", "masterPlan", "activities", "gallery", "contact"];
 const all: RouteKey[] = [
   "home", "temple", "architecture", "masterPlan", "activities", "environment",
-  "journey", "gallery", "location", "organisation", "contact",
+  "journey", "gallery", "location", "organisation", "contact", "donate",
 ];
 
 export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
@@ -79,14 +79,22 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
                 key={k}
                 href={href(locale, k)}
                 aria-current={isActive(k) ? "page" : undefined}
-                className="rounded-full px-3 py-2 text-[0.95rem] no-underline transition-colors duration-200 hover:text-gold aria-[current=page]:text-gold"
+                className="whitespace-nowrap rounded-full px-3 py-2 text-[0.95rem] no-underline transition-colors duration-200 hover:text-gold aria-[current=page]:text-gold"
               >
                 {dict.nav[k]}
               </Link>
             ))}
           </nav>
 
-          <div className="relative ml-auto xl:ml-2">
+          <Link
+            href={href(locale, "donate")}
+            aria-current={isActive("donate") ? "page" : undefined}
+            className="ml-auto hidden min-h-[44px] items-center whitespace-nowrap rounded-full bg-gold px-4 text-[0.95rem] text-[#fffaf0] no-underline transition-colors duration-200 hover:bg-[#8f6620] sm:flex xl:ml-2"
+          >
+            {dict.nav.donate}
+          </Link>
+
+          <div className="relative ml-auto sm:ml-0">
             <button
               type="button"
               onClick={() => setLangOpen((v) => !v)}

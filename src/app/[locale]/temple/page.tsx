@@ -6,7 +6,8 @@ import { pageMetadata } from "@/lib/seo";
 import { href } from "@/lib/routes";
 import { PageIntro } from "@/components/PageIntro";
 import { Icon } from "@/components/Icon";
-import { Placeholder } from "@/components/Placeholder";
+import { PhotoFigure } from "@/components/PhotoFigure";
+import { photos } from "@/lib/content";
 import type { IconKey } from "@/lib/types";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -28,9 +29,15 @@ export default async function TemplePage({ params }: Props) {
 
       <section className="section">
         <div className="container-x grid gap-12 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-20">
-          <div data-reveal className="aspect-square overflow-hidden rounded md:sticky md:top-28 md:self-start">
-            <Placeholder icon="feather" label={d.gallery.categories.art} note={d.common.placeholder} />
-          </div>
+          <PhotoFigure
+            data-reveal
+            photo={photos.radhaKrishnaRelief}
+            locale={locale}
+            credit={d.common.photoCredit}
+            aspect="aspect-[4/5]"
+            sizes="(min-width: 768px) 45vw, 100vw"
+            className="md:sticky md:top-28 md:self-start"
+          />
           <div>
             <h2 data-reveal className="display-lg">{d.temple.significanceTitle}</h2>
             {d.temple.significance.map((p) => (

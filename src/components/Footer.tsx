@@ -5,7 +5,7 @@ import type { Organisation } from "@/lib/types";
 import { href, type RouteKey } from "@/lib/routes";
 import { BrandMark } from "./BrandMark";
 
-const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities", "environment", "journey", "gallery", "location", "organisation", "contact"];
+const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities", "environment", "journey", "gallery", "location", "organisation", "contact", "donate"];
 
 export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary; org: Organisation }) {
   return (
@@ -48,7 +48,6 @@ export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary
 
         <div className="mt-8 flex flex-wrap items-center justify-between gap-4 text-sm text-forest-soft">
           <p>© {new Date().getFullYear()} {org.name}. {dict.footer.rights}</p>
-          <Link href="/admin" className="no-underline hover:text-gold-bright">{dict.footer.admin}</Link>
         </div>
       </div>
     </footer>

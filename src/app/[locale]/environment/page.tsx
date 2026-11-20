@@ -2,12 +2,10 @@ import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
-import { getGallery } from "@/lib/data";
+import { photos, type PhotoKey } from "@/lib/content";
 import { PageIntro } from "@/components/PageIntro";
-import { Placeholder } from "@/components/Placeholder";
+import { PhotoFigure } from "@/components/PhotoFigure";
 import { Icon } from "@/components/Icon";
-import type { GalleryCategory, IconKey } from "@/lib/types";
-import Image from "next/image";
 
 type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -17,21 +15,18 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata(locale, "/environment", d.environment.title, d.environment.intro);
 }
 
-const meta: Record<string, { icon: IconKey; cat: GalleryCategory | null }> = {
-  gaushala: { icon: "cow", cat: "gaushala" },
-  trees: { icon: "tree", cat: null },
-  bamboo: { icon: "bamboo", cat: "bamboo" },
-  medicinal: { icon: "herb", cat: "medicinal" },
-  fruit: { icon: "fruit", cat: "fruit" },
-  water: { icon: "water", cat: "sarovar" },
+const sectionPhoto: Record<string, PhotoKey> = {
+  gaushala: "cow",
+  trees: "tree",
+  bamboo: "bambooPath",
+  medicinal: "tulsi",
+  fruit: "mangoes",
+  water: "lotusPond",
 };
 
 export default async function EnvironmentPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const gallery = await getGallery();
-  const photoFor = (cat: GalleryCategory | null) =>
-    cat ? gallery.find((g) => g.category === cat && !g.is_placeholder && g.media_type === "image" && g.url) : undefined;
 
   return (
     <>
@@ -39,19 +34,15 @@ export default async function EnvironmentPage({ params }: Props) {
       <section className="section">
         <div className="container-x grid gap-16 md:gap-24">
           {d.environment.sections.map((s, i) => {
-            const m = meta[s.key];
-            const photo = photoFor(m.cat);
             return (
               <article key={s.key} id={s.key} data-reveal className="grid items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-16">
-                <div className={`aspect-[4/3] overflow-hidden rounded ${i % 2 ? "md:order-2" : ""}`}>
-                  {photo?.url ? (
-                    <div className="relative h-full w-full">
-                      <Image src={photo.url} alt={s.title} fill sizes="(min-width: 768px) 55vw, 100vw" className="object-cover" />
-                    </div>
-                  ) : (
-                    <Placeholder icon={m.icon} label={s.title} note={d.common.placeholder} />
-                  )}
-                </div>
+                <PhotoFigure
+                  photo={photos[sectionPhoto[s.key]]}
+                  locale={locale}
+                  credit={d.common.photoCredit}
+                  sizes="(min-width: 768px) 50vw, 100vw"
+                  className={i % 2 ? "md:order-2" : ""}
+                />
                 <div>
                   <div className="flex flex-wrap items-center gap-3">
                     <h2 className="display-md">{s.title}</h2>

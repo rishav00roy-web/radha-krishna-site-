@@ -18,7 +18,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function JourneyPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const [milestones, updates] = await Promise.all([getMilestones(), getUpdates()]);
+  const milestones = getMilestones();
+  const updates = getUpdates();
 
   return (
     <>

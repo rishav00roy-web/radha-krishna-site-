@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function LocationPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const loc = await getLocation();
+  const loc = getLocation();
   const hasCoords = typeof loc.lat === "number" && typeof loc.lng === "number";
   const bbox = hasCoords ? [loc.lng! - 0.02, loc.lat! - 0.012, loc.lng! + 0.02, loc.lat! + 0.012].join(",") : "";
 

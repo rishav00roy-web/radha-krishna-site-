@@ -17,7 +17,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function ContactPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const org = await getOrganisation();
+  const org = getOrganisation();
   const c = d.contact;
   return (
     <>
@@ -25,11 +25,12 @@ export default async function ContactPage({ params }: Props) {
       <section className="section">
         <div className="container-x grid gap-14 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-20">
           <ContactForm
-            locale={locale}
+            to={org.email}
+            whatsapp={org.whatsapp}
             strings={{
-              name: c.name, email: c.email, mobile: c.mobile, subject: c.subject, message: c.message, submit: c.submit,
-              sending: c.sending, success: c.success, error: c.error, notConfigured: c.notConfigured, required: c.required,
-              invalidEmail: c.invalidEmail, invalidMobile: c.invalidMobile,
+              name: c.name, email: c.email, mobile: c.mobile, subject: c.subject, message: c.message,
+              sendEmail: c.sendEmail, sendWhatsApp: c.sendWhatsApp, howEmail: c.howEmail, howWhatsApp: c.howWhatsApp,
+              required: c.required, invalidMobile: c.invalidMobile,
             }}
           />
           <aside className="on-dark rounded p-8 md:p-10 lg:self-start">

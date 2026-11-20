@@ -1,9 +1,8 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { isLocale, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
-import { getMedia, getOrganisation } from "@/lib/data";
+import { getOrganisation } from "@/lib/data";
 import { PageIntro } from "@/components/PageIntro";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -17,7 +16,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function OrganisationPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const [org, media] = await Promise.all([getOrganisation(), getMedia()]);
+  const org = getOrganisation();
   const rows: [string, string][] = [
     [d.organisation.cin, org.cin],
     [d.organisation.pan, org.pan],
@@ -32,14 +31,10 @@ export default async function OrganisationPage({ params }: Props) {
         <div className="container-x grid gap-14 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-20">
           <div>
             <div className="grid aspect-square w-full max-w-[280px] place-items-center overflow-hidden rounded border border-line bg-marble-2">
-              {media.logo ? (
-                <Image src={media.logo} alt={`${org.name} logo`} width={280} height={280} className="h-full w-full object-contain p-6" />
-              ) : (
-                <div className="p-6 text-center">
-                  <p className="font-display text-5xl text-gold">{org.short_name}</p>
-                  <p className="mt-3 text-sm text-ink-soft">{d.common.placeholder}</p>
-                </div>
-              )}
+              <div className="p-6 text-center">
+                <p className="font-display text-5xl text-gold">{org.short_name}</p>
+                <p className="mt-3 text-sm text-ink-soft">{d.common.placeholder}</p>
+              </div>
             </div>
             <h2 className="display-md mt-8">{org.name} ({org.short_name})</h2>
             <p className="mt-2 text-ink-soft">{d.organisation.legalForm}</p>

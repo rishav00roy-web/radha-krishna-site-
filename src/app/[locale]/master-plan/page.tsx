@@ -1,12 +1,12 @@
-import Image from "next/image";
 import type { Metadata } from "next";
 import { isLocale, t, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
-import { getFacilities, getMedia } from "@/lib/data";
+import { getFacilities } from "@/lib/data";
 import { PageIntro } from "@/components/PageIntro";
 import { MasterPlan } from "@/components/MasterPlan";
 import { Placeholder } from "@/components/Placeholder";
+import { PhotoFigure } from "@/components/PhotoFigure";
 import { StatusTag } from "@/components/ProposedTag";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -20,7 +20,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 export default async function MasterPlanPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
-  const [facilities, media] = await Promise.all([getFacilities(), getMedia()]);
+  const facilities = getFacilities();
 
   return (
     <>
@@ -28,7 +28,6 @@ export default async function MasterPlanPage({ params }: Props) {
       <section className="section !pt-12 md:!pt-16">
         <div className="container-x">
           <MasterPlan
-            image={media.masterplan_image}
             facilities={facilities.map((f) => ({
               id: f.id, code: f.code, slug: f.slug, icon: f.icon, status: f.status, x: f.pos_x, y: f.pos_y,
               name: t(f.name, locale), summary: t(f.summary, locale), description: t(f.description, locale),
@@ -53,15 +52,20 @@ export default async function MasterPlanPage({ params }: Props) {
                 data-reveal
                 className="grid scroll-mt-28 items-center gap-8 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:gap-14"
               >
-                <div className={`aspect-[3/2] overflow-hidden rounded ${i % 2 ? "md:order-2" : ""}`}>
-                  {f.image_url ? (
-                    <div className="relative h-full w-full">
-                      <Image src={f.image_url} alt={t(f.name, locale)} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
-                    </div>
-                  ) : (
+                {f.photo ? (
+                  <PhotoFigure
+                    photo={f.photo}
+                    locale={locale}
+                    credit={d.common.photoCredit}
+                    aspect="aspect-[3/2]"
+                    sizes="(min-width: 768px) 50vw, 100vw"
+                    className={i % 2 ? "md:order-2" : ""}
+                  />
+                ) : (
+                  <div className={`aspect-[3/2] overflow-hidden rounded ${i % 2 ? "md:order-2" : ""}`}>
                     <Placeholder icon={f.icon} label={t(f.name, locale)} note={d.common.placeholder} />
-                  )}
-                </div>
+                  </div>
+                )}
                 <div>
                   <div className="flex items-center gap-3">
                     <span className="tabular grid h-9 w-9 place-items-center rounded-full border border-gold text-gold">{f.code}</span>

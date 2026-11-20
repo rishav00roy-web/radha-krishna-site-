@@ -6,13 +6,13 @@ import type { GalleryViewItem } from "@/components/Gallery";
 export const toGalleryView = (items: GalleryItem[], locale: Locale): GalleryViewItem[] =>
   items.map((i) => ({
     id: i.id, category: i.category, title: t(i.title, locale), caption: t(i.caption, locale),
-    media_type: i.media_type, url: i.url, thumbnail_url: i.thumbnail_url, is_placeholder: i.is_placeholder,
+    media_type: i.media_type, url: i.url, photo: i.photo,
   }));
 
 export const galleryStrings = (d: Dictionary) => ({
   all: d.gallery.all, close: d.gallery.close, prev: d.gallery.prev, next: d.gallery.next,
   play: d.gallery.play, pause: d.gallery.pause, zoom: d.gallery.zoom, video: d.gallery.video,
-  empty: d.gallery.empty, placeholder: d.common.placeholder,
+  empty: d.gallery.empty, placeholder: d.common.placeholder, credit: d.common.photoCredit,
 });
 
 export function formatDate(iso: string, locale: Locale, opts: Intl.DateTimeFormatOptions = { dateStyle: "long" }) {

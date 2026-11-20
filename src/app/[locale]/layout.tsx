@@ -10,7 +10,6 @@ import { Header } from "@/components/Header";
 import { Footer } from "@/components/Footer";
 import { Motion } from "@/components/Motion";
 
-export const revalidate = 300;
 
 export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
@@ -41,7 +40,7 @@ export default async function LocaleLayout({
   const { locale } = await params;
   if (!isLocale(locale)) notFound();
   const dict = getDictionary(locale);
-  const org = await getOrganisation();
+  const org = getOrganisation();
 
   const jsonLd = {
     "@context": "https://schema.org",

@@ -1,15 +1,15 @@
 import Link from "next/link";
-import Image from "next/image";
 import type { Metadata } from "next";
 import { isLocale, t, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
-import { getFacilities, getMedia, getMilestones } from "@/lib/data";
+import { getFacilities, getMilestones } from "@/lib/data";
+import { photos } from "@/lib/content";
 import { href } from "@/lib/routes";
 import { pageMetadata } from "@/lib/seo";
 import { TempleIllustration } from "@/components/TempleIllustration";
 import { Petals } from "@/components/Petals";
 import { Icon } from "@/components/Icon";
-import { Placeholder } from "@/components/Placeholder";
+import { PhotoFigure } from "@/components/PhotoFigure";
 import { StatusTag } from "@/components/ProposedTag";
 import type { IconKey } from "@/lib/types";
 
@@ -28,7 +28,8 @@ export default async function Home({ params }: Props) {
   const { locale: raw } = await params;
   const locale = raw as Locale;
   const d = getDictionary(locale);
-  const [facilities, milestones, media] = await Promise.all([getFacilities(), getMilestones(), getMedia()]);
+  const facilities = getFacilities();
+  const milestones = getMilestones();
 
   return (
     <>
@@ -36,11 +37,7 @@ export default async function Home({ params }: Props) {
       <section data-hero className="relative isolate flex min-h-[100svh] items-end overflow-hidden bg-forest text-forest-ink">
         <div className="absolute inset-0 -z-10">
           <div className="absolute inset-x-0 top-0 h-[54svh] lg:inset-y-0 lg:left-auto lg:h-auto lg:w-[70%]">
-            {media.hero_image ? (
-              <Image src={media.hero_image} alt={d.meta.siteName} fill priority sizes="(min-width: 1024px) 70vw, 100vw" className="object-cover" />
-            ) : (
-              <TempleIllustration className="h-full w-full" title={d.common.conceptArt} />
-            )}
+            <TempleIllustration className="h-full w-full" title={d.common.conceptArt} />
           </div>
           {/* Scrims keep the text readable: a bottom wash on small screens, a left fade on wide ones. */}
           <div className="absolute inset-0 bg-[linear-gradient(180deg,rgb(13_36_28/0.5)_0%,rgb(13_36_28/0)_18%,rgb(13_36_28/0)_34%,var(--forest)_54svh,var(--forest)_100%)] lg:bg-[linear-gradient(90deg,var(--forest)_0%,var(--forest)_30%,rgb(23_48_31/0.6)_42%,rgb(23_48_31/0)_58%),linear-gradient(0deg,rgb(13_36_28/0.85)_0%,rgb(13_36_28/0)_30%)]" />
@@ -70,7 +67,7 @@ export default async function Home({ params }: Props) {
               <dt className="text-forest-soft">{d.common.implementedBy}</dt>
               <dd>{d.common.orgName}</dd>
             </div>
-            {!media.hero_image ? <dd className="self-end text-sm text-forest-soft">{d.common.conceptArt}</dd> : null}
+            <dd className="self-end text-sm text-forest-soft">{d.common.conceptArt}</dd>
           </dl>
         </div>
       </section>
@@ -83,9 +80,14 @@ export default async function Home({ params }: Props) {
             <p className="lede measure mt-6">{d.home.visionBody}</p>
             <p className="mt-6 font-display text-2xl text-gold">{d.meta.brandMessage}</p>
           </div>
-          <div data-reveal className="aspect-[4/5] overflow-hidden rounded">
-            <Placeholder icon="flute" label={d.gallery.categories.art} note={d.common.placeholder} />
-          </div>
+          <PhotoFigure
+            data-reveal
+            photo={photos.radhaKrishnaStatues}
+            locale={locale}
+            credit={d.common.photoCredit}
+            aspect="aspect-[4/5]"
+            sizes="(min-width: 768px) 45vw, 100vw"
+          />
         </div>
       </section>
 

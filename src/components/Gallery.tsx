@@ -1,9 +1,10 @@
 "use client";
 
-import Image from "next/image";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { Placeholder } from "./Placeholder";
-import type { GalleryCategory, IconKey } from "@/lib/types";
+import { PhotoCredit } from "./PhotoFigure";
+import { photoSrc, photoSrcSet } from "@/lib/photo";
+import type { GalleryCategory, IconKey, Photo } from "@/lib/types";
 
 export type GalleryViewItem = {
   id: string;
@@ -12,18 +13,17 @@ export type GalleryViewItem = {
   caption: string;
   media_type: "image" | "video";
   url: string | null;
-  thumbnail_url: string | null;
-  is_placeholder: boolean;
+  photo: Photo | null;
 };
 
 export const categoryIcon: Record<GalleryCategory, IconKey> = {
-  architecture: "temple", art: "flute", masterplan: "kalash", sarovar: "water", gaushala: "cow",
+  architecture: "temple", art: "flute", worship: "diya", masterplan: "kalash", sarovar: "water", gaushala: "cow",
   bamboo: "bamboo", medicinal: "herb", fruit: "fruit", updates: "book",
 };
 
 type Strings = {
   all: string; close: string; prev: string; next: string; play: string; pause: string;
-  zoom: string; video: string; empty: string; placeholder: string;
+  zoom: string; video: string; empty: string; placeholder: string; credit: string;
 };
 
 function youtubeId(url: string) {
@@ -122,16 +122,19 @@ export function Gallery({
                 className="group relative block aspect-[4/3] w-full overflow-hidden rounded text-left"
                 aria-label={`${item.title}${item.media_type === "video" ? ` (${strings.video})` : ""}`}
               >
-                {item.is_placeholder || !(item.thumbnail_url || item.url) ? (
-                  <Placeholder icon={categoryIcon[item.category]} label={item.title} note={strings.placeholder} />
-                ) : (
-                  <Image
-                    src={(item.thumbnail_url || item.url)!}
-                    alt={item.title}
-                    fill
+                {item.photo ? (
+                  // eslint-disable-next-line @next/next/no-img-element -- Unsplash serves pre-sized images
+                  <img
+                    src={photoSrc(item.photo, 800)}
+                    srcSet={photoSrcSet(item.photo, [400, 600, 800, 1200])}
                     sizes="(min-width: 1024px) 33vw, (min-width: 640px) 50vw, 100vw"
-                    className="object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    alt=""
+                    loading="lazy"
+                    decoding="async"
+                    className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 ease-out group-hover:scale-[1.04]"
                   />
+                ) : (
+                  <Placeholder icon={categoryIcon[item.category]} label={item.title} note={strings.placeholder} />
                 )}
                 {item.media_type === "video" ? (
                   <span className="absolute left-4 top-4 rounded-full bg-forest px-3 py-1 text-sm text-forest-ink">{strings.video}</span>
@@ -159,7 +162,7 @@ export function Gallery({
               {index! + 1} / {visible.length}
             </p>
             <div className="flex items-center gap-2">
-              {current.media_type === "image" && !current.is_placeholder && current.url ? (
+              {current.media_type === "image" && current.photo ? (
                 <button type="button" onClick={() => setZoomed((z) => !z)} aria-pressed={zoomed} className="btn btn-quiet !min-h-[40px] !py-1.5">
                   {strings.zoom}
                 </button>
@@ -187,9 +190,9 @@ export function Gallery({
                     allowFullScreen
                   />
                 ) : (
-                  <video className="absolute inset-0 m-auto max-h-full w-full" src={current.url} controls playsInline poster={current.thumbnail_url ?? undefined} />
+                  <video className="absolute inset-0 m-auto max-h-full w-full" src={current.url} controls playsInline poster={current.photo ? photoSrc(current.photo, 1600) : undefined} />
                 )
-              ) : current.is_placeholder || !current.url ? (
+              ) : !current.photo ? (
                 <div className="absolute inset-0 m-auto aspect-[4/3] max-h-full max-w-full overflow-hidden rounded">
                   <Placeholder dark icon={categoryIcon[current.category]} label={current.title} note={strings.placeholder} />
                 </div>
@@ -198,7 +201,14 @@ export function Gallery({
                   className={`relative h-full w-full transition-transform duration-500 ease-out ${zoomed ? "scale-[1.8] cursor-zoom-out" : "cursor-zoom-in"}`}
                   onClick={() => setZoomed((z) => !z)}
                 >
-                  <Image src={current.url} alt={current.title} fill sizes="100vw" className="object-contain" />
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Unsplash serves pre-sized images */}
+                  <img
+                    src={photoSrc(current.photo, 1600)}
+                    srcSet={photoSrcSet(current.photo, [800, 1200, 1600, 2400])}
+                    sizes="100vw"
+                    alt={current.title}
+                    className="absolute inset-0 h-full w-full object-contain"
+                  />
                 </div>
               )}
             </figure>
@@ -213,11 +223,14 @@ export function Gallery({
               </>
             ) : null}
           </div>
-          <figcaption className="px-4 pb-6 pt-3 text-center md:px-8">
+          <div className="px-4 pb-6 pt-3 text-center md:px-8">
             <p className="font-display text-xl">{current.title}</p>
             {current.caption ? <p className="mt-1 text-forest-soft">{current.caption}</p> : null}
-            <p className="mt-1 text-sm text-forest-soft">{categories[current.category]}</p>
-          </figcaption>
+            <p className="mt-1 text-sm text-forest-soft">
+              {categories[current.category]}
+              {current.photo ? <> · <PhotoCredit photo={current.photo} template={strings.credit} dark /></> : null}
+            </p>
+          </div>
         </div>
       ) : null}
     </div>
