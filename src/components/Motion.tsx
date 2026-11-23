@@ -99,25 +99,6 @@ export function Motion() {
           );
         });
 
-        // Facility reel: on desktop the section pins and the row of painted scenes slides sideways.
-        const reel = document.querySelector<HTMLElement>("[data-hscroll]");
-        const track = reel?.querySelector<HTMLElement>("[data-hscroll-track]");
-        if (reel && track && !phone) {
-          const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
-          gsap.to(track, {
-            x: () => -distance(),
-            ease: "none",
-            scrollTrigger: { trigger: reel, start: "top top", end: () => `+=${distance()}`, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1 },
-          });
-          // Each painting drifts inside its frame as the row moves, for depth.
-          track.querySelectorAll<HTMLElement>("[data-reel-art]").forEach((img) => {
-            gsap.fromTo(img, { xPercent: 6 }, {
-              xPercent: -6, ease: "none",
-              scrollTrigger: { trigger: reel, start: "top top", end: () => `+=${distance()}`, scrub: true, invalidateOnRefresh: true },
-            });
-          });
-        }
-
         // Journey: a gold line draws across the steps, with a glowing bead at its tip.
         const journey = document.querySelector<HTMLElement>("[data-journey]");
         if (journey) {
@@ -168,9 +149,9 @@ export function Motion() {
         window.addEventListener("pointermove", onPointer, { passive: true });
       }
 
-      // Pause the CSS loops (petals, birds, rays, mist, diya) in scenes that are off screen.
+      // Pause the CSS loops (petals, rays, mist, diya, glow) in scenes that are off screen.
       const scenes = new Set<HTMLElement>();
-      document.querySelectorAll<HTMLElement>(".petal, .bird, .rays-sway, .mist-drift, .diya-swing, .sun-glow").forEach((el) => {
+      document.querySelectorAll<HTMLElement>(".petal, .rays-sway, .mist-drift, .diya-swing, .sun-glow").forEach((el) => {
         const scene = el.closest<HTMLElement>("section");
         if (scene) scenes.add(scene);
       });

@@ -2,15 +2,14 @@ import Link from "next/link";
 import type { Metadata } from "next";
 import { isLocale, t, type Locale } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
-import { getEvents, getFacilities, getMilestones } from "@/lib/data";
+import { getEvents, getMilestones } from "@/lib/data";
 import { formatDate } from "@/lib/view";
 import { href } from "@/lib/routes";
 import { pageMetadata } from "@/lib/seo";
 import { Petals } from "@/components/Petals";
 import { Icon } from "@/components/Icon";
-import { Birds, Hill, Leaves, Mist, Ornament, Rays } from "@/components/home/art";
+import { Hill, Leaves, Mist, Ornament, Rays } from "@/components/home/art";
 import { Embers } from "@/components/Embers";
-import { FacilityReel } from "@/components/home/FacilityReel";
 import { RiverLamps } from "@/components/home/RiverLamps";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -26,7 +25,6 @@ export default async function Home({ params }: Props) {
   const { locale: raw } = await params;
   const locale = raw as Locale;
   const d = getDictionary(locale);
-  const facilities = getFacilities();
   const milestones = getMilestones();
 
   const next = getEvents().find((e) => new Date(e.ends_at ?? e.starts_at).getTime() >= Date.now());
@@ -86,13 +84,13 @@ export default async function Home({ params }: Props) {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(241_220_196/0.55)_55%,var(--mist)_100%)]" />
           <Mist className="absolute inset-x-0 bottom-0 h-full w-full" />
         </div>
-        <p className="absolute bottom-2 left-4 right-4 z-30 text-right text-[0.7rem] leading-snug text-ink-soft md:text-xs">{h.heroArt}</p>
+        <p className="absolute bottom-[22svh] left-4 right-4 z-30 text-right text-[0.7rem] leading-snug text-forest-soft/80 md:text-xs">{h.heroArt}</p>
       </section>
 
       {/* 2. About the temple: concept temple among trees */}
-      <section id="vision" data-parallax className="relative isolate scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,var(--mist)_0%,#ead2b6_100%)] pb-0">
-        <Birds />
-        <div className="container-x relative grid items-end gap-10 pt-16 md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-24">
+      {/* Pulled up under the hero's mist, so the night melts straight into this scene with no seam. */}
+      <section id="vision" data-parallax className="relative isolate z-10 -mt-[20svh] scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,transparent_0%,var(--mist)_20svh,#ead2b6_100%)] pb-0">
+        <div className="container-x relative grid items-end gap-10 pt-[6svh] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-[7svh]">
           <div className="pb-10 md:pb-48">
             <p data-reveal className="flex items-center gap-3 font-display text-xl text-gold">
               <span aria-hidden className="h-px w-10 bg-gold" />
@@ -118,7 +116,7 @@ export default async function Home({ params }: Props) {
                 loading="lazy"
                 className="relative h-auto w-full"
                 style={{
-                  maskImage: "linear-gradient(90deg, transparent 0%, #000 22%, #000 80%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 16%)",
+                  maskImage: "linear-gradient(90deg, transparent 0%, #000 34%, #000 74%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 26%)",
                   maskComposite: "intersect",
                   WebkitMaskComposite: "source-in",
                 }}
@@ -201,14 +199,11 @@ export default async function Home({ params }: Props) {
           <figcaption data-reveal className="mt-5 text-forest-soft">{h.quoteSource}</figcaption>
           <Ornament className="mt-8" />
         </figure>
+        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:h-36">
+          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(244_238_226/0.3)_60%,var(--marble-2)_100%)]" />
+          <Mist className="absolute inset-0 h-full w-full" color="#f4eee2" />
+        </div>
       </section>
-
-      {/* Campus: painted scenes of the eight proposed facilities */}
-      <FacilityReel facilities={facilities} locale={locale} d={d} />
-      <div aria-hidden className="relative h-24 bg-[#10161d] md:h-32">
-        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(244_238_226/0.35)_60%,var(--marble-2)_100%)]" />
-        <Mist className="absolute inset-0 h-full w-full" color="#f4eee2" />
-      </div>
 
       {/* Journey */}
       <section className="section bg-marble-2">

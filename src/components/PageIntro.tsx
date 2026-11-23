@@ -2,23 +2,21 @@ import type { IconKey } from "@/lib/types";
 import { Icon } from "./Icon";
 import { Petals } from "./Petals";
 import { Embers } from "./Embers";
-import { Birds, Mist, Rays } from "./home/art";
+import { Mist, Rays } from "./home/art";
 
 /**
  * Shared opening band for inner pages, in the homepage's night palette:
- * soft rays, drifting petals (and birds where asked), and mist melting into the page.
+ * soft rays, rising embers, drifting petals, and mist melting into the page.
  */
 export function PageIntro({
   title,
   intro,
   icon,
-  birds = false,
   children,
 }: {
   title: string;
   intro: string;
   icon?: IconKey;
-  birds?: boolean;
   children?: React.ReactNode;
 }) {
   return (
@@ -32,7 +30,6 @@ export function PageIntro({
       </svg>
       <Embers className="absolute inset-0 h-full w-full" density={0.7} />
       <Petals />
-      {birds ? <Birds tone="#c9c0a8" /> : null}
       <div data-speed="-0.2" className="container-x relative z-10">
         {icon ? <span data-intro-line className="block"><Icon name={icon} size={52} className="mb-6 text-gold-bright" /></span> : null}
         <h1 data-intro-line className="display-lg max-w-[18ch]">{title}</h1>

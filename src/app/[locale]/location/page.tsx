@@ -4,7 +4,6 @@ import { getDictionary } from "@/i18n";
 import { pageMetadata } from "@/lib/seo";
 import { getLocation } from "@/lib/data";
 import { PageIntro } from "@/components/PageIntro";
-import { Birds } from "@/components/home/art";
 import { Icon } from "@/components/Icon";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -45,7 +44,6 @@ export default async function LocationPage({ params }: Props) {
                   <path d="M0 405 Q40 370 80 400 Q120 360 170 398 Q220 372 260 402 Q300 380 330 404 L330 420 L0 420Z" fill="#c9b893" opacity="0.7" />
                   <path d="M520 400 Q560 366 600 398 Q650 360 700 396 Q740 372 800 394 L800 420 L520 420Z" fill="#c9b893" opacity="0.7" />
                 </svg>
-                <Birds />
                 <span className="relative grid h-20 w-20 place-items-center rounded-full border border-gold bg-[rgb(251_248_242/0.8)]">
                   <Icon name="temple" size={44} className="text-gold" />
                 </span>
