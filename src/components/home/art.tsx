@@ -98,26 +98,6 @@ export function Mist({ className = "", color = "#f1dcc4" }: { className?: string
   );
 }
 
-/** A few birds crossing the sky. */
-export function Birds({ className = "", tone = "#5b4d3d" }: { className?: string; tone?: string }) {
-  const birds = [
-    { top: "18%", delay: "0s", dur: "26s", s: 1 },
-    { top: "26%", delay: "-9s", dur: "31s", s: 0.75 },
-    { top: "12%", delay: "-17s", dur: "29s", s: 0.6 },
-  ];
-  return (
-    <div aria-hidden className={`pointer-events-none absolute inset-0 overflow-hidden ${className}`}>
-      {birds.map((b, i) => (
-        <span key={i} className="bird" style={{ top: b.top, animationDelay: b.delay, animationDuration: b.dur, scale: String(b.s) }}>
-          <svg viewBox="0 0 40 16" width="26" height="11">
-            <path className="bird-wing" d="M2 10 Q11 2 20 9 Q29 2 38 10" fill="none" stroke={tone} strokeWidth="2" strokeLinecap="round" />
-          </svg>
-        </span>
-      ))}
-    </div>
-  );
-}
-
 /** Canopy outline: many overlapping leaf-clumps along a ridge, so the edge reads as foliage, not shapes. */
 function canopy(seed0: number, base: number, amp: number, step: number) {
   let seed = seed0;
