@@ -256,8 +256,9 @@
 [data-offscreen] .mist-drift, [data-offscreen] .diya-swing, [data-offscreen] .flame-glow, [data-offscreen] .sun-glow { animation-play-state: paused; }
 /* Phones get four petals instead of seven. */
 @media (max-width: 767px) { .petal:nth-child(n + 5) { display: none; } }
-.rays-sway { animation: rays-sway 12s ease-in-out infinite alternate; transform-origin: 22% -4%; will-change: transform; }
-@keyframes rays-sway { from { transform: rotate(-2.5deg); opacity: 0.85; } to { transform: rotate(2.5deg); opacity: 1; } }
+.rays-sway { animation: rays-sway 12s ease-in-out infinite alternate; will-change: transform, opacity; }
+/* A drift, not a rotation: rotating a full-screen layer forces it to be resampled every frame. */
+@keyframes rays-sway { from { transform: translate3d(-1.5%, 0, 0); opacity: 0.8; } to { transform: translate3d(1.5%, 0, 0); opacity: 1; } }
 .mist-drift { animation: mist-drift 22s ease-in-out infinite alternate; will-change: transform; }
 .mist-drift--slow { animation-duration: 34s; animation-direction: alternate-reverse; }
 @keyframes mist-drift { from { transform: translate3d(-4%, 0, 0); } to { transform: translate3d(4%, 0, 0); } }

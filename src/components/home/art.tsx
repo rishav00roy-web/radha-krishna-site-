@@ -21,32 +21,13 @@ export function Ornament({ className = "" }: { className?: string }) {
 }
 
 /**
- * Soft god-rays falling from the upper left. The sway animates the whole <svg> (an HTML-level
- * transform the GPU can move), never the blurred group inside it, which would re-blur every frame.
+ * Soft god-rays falling from the upper left. A pre-blurred image (public/art/rays.png), so the
+ * sway is a plain compositor transform: an SVG blur here had to be re-rasterised every frame.
  */
 export function Rays({ className = "" }: { className?: string }) {
-  const beams = [
-    { x: 300, w: 70, o: 0.34 },
-    { x: 380, w: 40, o: 0.26 },
-    { x: 450, w: 110, o: 0.2 },
-    { x: 560, w: 50, o: 0.16 },
-  ];
   return (
-    <svg aria-hidden viewBox="0 0 1200 900" preserveAspectRatio="xMidYMin slice" className={`rays-sway ${className}`}>
-      <defs>
-        <linearGradient id="ray" x1="0" y1="0" x2="0" y2="1">
-          <stop offset="0" stopColor="#ffdca0" stopOpacity="1" />
-          <stop offset="0.7" stopColor="#ffdca0" stopOpacity="0.25" />
-          <stop offset="1" stopColor="#ffdca0" stopOpacity="0" />
-        </linearGradient>
-        <filter id="rayBlur" x="-20%" y="-20%" width="140%" height="140%"><feGaussianBlur stdDeviation="14" /></filter>
-      </defs>
-      <g filter="url(#rayBlur)">
-        {beams.map((b) => (
-          <polygon key={b.x} points={`${b.x - 30},-40 ${b.x + 30},-40 ${b.x + 260 + b.w},900 ${b.x + 260},900`} fill="url(#ray)" opacity={b.o} />
-        ))}
-      </g>
-    </svg>
+    // eslint-disable-next-line @next/next/no-img-element -- tiny local decorative image
+    <img src="/art/rays.png" alt="" aria-hidden width={600} height={450} decoding="async" className={`rays-sway object-cover object-top ${className}`} />
   );
 }
 
@@ -62,7 +43,7 @@ export function Leaves({ className = "", tone = "#06090c", flip = false, blur = 
   }
   return (
     <svg aria-hidden viewBox="0 0 520 360" className={className} style={flip ? { transform: "scaleX(-1)" } : undefined}>
-      {blur ? <defs><filter id="leafBlur" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="2.6" /></filter></defs> : null}
+      {blur ? <defs><filter id="leafBlur" x="-5%" y="-5%" width="110%" height="110%" colorInterpolationFilters="sRGB"><feGaussianBlur stdDeviation="2.6" /></filter></defs> : null}
       <g filter={blur ? "url(#leafBlur)" : undefined}>
       <path d="M-10 40 C120 70 260 120 470 250" stroke={tone} strokeWidth="7" fill="none" strokeLinecap="round" />
       <path d="M150 85 C190 60 230 50 280 52 M260 150 C300 170 330 200 350 240" stroke={tone} strokeWidth="4" fill="none" strokeLinecap="round" />
@@ -102,12 +83,12 @@ export function Mist({ className = "", color = "#f1dcc4" }: { className?: string
 function canopy(seed0: number, base: number, amp: number, step: number) {
   let seed = seed0;
   const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-  let d = `M0 ${base}`;
-  for (let x = 0; x <= 1600; x += step) {
+  let d = `M-60 ${base}`;
+  for (let x = -60; x <= 1660; x += step) {
     const h = base - amp * (0.35 + rnd() * 0.65) * (0.6 + 0.4 * Math.sin(x / 210 + seed0));
     d += ` Q${x + step / 2} ${h - rnd() * 18} ${x + step} ${base - amp * 0.3 * rnd()}`;
   }
-  return `${d} V220 H0Z`;
+  return `${d} V240 H-60Z`;
 }
 
 /** Dark ground with a soft, painterly tree line that carries the cream section into the night one. */
@@ -115,13 +96,13 @@ export function Hill({ className = "", tone = "#141b24" }: { className?: string;
   return (
     <svg aria-hidden viewBox="0 0 1600 220" preserveAspectRatio="none" className={className}>
       <defs>
-        <filter id="hillSoft" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="2.2" /></filter>
-        <filter id="hillFar" x="-5%" y="-20%" width="110%" height="140%"><feGaussianBlur stdDeviation="4" /></filter>
+        <filter id="hillSoft" x="-5%" y="-20%" width="110%" height="140%" colorInterpolationFilters="sRGB"><feGaussianBlur stdDeviation="2.2" /></filter>
+        <filter id="hillFar" x="-5%" y="-20%" width="110%" height="140%" colorInterpolationFilters="sRGB"><feGaussianBlur stdDeviation="4" /></filter>
       </defs>
       <path d={canopy(3, 120, 70, 46)} fill="#5a5450" opacity="0.35" filter="url(#hillFar)" />
       <path d={canopy(11, 150, 60, 30)} fill={tone} opacity="0.75" filter="url(#hillSoft)" />
-      <path d="M0 150 C220 118 420 110 640 128 C840 146 1000 118 1200 114 C1380 110 1500 128 1600 140 V220 H0Z" fill={tone} filter="url(#hillSoft)" />
-      <rect x="0" y="180" width="1600" height="40" fill={tone} />
+      <path d="M-60 152 C220 118 420 110 640 128 C840 146 1000 118 1200 114 C1380 110 1500 128 1660 142 V240 H-60Z" fill={tone} filter="url(#hillSoft)" />
+      <rect x="-60" y="170" width="1720" height="60" fill={tone} />
     </svg>
   );
 }

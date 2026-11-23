@@ -49,8 +49,8 @@ export default async function Home({ params }: Props) {
               style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 30%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
             />
           </div>
-          <div data-depth="0.25" className="pointer-events-none absolute inset-0"><Rays className="h-full w-full opacity-80" /></div>
-          <Embers className="absolute inset-0 z-10 h-full w-full" density={0.9} />
+          <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
+          <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
           <div data-speed="-0.25" data-depth="-1.4" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] lg:w-[42vw]">
             <Leaves blur className="h-auto w-full opacity-90" />
           </div>
@@ -156,9 +156,9 @@ export default async function Home({ params }: Props) {
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
             </Link>
           </div>
-          <div data-speed="-0.2" aria-hidden className="relative order-first mx-auto w-[min(56vw,260px)] md:order-none md:-mt-48 md:w-[300px]">
+          <div data-speed="-0.2" aria-hidden className="relative order-first mx-auto w-[min(56vw,260px)] md:order-none md:-mt-16 md:w-[300px]">
             <div className="diya-swing relative">
-              <span className="flame-glow absolute left-[21%] top-[48%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)] mix-blend-screen" />
+              <span className="flame-glow absolute left-[21%] top-[48%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)]" />
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img
                 src="/art/hanging-diya.jpg"
@@ -167,7 +167,7 @@ export default async function Home({ params }: Props) {
                 height={580}
                 loading="lazy"
                 className="relative h-auto w-full"
-                style={{ maskImage: "radial-gradient(closest-side at 52% 52%, #000 55%, transparent 100%)" }}
+                style={{ maskImage: "radial-gradient(closest-side at 52% 52%, #000 55%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 22%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
               />
             </div>
           </div>
@@ -214,7 +214,7 @@ export default async function Home({ params }: Props) {
             {milestones.map((m) => (
               <li key={m.id} className="relative border-t-2 border-marble-3 pt-4 data-[done=true]:border-gold" data-done={m.verified && m.status === "completed"}>
                 <span aria-hidden data-journey-line className="absolute -top-0.5 left-0 h-0.5 w-full origin-left scale-x-0 bg-gold" />
-                <span aria-hidden data-journey-dot className="absolute -top-[5px] left-0 h-2 w-2 scale-0 rounded-full bg-gold shadow-[0_0_10px_rgb(212_169_73/0.9)]" />
+                <span aria-hidden data-journey-dot className="absolute -top-[5px] left-0 h-2 w-full"><span className="block h-2 w-2 -translate-x-1 scale-0 rounded-full bg-gold shadow-[0_0_10px_rgb(212_169_73/0.9)]" /></span>
                 <p className="tabular text-sm text-ink-soft">{m.step}</p>
                 <p className="mt-1 font-display text-xl leading-snug">{t(m.title, locale)}</p>
                 <p className="mt-1 text-sm text-ink-soft">
