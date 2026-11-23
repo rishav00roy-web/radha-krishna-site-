@@ -11,6 +11,8 @@ import { Icon } from "@/components/Icon";
 import { Hill, Leaves, Mist, Ornament, Rays } from "@/components/home/art";
 import { Embers } from "@/components/Embers";
 import { RiverLamps } from "@/components/home/RiverLamps";
+import { SparkLotus } from "@/components/home/SparkLotus";
+import { MaskWords } from "@/components/MaskWords";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -70,7 +72,7 @@ export default async function Home({ params }: Props) {
           <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[24svh] pt-[50svh] lg:justify-center lg:pb-[22svh] lg:pt-28">
             <div className="max-w-[30rem] text-center lg:ml-[4%]">
               <Ornament className="mb-6" />
-              <h1 data-hero-line className="display-xl text-balance drop-shadow-[0_2px_18px_rgb(0_0_0/0.45)]">{h.headline.replace("-", "\u2011")}</h1>
+              <h1 data-hero-title className="display-xl text-balance [text-shadow:0_2px_18px_rgb(0_0_0/0.45)]"><MaskWords text={h.headline.replace("-", "\u2011")} /></h1>
               <p data-hero-line className="mx-auto mt-5 max-w-[26ch] font-display text-2xl italic leading-snug text-gold-pale">{d.meta.tagline}</p>
               <p data-hero-line className="mx-auto mt-3 max-w-[34ch] text-forest-soft">{h.subhead}</p>
               <nav data-hero-line aria-label={h.headline} className="mt-8 flex flex-wrap justify-center gap-2.5">
@@ -106,7 +108,7 @@ export default async function Home({ params }: Props) {
               <span aria-hidden className="h-px w-10 bg-gold" />
               {h.aboutLabel}
             </p>
-            <h2 data-reveal className="display-lg mt-4">{h.aboutTitle}</h2>
+            <h2 data-reveal className="display-lg mt-4"><MaskWords text={h.aboutTitle} /></h2>
             <p data-reveal className="lede measure mt-6 !text-ink-soft">{h.aboutBody}</p>
             <p data-reveal className="mt-4 font-display text-2xl text-gold">{d.meta.brandMessage}</p>
             <Link data-reveal href={href(locale, "temple")} className="group mt-8 inline-flex items-center gap-3 border-b border-gold pb-1 font-display text-xl text-ink no-underline">
@@ -152,7 +154,7 @@ export default async function Home({ params }: Props) {
               <span aria-hidden className="h-px w-10 bg-gold-bright" />
               {next ? h.upcomingLabel : h.festivalsLabel}
             </p>
-            <h2 data-reveal className="display-lg mt-4">{next ? t(next.title, locale) : h.festivalName}</h2>
+            <h2 data-reveal className="display-lg mt-4"><MaskWords text={next ? t(next.title, locale) : h.festivalName} /></h2>
             {next ? (
               <p data-reveal className="mt-4 flex items-center gap-3 text-lg">
                 <Icon name="kalash" size={22} className="text-gold-bright" />
@@ -207,7 +209,7 @@ export default async function Home({ params }: Props) {
             &ldquo;{h.quote}&rdquo;
           </blockquote>
           <figcaption data-reveal className="mt-5 text-forest-soft">{h.quoteSource}</figcaption>
-          <Ornament className="mt-8" />
+          <SparkLotus className="mt-4" />
         </figure>
         <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:h-36">
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(244_238_226/0.3)_60%,var(--marble-2)_100%)]" />
@@ -218,18 +220,21 @@ export default async function Home({ params }: Props) {
       {/* Journey */}
       <section className="section bg-marble-2">
         <div className="container-x">
-          <h2 data-reveal className="display-lg">{d.home.journeyTitle}</h2>
+          <h2 data-reveal className="display-lg"><MaskWords text={d.home.journeyTitle} /></h2>
           <p data-reveal className="lede measure mt-5">{d.home.journeyBody}</p>
           <ol data-journey className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
             {milestones.map((m) => (
               <li key={m.id} className="relative border-t-2 border-marble-3 pt-4 data-[done=true]:border-gold" data-done={m.verified && m.status === "completed"}>
                 <span aria-hidden data-journey-line className="absolute -top-0.5 left-0 h-0.5 w-full origin-left scale-x-0 bg-gold" />
+                <span aria-hidden data-journey-ring className="absolute -left-[7px] -top-[8px] block h-3.5 w-3.5 scale-0 rounded-full border border-gold opacity-0" />
                 <span aria-hidden data-journey-dot className="absolute -top-[5px] left-0 h-2 w-full"><span className="block h-2 w-2 -translate-x-1 scale-0 rounded-full bg-gold shadow-[0_0_10px_rgb(212_169_73/0.9)]" /></span>
-                <p className="tabular text-sm text-ink-soft">{m.step}</p>
-                <p className="mt-1 font-display text-xl leading-snug">{t(m.title, locale)}</p>
-                <p className="mt-1 text-sm text-ink-soft">
-                  {m.verified && m.status === "completed" ? d.journey.statusCompleted : m.verified && m.status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned}
-                </p>
+                <div data-journey-text>
+                  <p className="tabular text-sm text-ink-soft">{m.step}</p>
+                  <p className="mt-1 font-display text-xl leading-snug">{t(m.title, locale)}</p>
+                  <p className="mt-1 text-sm text-ink-soft">
+                    {m.verified && m.status === "completed" ? d.journey.statusCompleted : m.verified && m.status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned}
+                  </p>
+                </div>
               </li>
             ))}
           </ol>

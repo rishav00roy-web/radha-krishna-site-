@@ -36,8 +36,20 @@ export function Motion() {
       const ctx = gsap.context(() => {
         const phone = window.innerWidth < 768;
 
+        // Masked type: words rise from behind their cut line, each a beat after the last.
+        // Once landed, the windows stop clipping, so shadows and diacritics are never cut off.
+        const riseWords = (el: Element, vars: gsap.TweenVars = {}) =>
+          gsap.from(el.querySelectorAll("[data-mask-word]"), {
+            yPercent: 118, duration: 1.15, ease: "expo.out", stagger: 0.07, ...vars,
+            onComplete: () => el.querySelectorAll<HTMLElement>(".mask-w").forEach((w) => (w.style.overflow = "visible")),
+          });
+
         // Hand-placed reveals.
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
+          if (el.querySelector("[data-mask-word]")) {
+            riseWords(el, { scrollTrigger: { trigger: el, start: "top 90%", once: true } });
+            return;
+          }
           gsap.from(el, {
             y: 28,
             opacity: 0,
@@ -48,12 +60,14 @@ export function Motion() {
         });
 
         // Inner-page headers rise in on load.
+        const introTitle = document.querySelector("[data-intro-title]");
+        if (introTitle) riseWords(introTitle, { delay: 0.05 });
         const intro = gsap.utils.toArray<HTMLElement>("[data-intro-line]");
-        if (intro.length) gsap.from(intro, { y: 30, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.1, delay: 0.1 });
+        if (intro.length) gsap.from(intro, { y: 30, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.1, delay: introTitle ? 0.35 : 0.1 });
 
         // Site-wide reveals: every heading, paragraph, list item, picture and form row in the page body,
         // except inside the hero, page headers, hand-placed reveals and anything marked data-no-reveal.
-        const skip = "[data-hero], [data-intro-line], [data-reveal], [data-no-reveal], header, footer, [role=dialog]";
+        const skip = "[data-hero], [data-intro-line], [data-intro-title], [data-reveal], [data-no-reveal], header, footer, [role=dialog]";
         const pick = (sel: string) =>
           gsap.utils.toArray<HTMLElement>(sel).filter((el) => !el.closest(skip) && !el.querySelector("[data-reveal]"));
         const pictures = pick("main figure, main [data-reveal-image]");
@@ -67,15 +81,45 @@ export function Motion() {
           once: true,
           onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", stagger: 0.07, overwrite: true }),
         });
-        gsap.set(pictures, { clipPath: "inset(100% 0% 0% 0%)" });
+        // Shutter reveal: the picture opens through vertical slats, each widening from its own
+        // centre line, left to right a beat apart. One clip-path polygon, so it works on masked art too.
+        const SLATS = phone ? 5 : 7;
+        const slatClip = (open: number[]) => {
+          const pts: string[] = [];
+          open.forEach((o, i) => {
+            const c = ((i + 0.5) / SLATS) * 100;
+            const half = (o * 50) / SLATS + (o > 0 && o < 1 ? 0.02 : 0);
+            const l = (c - half).toFixed(3), r = (c + half).toFixed(3);
+            pts.push(`${l}% 100%`, `${l}% 0%`, `${r}% 0%`, `${r}% 100%`);
+          });
+          return `polygon(${pts.join(", ")})`;
+        };
+        const closed = slatClip(new Array(SLATS).fill(0));
+        gsap.set(pictures, { clipPath: closed });
         ScrollTrigger.batch(pictures, {
           start: "top 92%",
           once: true,
           onEnter: (batch) =>
-            batch.forEach((el, i) => {
-              gsap.to(el, { clipPath: "inset(0% 0% 0% 0%)", duration: 1, ease: "expo.out", delay: i * 0.08 });
+            (batch as HTMLElement[]).forEach((el, i) => {
+              const open = new Array(SLATS).fill(0);
+              const state = { t: 0 };
+              gsap.to(state, {
+                t: 1,
+                duration: 1.5,
+                ease: "none",
+                delay: i * 0.1,
+                onUpdate: () => {
+                  // Each slat gets its own expo-out ride inside the shared clock, starting 0.07 later than the one before.
+                  for (let s = 0; s < SLATS; s++) {
+                    const local = Math.min(1, Math.max(0, (state.t * 1.5 - s * 0.07) / 0.95));
+                    open[s] = local === 1 ? 1 : 1 - Math.pow(2, -10 * local);
+                  }
+                  el.style.clipPath = slatClip(open);
+                },
+                onComplete: () => { el.style.clipPath = ""; },
+              });
               const img = el.querySelector("img");
-              if (img) gsap.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 1.4, ease: "expo.out", delay: i * 0.08 });
+              if (img) gsap.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 1.6, ease: "expo.out", delay: i * 0.1 });
             }),
         });
 
@@ -104,9 +148,15 @@ export function Motion() {
         if (journey) {
           const lines = journey.querySelectorAll<HTMLElement>("[data-journey-line]");
           const dots = journey.querySelectorAll<HTMLElement>("[data-journey-dot]");
+          const rings = journey.querySelectorAll<HTMLElement>("[data-journey-ring]");
+          const texts = journey.querySelectorAll<HTMLElement>("[data-journey-text]");
+          // Steps wait softly until the bead reaches them, then each node answers with a ring.
+          gsap.set(texts, { opacity: 0.45 });
           const tl = gsap.timeline({ scrollTrigger: { trigger: journey, start: "top 80%", end: "bottom 55%", scrub: true } });
           lines.forEach((line, i) => {
             const bead = dots[i].firstElementChild;
+            tl.fromTo(rings[i], { scale: 0.4, opacity: 0.9 }, { scale: 2.8, opacity: 0, ease: "power2.out", duration: 0.6 }, i);
+            tl.to(texts[i], { opacity: 1, ease: "power1.out", duration: 0.35 }, i);
             tl.to(bead, { scale: 1, duration: 0.15 }, i);
             tl.to(line, { scaleX: 1, ease: "none", duration: 1 }, i);
             // The bead's full-width track slides with a transform, never `left`, so scrolling stays layout-free.
@@ -117,8 +167,20 @@ export function Motion() {
 
         const hero = document.querySelector<HTMLElement>("[data-hero]");
         if (hero) {
+          // The lotus draws itself and its two lines reach outward, then the title's words rise
+          // through their cut line, then the rest follows.
+          const ornament = hero.querySelector("[data-ornament]");
+          if (ornament) {
+            ornament.querySelectorAll<SVGPathElement>("path").forEach((p, i) => {
+              const len = p.getTotalLength();
+              gsap.fromTo(p, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut", delay: 0.1 + i * 0.08, onComplete: () => gsap.set(p, { clearProps: "strokeDasharray,strokeDashoffset" }) });
+            });
+            gsap.from(ornament.querySelectorAll("[data-ornament-line]"), { scaleX: 0, duration: 1.2, ease: "expo.out", delay: 0.5 });
+          }
+          const title = hero.querySelector("[data-hero-title]");
+          if (title) riseWords(title, { duration: 1.3, stagger: 0.09, delay: 0.35 });
           gsap.from(hero.querySelectorAll("[data-hero-line]"), {
-            y: 30, opacity: 0, duration: 1.4, ease: "expo.out", stagger: 0.12, delay: 0.15,
+            y: 30, opacity: 0, duration: 1.4, ease: "expo.out", stagger: 0.12, delay: 0.75,
           });
           // The hero copy fades as it leaves, so the mist takes over.
           const copy = hero.querySelector("[data-hero-copy]");
