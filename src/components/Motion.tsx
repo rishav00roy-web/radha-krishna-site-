@@ -99,6 +99,39 @@ export function Motion() {
           );
         });
 
+        // Facility reel: on desktop the section pins and the row of painted scenes slides sideways.
+        const reel = document.querySelector<HTMLElement>("[data-hscroll]");
+        const track = reel?.querySelector<HTMLElement>("[data-hscroll-track]");
+        if (reel && track && !phone) {
+          const distance = () => Math.max(0, track.scrollWidth - window.innerWidth);
+          gsap.to(track, {
+            x: () => -distance(),
+            ease: "none",
+            scrollTrigger: { trigger: reel, start: "top top", end: () => `+=${distance()}`, pin: true, scrub: true, invalidateOnRefresh: true, anticipatePin: 1 },
+          });
+          // Each painting drifts inside its frame as the row moves, for depth.
+          track.querySelectorAll<HTMLElement>("[data-reel-art]").forEach((img) => {
+            gsap.fromTo(img, { xPercent: 6 }, {
+              xPercent: -6, ease: "none",
+              scrollTrigger: { trigger: reel, start: "top top", end: () => `+=${distance()}`, scrub: true, invalidateOnRefresh: true },
+            });
+          });
+        }
+
+        // Journey: a gold line draws across the steps, with a glowing bead at its tip.
+        const journey = document.querySelector<HTMLElement>("[data-journey]");
+        if (journey) {
+          const lines = journey.querySelectorAll<HTMLElement>("[data-journey-line]");
+          const dots = journey.querySelectorAll<HTMLElement>("[data-journey-dot]");
+          const tl = gsap.timeline({ scrollTrigger: { trigger: journey, start: "top 80%", end: "bottom 55%", scrub: true } });
+          lines.forEach((line, i) => {
+            tl.to(dots[i], { scale: 1, duration: 0.15 }, i);
+            tl.to(line, { scaleX: 1, ease: "none", duration: 1 }, i);
+            tl.to(dots[i], { left: "100%", ease: "none", duration: 1 }, i);
+            tl.to(dots[i], { scale: 0, duration: 0.15 }, i + 0.9);
+          });
+        }
+
         const hero = document.querySelector<HTMLElement>("[data-hero]");
         if (hero) {
           gsap.from(hero.querySelectorAll("[data-hero-line]"), {
@@ -117,9 +150,27 @@ export function Motion() {
         }
       });
 
+      // Desktop: hero layers lean gently toward the pointer, at different depths.
+      const depthLayers = gsap.utils.toArray<HTMLElement>("[data-hero] [data-depth]");
+      let onPointer: ((e: PointerEvent) => void) | null = null;
+      if (depthLayers.length && window.matchMedia("(pointer: fine)").matches) {
+        const movers = depthLayers.map((el) => {
+          const d = Number(el.dataset.depth ?? 0);
+          return { d, x: gsap.quickTo(el, "x", { duration: 1.4, ease: "power3.out" }), r: gsap.quickTo(el, "rotation", { duration: 1.6, ease: "power3.out" }) };
+        });
+        onPointer = (e) => {
+          const nx = e.clientX / window.innerWidth - 0.5;
+          movers.forEach((m) => {
+            m.x(nx * 24 * m.d);
+            m.r(nx * 0.6 * m.d);
+          });
+        };
+        window.addEventListener("pointermove", onPointer, { passive: true });
+      }
+
       // Pause the CSS loops (petals, birds, rays, mist, diya) in scenes that are off screen.
       const scenes = new Set<HTMLElement>();
-      document.querySelectorAll<HTMLElement>(".petal, .bird, .rays-sway, .mist-drift, .diya-swing").forEach((el) => {
+      document.querySelectorAll<HTMLElement>(".petal, .bird, .rays-sway, .mist-drift, .diya-swing, .sun-glow").forEach((el) => {
         const scene = el.closest<HTMLElement>("section");
         if (scene) scenes.add(scene);
       });
@@ -129,6 +180,7 @@ export function Motion() {
       scenes.forEach((s) => io.observe(s));
 
       cleanup = () => {
+        if (onPointer) window.removeEventListener("pointermove", onPointer);
         io.disconnect();
         scenes.forEach((s) => s.removeAttribute("data-offscreen"));
         ctx.revert();

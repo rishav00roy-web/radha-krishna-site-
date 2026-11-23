@@ -9,7 +9,9 @@ import { pageMetadata } from "@/lib/seo";
 import { Petals } from "@/components/Petals";
 import { Icon } from "@/components/Icon";
 import { Birds, Hill, Leaves, Mist, Ornament, Rays } from "@/components/home/art";
-import { StatusTag } from "@/components/ProposedTag";
+import { Embers } from "@/components/Embers";
+import { FacilityReel } from "@/components/home/FacilityReel";
+import { RiverLamps } from "@/components/home/RiverLamps";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -36,7 +38,7 @@ export default async function Home({ params }: Props) {
       <section data-hero data-parallax className="relative isolate overflow-hidden bg-night text-forest-ink">
         <div className="relative min-h-[100svh]">
           {/* Painted artwork. Right-aligned on wide screens, top band on phones. */}
-          <div data-speed="0.18" className="absolute inset-x-0 top-0 h-[68svh] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(100%,calc(100svh*1.18))]">
+          <div data-speed="0.18" data-depth="0.6" className="absolute inset-x-0 top-0 h-[68svh] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(100%,calc(100svh*1.18))]">
             {/* eslint-disable-next-line @next/next/no-img-element -- local art, no optimiser needed */}
             <img
               src="/art/hero-radha-krishna.jpg"
@@ -49,8 +51,9 @@ export default async function Home({ params }: Props) {
               style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 30%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
             />
           </div>
-          <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
-          <div data-speed="-0.25" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] lg:w-[42vw]">
+          <div data-depth="0.25" className="pointer-events-none absolute inset-0"><Rays className="h-full w-full opacity-80" /></div>
+          <Embers className="absolute inset-0 z-10 h-full w-full" density={0.9} />
+          <div data-speed="-0.25" data-depth="-1.4" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] lg:w-[42vw]">
             <Leaves blur className="h-auto w-full opacity-90" />
           </div>
           <Petals />
@@ -105,6 +108,7 @@ export default async function Home({ params }: Props) {
           </div>
           <figure className="relative -mr-[var(--gutter,1rem)] translate-y-10 md:-mr-10 md:translate-y-24">
             <div data-speed="0.08" className="relative ml-auto w-full max-w-[640px]">
+              <span aria-hidden className="sun-glow absolute left-1/2 top-[18%] h-[70%] w-[80%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_226_170/0.75),rgb(255_210_150/0.25)_55%,transparent)]" />
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img
                 src="/art/temple-concept.jpg"
@@ -112,7 +116,7 @@ export default async function Home({ params }: Props) {
                 width={984}
                 height={1040}
                 loading="lazy"
-                className="h-auto w-full"
+                className="relative h-auto w-full"
                 style={{
                   maskImage: "linear-gradient(90deg, transparent 0%, #000 22%, #000 80%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 16%)",
                   maskComposite: "intersect",
@@ -133,7 +137,8 @@ export default async function Home({ params }: Props) {
 
       {/* 3. Festivals: hanging diya */}
       <section data-parallax className="relative isolate overflow-hidden bg-[#141b24] text-forest-ink">
-        <div className="container-x relative grid items-center gap-6 pb-16 pt-2 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:gap-10 md:pb-20">
+        <Embers className="absolute inset-0 h-full w-full" density={0.6} />
+        <div className="container-x relative grid items-center gap-6 pb-10 pt-2 md:grid-cols-[minmax(0,1fr)_minmax(0,0.8fr)] md:gap-10 md:pb-20">
           <div>
             <p data-reveal className="flex items-center gap-3 font-display text-xl text-gold-bright">
               <span aria-hidden className="h-px w-10 bg-gold-bright" />
@@ -169,10 +174,12 @@ export default async function Home({ params }: Props) {
             </div>
           </div>
         </div>
+        {/* A live river of floating diyas and lotus. */}
+        <RiverLamps className="relative h-56 w-full md:h-72" />
       </section>
 
       {/* 4. Closing verse: peacock feather */}
-      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#141b24_0%,#22262c_100%)] text-forest-ink">
+      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#0b1016_0%,#22262c_100%)] text-forest-ink">
         <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute bottom-16 -left-10 w-[min(70vw,520px)] opacity-90 md:-left-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img
@@ -194,49 +201,25 @@ export default async function Home({ params }: Props) {
           <figcaption data-reveal className="mt-5 text-forest-soft">{h.quoteSource}</figcaption>
           <Ornament className="mt-8" />
         </figure>
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-28 md:h-36">
-          <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(251_248_242/0.3)_60%,var(--marble)_100%)]" />
-          <Mist className="absolute inset-0 h-full w-full" color="#fbf8f2" />
-        </div>
       </section>
 
-      {/* Campus */}
-      <section className="section">
-        <div className="container-x">
-          <div className="grid gap-6 md:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] md:items-end">
-            <h2 data-reveal className="display-lg max-w-[16ch]">{d.home.campusTitle}</h2>
-            <p data-reveal className="lede measure">{d.home.campusBody}</p>
-          </div>
-          <ol className="mt-14 grid gap-px overflow-hidden rounded border border-line bg-[var(--line)] sm:grid-cols-2 lg:grid-cols-4">
-            {facilities.map((f, i) => (
-              <li key={f.id} className={`bg-marble p-7 ${f.code === "A" ? "sm:col-span-2 lg:row-span-2 lg:p-10" : ""} ${i === facilities.length - 1 && facilities.length % 2 === 0 ? "sm:col-span-2" : ""}`}>
-                <Link href={`${href(locale, "masterPlan")}#${f.slug}`} className="group block no-underline">
-                  <div className="flex items-start justify-between gap-4">
-                    <Icon name={f.icon} size={f.code === "A" ? 72 : 44} className="text-gold" />
-                    <StatusTag status={f.status} dict={d} />
-                  </div>
-                  <h3 className={`mt-6 ${f.code === "A" ? "display-md" : "text-2xl"} transition-colors duration-200 group-hover:text-gold`}>
-                    {t(f.name, locale)}
-                  </h3>
-                  <p className="mt-2 text-ink-soft">{t(f.summary, locale)}</p>
-                </Link>
-              </li>
-            ))}
-          </ol>
-          <Link href={href(locale, "masterPlan")} className="btn btn-quiet mt-12">
-            {d.home.ctaPlan}
-          </Link>
-        </div>
-      </section>
+      {/* Campus: painted scenes of the eight proposed facilities */}
+      <FacilityReel facilities={facilities} locale={locale} d={d} />
+      <div aria-hidden className="relative h-24 bg-[#10161d] md:h-32">
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(244_238_226/0.35)_60%,var(--marble-2)_100%)]" />
+        <Mist className="absolute inset-0 h-full w-full" color="#f4eee2" />
+      </div>
 
       {/* Journey */}
       <section className="section bg-marble-2">
         <div className="container-x">
           <h2 data-reveal className="display-lg">{d.home.journeyTitle}</h2>
           <p data-reveal className="lede measure mt-5">{d.home.journeyBody}</p>
-          <ol className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
+          <ol data-journey className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
             {milestones.map((m) => (
-              <li key={m.id} className="border-t-2 border-marble-3 pt-4 data-[done=true]:border-gold" data-done={m.verified && m.status === "completed"}>
+              <li key={m.id} className="relative border-t-2 border-marble-3 pt-4 data-[done=true]:border-gold" data-done={m.verified && m.status === "completed"}>
+                <span aria-hidden data-journey-line className="absolute -top-0.5 left-0 h-0.5 w-full origin-left scale-x-0 bg-gold" />
+                <span aria-hidden data-journey-dot className="absolute -top-[5px] left-0 h-2 w-2 scale-0 rounded-full bg-gold shadow-[0_0_10px_rgb(212_169_73/0.9)]" />
                 <p className="tabular text-sm text-ink-soft">{m.step}</p>
                 <p className="mt-1 font-display text-xl leading-snug">{t(m.title, locale)}</p>
                 <p className="mt-1 text-sm text-ink-soft">
