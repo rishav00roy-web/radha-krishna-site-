@@ -21,6 +21,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return pageMetadata(locale, "", `${d.meta.siteName} | ${d.meta.tagline}`, d.meta.description);
 }
 
+const HERO_ART_WIDTHS = [828, 1280, 1920, 2272];
+const HERO_ART_SRCSET = (ext: string) => HERO_ART_WIDTHS.map((w) => `/art/hero/radha-krishna-${w}.${ext} ${w}w`).join(", ");
+// Phones show it cover-cropped in a tall band, so it renders about two screen-widths wide.
+const HERO_ART_SIZES = "(min-width: 1024px) 60vw, 200vw";
+
 export default async function Home({ params }: Props) {
   const { locale: raw } = await params;
   const locale = raw as Locale;
@@ -35,19 +40,24 @@ export default async function Home({ params }: Props) {
       {/* 1. Night hero: Radha-Krishna artwork, light rays, foreground leaves, mist */}
       <section data-hero data-parallax className="relative isolate overflow-hidden bg-night text-forest-ink">
         <div className="relative min-h-[100svh]">
-          {/* Painted artwork. Right-aligned on wide screens, top band on phones. */}
-          <div data-speed="0.18" data-depth="0.6" className="absolute inset-x-0 top-0 h-[68svh] lg:inset-y-0 lg:left-auto lg:right-0 lg:h-full lg:w-[min(100%,calc(100svh*1.18))]">
-            {/* eslint-disable-next-line @next/next/no-img-element -- local art, no optimiser needed */}
-            <img
-              src="/art/hero-radha-krishna.jpg"
-              alt={h.heroArt}
-              width={1704}
-              height={1440}
-              fetchPriority="high"
-              data-hero-art
-              className="h-full w-full object-cover object-[72%_18%] lg:object-[100%_0%]"
-              style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 22%), linear-gradient(0deg, transparent 0%, #000 30%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
-            />
+          {/* Painted artwork. Upper right on wide screens (the painting is wide, so it fades out below), top band on phones. */}
+          <div data-speed="0.18" data-depth="0.6" className="absolute inset-x-0 top-0 h-[68svh] lg:left-auto lg:right-0 lg:h-auto lg:w-[min(60vw,calc(100svh*1.48))] lg:aspect-[2272/1536]">
+            <picture className="block h-full w-full">
+              <source type="image/avif" srcSet={HERO_ART_SRCSET("avif")} sizes={HERO_ART_SIZES} />
+              <source type="image/webp" srcSet={HERO_ART_SRCSET("webp")} sizes={HERO_ART_SIZES} />
+              {/* eslint-disable-next-line @next/next/no-img-element -- local art, sized variants above */}
+              <img
+                src="/art/hero/radha-krishna-1280.jpg"
+                alt={h.heroArt}
+                width={2272}
+                height={1536}
+                fetchPriority="high"
+                decoding="async"
+                data-hero-art
+                className="h-full w-full object-cover object-[47%_20%] lg:object-center"
+                style={{ maskImage: "linear-gradient(90deg, transparent 0%, #000 12%), linear-gradient(0deg, transparent 0%, #000 38%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
+              />
+            </picture>
           </div>
           <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
           <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
