@@ -1,6 +1,7 @@
 import type { IconKey } from "@/lib/types";
 import { Icon } from "./Icon";
 import { Petals } from "./Petals";
+import { Embers } from "./Embers";
 import { Birds, Mist, Rays } from "./home/art";
 
 /**
@@ -29,6 +30,7 @@ export function PageIntro({
         ))}
         <circle cx="300" cy="300" r="60" fill="none" stroke="currentColor" />
       </svg>
+      <Embers className="absolute inset-0 h-full w-full" density={0.7} />
       <Petals />
       {birds ? <Birds tone="#c9c0a8" /> : null}
       <div data-speed="-0.2" className="container-x relative z-10">

@@ -253,7 +253,7 @@
 [data-speed] { will-change: transform; }
 /* Decorative loops pause while their scene is off screen (Motion sets data-offscreen). */
 [data-offscreen] .petal, [data-offscreen] .bird, [data-offscreen] .bird-wing, [data-offscreen] .rays-sway,
-[data-offscreen] .mist-drift, [data-offscreen] .diya-swing, [data-offscreen] .flame-glow { animation-play-state: paused; }
+[data-offscreen] .mist-drift, [data-offscreen] .diya-swing, [data-offscreen] .flame-glow, [data-offscreen] .sun-glow { animation-play-state: paused; }
 /* Phones get four petals instead of seven. */
 @media (max-width: 767px) { .petal:nth-child(n + 5) { display: none; } }
 .rays-sway { animation: rays-sway 12s ease-in-out infinite alternate; transform-origin: 22% -4%; will-change: transform; }
@@ -270,11 +270,13 @@
 .flame-glow { animation: flame-glow 2.4s ease-in-out infinite; will-change: scale, opacity; }
 /* Uses the scale property, so it never overrides the Tailwind translate that centres the glow. */
 @keyframes flame-glow { 0%, 100% { opacity: 0.75; scale: 1; } 45% { opacity: 1; scale: 1.08; } 70% { opacity: 0.85; scale: 0.97; } }
+.sun-glow { animation: sun-glow 7s ease-in-out infinite; will-change: opacity, scale; }
+@keyframes sun-glow { 0%, 100% { opacity: 0.55; scale: 0.94; } 50% { opacity: 1; scale: 1.06; } }
 .scroll-wheel { animation: scroll-wheel 1.8s ease-in-out infinite; }
 @keyframes scroll-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .rays-sway, .mist-drift, .bird, .bird-wing, .diya-swing, .flame-glow, .scroll-wheel { animation: none !important; }
+  .rays-sway, .mist-drift, .bird, .bird-wing, .diya-swing, .flame-glow, .sun-glow, .scroll-wheel { animation: none !important; }
   .bird { display: none; }
   *,
   *::before,
@@ -288,3 +290,6 @@
     display: none;
   }
 }
+
+/* Facility reel: hide the phone swipe row's scrollbar. */
+[data-hscroll-track]::-webkit-scrollbar { display: none; }
