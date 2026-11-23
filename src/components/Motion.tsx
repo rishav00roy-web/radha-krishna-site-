@@ -106,10 +106,12 @@ export function Motion() {
           const dots = journey.querySelectorAll<HTMLElement>("[data-journey-dot]");
           const tl = gsap.timeline({ scrollTrigger: { trigger: journey, start: "top 80%", end: "bottom 55%", scrub: true } });
           lines.forEach((line, i) => {
-            tl.to(dots[i], { scale: 1, duration: 0.15 }, i);
+            const bead = dots[i].firstElementChild;
+            tl.to(bead, { scale: 1, duration: 0.15 }, i);
             tl.to(line, { scaleX: 1, ease: "none", duration: 1 }, i);
-            tl.to(dots[i], { left: "100%", ease: "none", duration: 1 }, i);
-            tl.to(dots[i], { scale: 0, duration: 0.15 }, i + 0.9);
+            // The bead's full-width track slides with a transform, never `left`, so scrolling stays layout-free.
+            tl.to(dots[i], { xPercent: 100, ease: "none", duration: 1 }, i);
+            tl.to(bead, { scale: 0, duration: 0.15 }, i + 0.9);
           });
         }
 
@@ -137,14 +139,12 @@ export function Motion() {
       if (depthLayers.length && window.matchMedia("(pointer: fine)").matches) {
         const movers = depthLayers.map((el) => {
           const d = Number(el.dataset.depth ?? 0);
-          return { d, x: gsap.quickTo(el, "x", { duration: 1.4, ease: "power3.out" }), r: gsap.quickTo(el, "rotation", { duration: 1.6, ease: "power3.out" }) };
+          return { d, x: gsap.quickTo(el, "x", { duration: 1.4, ease: "power3.out" }) };
         });
+        // Sideways only: rotating these big layers made the browser re-rasterise them every frame.
         onPointer = (e) => {
           const nx = e.clientX / window.innerWidth - 0.5;
-          movers.forEach((m) => {
-            m.x(nx * 24 * m.d);
-            m.r(nx * 0.6 * m.d);
-          });
+          movers.forEach((m) => m.x(nx * 24 * m.d));
         };
         window.addEventListener("pointermove", onPointer, { passive: true });
       }

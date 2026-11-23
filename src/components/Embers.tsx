@@ -56,7 +56,7 @@ export function Embers({
       canvas.height = Math.round(h * dpr);
       ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
       const count = Math.round(((w * h) / (phone ? 22000 : 14000)) * density);
-      motes = Array.from({ length: Math.min(count, phone ? 40 : 110) }, () => spawn(true));
+      motes = Array.from({ length: Math.min(count, phone ? 36 : 70) }, () => spawn(true));
     };
 
     // Pre-render one soft glow sprite; drawing images is much cheaper than gradients per mote.
