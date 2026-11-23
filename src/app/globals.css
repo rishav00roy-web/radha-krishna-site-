@@ -248,6 +248,12 @@
   100% { transform: translate3d(var(--drift, 40px), 105vh, 0) rotate(540deg); opacity: 0; }
 }
 
+/* Masked type: each word sits in its own clipping window and rises from behind a cut line.
+   The padding gives ascenders, descenders and Devanagari/Assamese marks room inside the window;
+   the negative margin cancels it, so the heading's layout is unchanged. */
+.mask-w { display: inline-block; overflow: hidden; vertical-align: top; padding: 0.12em 0.06em 0.16em; margin: -0.12em -0.06em -0.16em; }
+.mask-wi { display: inline-block; }
+
 /* Homepage scene motion (decorative; all disabled for reduced motion below). */
 /* Parallax layers get their own GPU layer up front, so scrolling never repaints them. */
 [data-speed] { will-change: transform; }

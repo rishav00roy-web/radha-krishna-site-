@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { Petals } from "./Petals";
 import { Embers } from "./Embers";
 import { Mist, Rays } from "./home/art";
+import { MaskWords } from "./MaskWords";
 
 /**
  * Shared opening band for inner pages, in the homepage's night palette:
@@ -32,7 +33,7 @@ export function PageIntro({
       <Petals />
       <div data-speed="-0.2" className="container-x relative z-10">
         {icon ? <span data-intro-line className="block"><Icon name={icon} size={52} className="mb-6 text-gold-bright" /></span> : null}
-        <h1 data-intro-line className="display-lg max-w-[18ch]">{title}</h1>
+        <h1 data-intro-title className="display-lg max-w-[18ch]"><MaskWords text={title} /></h1>
         <p data-intro-line className="lede measure mt-6">{intro}</p>
         {children}
       </div>
