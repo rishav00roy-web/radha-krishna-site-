@@ -21,13 +21,13 @@ export function Ornament({ className = "" }: { className?: string }) {
 }
 
 /**
- * Soft god-rays falling from the upper left. A pre-blurred image (public/art/rays.png), so the
+ * Soft god-rays falling from the upper left. A pre-blurred image (public/art/rays.webp), so the
  * sway is a plain compositor transform: an SVG blur here had to be re-rasterised every frame.
  */
 export function Rays({ className = "" }: { className?: string }) {
   return (
     // eslint-disable-next-line @next/next/no-img-element -- tiny local decorative image
-    <img src="/art/rays.png" alt="" aria-hidden width={600} height={450} decoding="async" className={`rays-sway object-cover object-top ${className}`} />
+    <img src="/art/rays.webp" alt="" aria-hidden width={800} height={598} decoding="async" className={`rays-sway object-cover object-top ${className}`} />
   );
 }
 

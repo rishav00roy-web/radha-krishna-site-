@@ -36,6 +36,18 @@ export function RiverLamps({ className = "" }: { className?: string }) {
     gx.fillStyle = gg;
     gx.fillRect(0, 0, 128, 128);
 
+    // Rishav's painted sprites (public/art). Until they load, the drawn shapes below stand in.
+    const sprite = (src: string) => {
+      const img = new Image();
+      img.decoding = "async";
+      img.src = src;
+      img.onload = () => { if (still) draw(performance.now()); };
+      return img;
+    };
+    const lotusImg = sprite("/art/lotus-float.webp");
+    const diyaImg = sprite("/art/diya-float.webp");
+    const ready = (img: HTMLImageElement) => img.complete && img.naturalWidth > 0;
+
     const resize = () => {
       const r = canvas.getBoundingClientRect();
       w = r.width;
@@ -86,35 +98,54 @@ export function RiverLamps({ className = "" }: { className?: string }) {
       ctx.globalCompositeOperation = "lighter";
       for (let k = 1; k <= 6; k++) {
         const ry = y + k * 7 * s;
-        const rx = x + Math.sin(t * 2 + k + f.phase) * 3 * s;
+        const rx = (ready(diyaImg) ? x + 12 * s : x) + Math.sin(t * 2 + k + f.phase) * 3 * s;
         ctx.globalAlpha = (0.32 / k) * flick;
         ctx.drawImage(glow, rx - 22 * s, ry - 5 * s, 44 * s, 10 * s);
       }
       ctx.globalAlpha = 0.9 * flick;
-      ctx.drawImage(glow, x - 46 * s * flick, y - 62 * s, 92 * s * flick, 92 * s * flick);
+      const gx = ready(diyaImg) ? x + 12 * s : x; // over the wick
+      ctx.drawImage(glow, gx - 46 * s * flick, y - 62 * s, 92 * s * flick, 92 * s * flick);
       ctx.globalCompositeOperation = "source-over";
       ctx.globalAlpha = 1;
-      // Clay lamp.
-      ctx.fillStyle = "#7a3f22";
-      ctx.beginPath();
-      ctx.ellipse(x, y, 13 * s, 5 * s, 0, 0, Math.PI);
-      ctx.fill();
-      ctx.fillStyle = "#a65a2e";
-      ctx.beginPath();
-      ctx.ellipse(x, y, 13 * s, 3 * s, 0, 0, Math.PI * 2);
-      ctx.fill();
+      // Clay lamp: the painted diya, else a drawn one. The flame sits on its wick.
+      let fx = x;
+      let fy = y;
+      if (ready(diyaImg)) {
+        const dw = 34 * s;
+        const dh = (dw * diyaImg.naturalHeight) / diyaImg.naturalWidth;
+        const left = x - dw / 2;
+        const top = y - dh * 0.5;
+        ctx.drawImage(diyaImg, left, top, dw, dh);
+        fx = left + dw * 0.86;
+        fy = top + dh * 0.22;
+      } else {
+        ctx.fillStyle = "#7a3f22";
+        ctx.beginPath();
+        ctx.ellipse(x, y, 13 * s, 5 * s, 0, 0, Math.PI);
+        ctx.fill();
+        ctx.fillStyle = "#a65a2e";
+        ctx.beginPath();
+        ctx.ellipse(x, y, 13 * s, 3 * s, 0, 0, Math.PI * 2);
+        ctx.fill();
+      }
       // Flame.
       const fh = 15 * s * flick;
       ctx.fillStyle = "#ffe7b0";
       ctx.beginPath();
-      ctx.moveTo(x - 3.2 * s, y - 2 * s);
-      ctx.quadraticCurveTo(x - 4 * s, y - fh * 0.55, x + Math.sin(t * 3 + f.phase) * 1.5 * s, y - fh);
-      ctx.quadraticCurveTo(x + 4 * s, y - fh * 0.55, x + 3.2 * s, y - 2 * s);
+      ctx.moveTo(fx - 3.2 * s, fy - 2 * s);
+      ctx.quadraticCurveTo(fx - 4 * s, fy - fh * 0.55, fx + Math.sin(t * 3 + f.phase) * 1.5 * s, fy - fh);
+      ctx.quadraticCurveTo(fx + 4 * s, fy - fh * 0.55, fx + 3.2 * s, fy - 2 * s);
       ctx.closePath();
       ctx.fill();
     };
 
     const lotus = (x: number, y: number, s: number) => {
+      if (ready(lotusImg)) {
+        const lw = 56 * s;
+        const lh = (lw * lotusImg.naturalHeight) / lotusImg.naturalWidth;
+        ctx.drawImage(lotusImg, x - lw / 2, y - lh * 0.72, lw, lh);
+        return;
+      }
       ctx.fillStyle = "rgba(38, 66, 52, 0.95)";
       ctx.beginPath();
       ctx.ellipse(x, y + 2 * s, 22 * s, 6 * s, 0, 0, Math.PI * 2);

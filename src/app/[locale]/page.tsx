@@ -155,16 +155,16 @@ export default async function Home({ params }: Props) {
           </div>
           <div data-speed="-0.2" aria-hidden className="relative order-first mx-auto w-[min(56vw,260px)] md:order-none md:-mt-16 md:w-[300px]">
             <div className="diya-swing relative">
-              <span className="flame-glow absolute left-[21%] top-[48%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)]" />
+              <span className="flame-glow absolute left-1/2 top-[57%] h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)]" />
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img
-                src="/art/hanging-diya.jpg"
+                src="/art/hanging-diya.webp"
                 alt=""
-                width={480}
-                height={580}
+                width={640}
+                height={770}
                 loading="lazy"
                 className="relative h-auto w-full"
-                style={{ maskImage: "radial-gradient(closest-side at 52% 52%, #000 55%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 22%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
+                style={{ maskImage: "linear-gradient(180deg, transparent 0%, #000 18%)" }}
               />
             </div>
           </div>
@@ -178,13 +178,12 @@ export default async function Home({ params }: Props) {
         <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute bottom-16 -left-10 w-[min(70vw,520px)] opacity-90 md:-left-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img
-            src="/art/peacock-feather.jpg"
+            src="/art/peacock-feather.webp"
             alt=""
-            width={640}
-            height={552}
+            width={800}
+            height={685}
             loading="lazy"
             className="h-auto w-full"
-            style={{ maskImage: "radial-gradient(closest-side at 45% 52%, #000 50%, transparent 100%)" }}
           />
         </div>
         <Petals />
