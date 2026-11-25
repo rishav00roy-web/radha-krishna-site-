@@ -23,7 +23,7 @@ export default async function LocationPage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.location.title} intro={d.location.intro} icon="temple" />
+      <PageIntro art="moon" title={d.location.title} intro={d.location.intro} icon="temple" />
       <section className="section">
         <div className="container-x grid gap-12 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
           <div className="relative aspect-[4/3] overflow-hidden rounded border border-line bg-[linear-gradient(180deg,#f4e6d2_0%,var(--marble-2)_100%)]">

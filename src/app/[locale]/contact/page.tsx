@@ -21,7 +21,7 @@ export default async function ContactPage({ params }: Props) {
   const c = d.contact;
   return (
     <>
-      <PageIntro title={c.title} intro={c.intro} icon="conch" />
+      <PageIntro art="hangingDiya" title={c.title} intro={c.intro} icon="conch" />
       <section className="section">
         <div className="container-x grid gap-14 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-20">
           <ContactForm

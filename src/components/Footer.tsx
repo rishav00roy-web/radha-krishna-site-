@@ -9,7 +9,8 @@ const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities",
 
 export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary; org: Organisation }) {
   return (
-    <footer className="on-dark">
+    <footer className="on-dark relative">
+      <div aria-hidden className="footer-ridge" />
       <div className="container-x pb-28 pt-14 md:pt-16">
         <div className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.1fr)]">
           <div className="flex items-start gap-4">

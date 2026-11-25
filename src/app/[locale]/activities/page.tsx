@@ -27,7 +27,7 @@ export default async function ActivitiesPage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.activities.title} intro={d.activities.intro} icon="diya" />
+      <PageIntro art="hangingDiya" title={d.activities.title} intro={d.activities.intro} icon="diya" />
 
       <section className="section">
         <div className="container-x">

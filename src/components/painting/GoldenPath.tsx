@@ -4,7 +4,7 @@
  * (Motion.tsx, [data-golden-path]). Without JS or with reduced motion the whole path shows lit.
  * Stages stay "Planned" until the foundation verifies them (src/lib/content.ts).
  */
-type Step = { num: string; title: string; status: string; done: boolean };
+type Step = { num: string; title: string; status: string; done: boolean; body?: string };
 
 const pts = (n: number, left: number, right: number) =>
   Array.from({ length: n }, (_, i) => ({ x: i % 2 === 0 ? left : right, y: ((i + 0.5) / n) * 100 }));
@@ -49,7 +49,8 @@ export function GoldenPath({ steps }: { steps: Step[] }) {
             <div className="gp-text">
               <span className="block font-display text-lg text-gold-bright/80 tabular">{s.num}</span>
               <h3 className="font-display text-[1.45rem] leading-tight text-forest-ink md:text-[1.7rem]">{s.title}</h3>
-              <p className="mt-1 text-sm text-forest-soft">{s.status}</p>
+              {s.body ? <p className="mt-1.5 text-[0.95rem] leading-relaxed text-forest-ink/80">{s.body}</p> : null}
+              <p className="mt-1 text-sm text-gold-bright/80">{s.status}</p>
             </div>
           </li>
         ))}

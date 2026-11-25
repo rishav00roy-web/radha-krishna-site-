@@ -26,7 +26,7 @@ export default async function OrganisationPage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.organisation.title} intro={d.organisation.intro} icon="hands" />
+      <PageIntro art="lotus" title={d.organisation.title} intro={d.organisation.intro} icon="hands" />
       <section className="section">
         <div className="container-x grid gap-14 md:grid-cols-[minmax(0,0.8fr)_minmax(0,1.2fr)] md:gap-20">
           <div>
@@ -47,7 +47,7 @@ export default async function OrganisationPage({ params }: Props) {
                 {rows.map(([k, v]) => (
                   <div key={k} className="grid grid-cols-[minmax(0,1fr)_minmax(0,1.3fr)] gap-4 py-3.5">
                     <dt className="text-ink-soft">{k}</dt>
-                    <dd className="tabular">{v}</dd>
+                    <dd className="tabular min-w-0 break-all">{v}</dd>
                   </div>
                 ))}
               </dl>

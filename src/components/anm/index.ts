@@ -2,13 +2,7 @@
 // They were tested with Playwright against this site's Lenis + ScrollTrigger setup before use;
 // see the PR description for what was changed from the originals.
 import type { ComponentType } from "react";
-import ProcessRailJs from "./ProcessRail";
 import CurtainSliderJs from "./CurtainSlider";
-
-export type RailStep = { num?: string; title: string; text: string; image?: string; alt?: string };
-export const ProcessRail = ProcessRailJs as unknown as ComponentType<{
-  steps: RailStep[]; className?: string; scrub?: number; beadSize?: number; sticky?: boolean; stagger?: number; vertical?: boolean;
-}>;
 
 export type CurtainImage = { src: string; alt: string; title: string; label: string };
 export const CurtainSlider = CurtainSliderJs as unknown as ComponentType<{

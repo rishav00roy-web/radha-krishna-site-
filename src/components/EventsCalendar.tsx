@@ -7,6 +7,8 @@ type CalendarEvent = { id: string; title: string; description: string; starts_at
 type Strings = { noEvents: string; upcoming: string; prevMonth: string; nextMonth: string; today: string };
 
 const TZ = "Asia/Kolkata";
+// Server (Node) and browser ICU can name Assamese months and weekdays differently, so locale-formatted
+// text below opts out of the hydration text check instead of throwing.
 // Date key in India time, so an event at 11pm IST stays on its own day.
 const dayKey = (d: Date) => new Intl.DateTimeFormat("en-CA", { timeZone: TZ, year: "numeric", month: "2-digit", day: "2-digit" }).format(d);
 
@@ -66,7 +68,7 @@ export function EventsCalendar({ events, strings, langTag }: { events: CalendarE
             <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.6"><path d="M15 5l-7 7 7 7" /></svg>
           </button>
           <div className="text-center">
-            <p className="font-display text-2xl" aria-live="polite">{monthLabel}</p>
+            <p className="font-display text-2xl" aria-live="polite" suppressHydrationWarning>{monthLabel}</p>
             <button type="button" onClick={() => { setSelected(null); setMonth({ y: ty, m: tm - 1 }); }} className="text-sm text-gold underline">
               {strings.today}
             </button>
@@ -76,9 +78,9 @@ export function EventsCalendar({ events, strings, langTag }: { events: CalendarE
           </button>
         </div>
         <div className="grid grid-cols-7 gap-1 text-center text-sm text-ink-soft" aria-hidden>
-          {weekdays.map((w) => <div key={w} className="py-2">{w}</div>)}
+          {weekdays.map((w) => <div key={w} className="py-2" suppressHydrationWarning>{w}</div>)}
         </div>
-        <div className="grid grid-cols-7 gap-1" aria-label={monthLabel}>
+        <div className="grid grid-cols-7 gap-1" aria-label={monthLabel} suppressHydrationWarning>
           {cells.map((day, i) => {
             if (!day) return <div key={i} />;
             const k = keyFor(day);
@@ -109,7 +111,7 @@ export function EventsCalendar({ events, strings, langTag }: { events: CalendarE
           ) : (
             listed.map((e) => (
               <li key={e.id} className="border-t border-line pt-4">
-                <p className="tabular text-sm text-gold">{fmt(e.starts_at)}{e.ends_at ? ` – ${fmt(e.ends_at)}` : ""}</p>
+                <p className="tabular text-sm text-gold" suppressHydrationWarning>{fmt(e.starts_at)}{e.ends_at ? ` – ${fmt(e.ends_at)}` : ""}</p>
                 <p className="mt-1 font-display text-2xl">{e.title}</p>
                 {e.venue ? <p className="text-sm text-ink-soft">{e.venue}</p> : null}
                 {e.description ? <p className="mt-2 text-ink-soft">{e.description}</p> : null}
