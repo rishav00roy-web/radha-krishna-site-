@@ -11,6 +11,7 @@ export const as: Dictionary = {
     brandMessage: "দিব্য প্ৰেম, ভক্তি আৰু চিৰন্তন শান্তিৰ এক পৱিত্ৰ ধাম।",
   },
   nav: {
+    founding: "প্ৰতিষ্ঠাপক সদস্য হওক",
     home: "মূখ্য পৃষ্ঠা",
     temple: "মন্দিৰ",
     architecture: "স্থাপত্য",
