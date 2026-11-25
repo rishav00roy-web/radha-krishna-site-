@@ -299,3 +299,12 @@
 .prl_wrap .prl_step_text { font-size: 1rem; line-height: 1.6; letter-spacing: 0; }
 .prl_wrap .prl_step_num { font-size: 0.875rem; color: var(--gold); }
 .prl_wrap { letter-spacing: 0; }
+
+/* Compact: the home page's short version (title and status only), so eight stages fit in
+   about one and a half phone screens instead of three. */
+.prl_vertical.prl_compact .prl_steps,
+.prl_compact.prl_vertical .prl_steps {
+  grid-auto-rows: auto;
+  row-gap: 28px;
+}
+.prl_compact.prl_vertical .prl_stage { padding-top: 8px; padding-bottom: 8px; }

@@ -31,30 +31,6 @@ export function Rays({ className = "" }: { className?: string }) {
   );
 }
 
-/** Deterministic leaf cluster silhouette, for out-of-focus foreground branches. */
-/** `blur` softens them inside the SVG (painted once), cheaper than a CSS filter on a moving layer. */
-export function Leaves({ className = "", tone = "#06090c", flip = false, blur = false }: { className?: string; tone?: string; flip?: boolean; blur?: boolean }) {
-  const leaves: { x: number; y: number; r: number; s: number }[] = [];
-  let seed = 7;
-  const rnd = () => ((seed = (seed * 9301 + 49297) % 233280) / 233280);
-  for (let i = 0; i < 46; i++) {
-    const t = i / 46;
-    leaves.push({ x: 20 + t * 420 + rnd() * 60, y: 30 + Math.sin(t * 3) * 60 + t * 120 + rnd() * 70, r: rnd() * 180, s: 0.6 + rnd() * 0.8 });
-  }
-  return (
-    <svg aria-hidden viewBox="0 0 520 360" className={className} style={flip ? { transform: "scaleX(-1)" } : undefined}>
-      {blur ? <defs><filter id="leafBlur" x="-5%" y="-5%" width="110%" height="110%" colorInterpolationFilters="sRGB"><feGaussianBlur stdDeviation="2.6" /></filter></defs> : null}
-      <g filter={blur ? "url(#leafBlur)" : undefined}>
-      <path d="M-10 40 C120 70 260 120 470 250" stroke={tone} strokeWidth="7" fill="none" strokeLinecap="round" />
-      <path d="M150 85 C190 60 230 50 280 52 M260 150 C300 170 330 200 350 240" stroke={tone} strokeWidth="4" fill="none" strokeLinecap="round" />
-      {leaves.map((l, i) => (
-        <path key={i} d="M0 0 C10 -12 30 -12 40 0 C30 12 10 12 0 0Z" fill={tone} transform={`translate(${l.x} ${l.y}) rotate(${l.r}) scale(${l.s})`} />
-      ))}
-      </g>
-    </svg>
-  );
-}
-
 /**
  * Drifting mist bands, drawn with soft radial gradients instead of an SVG blur filter, so nothing
  * has to be re-blurred while the bands slide (the drift itself is a compositor-only transform).

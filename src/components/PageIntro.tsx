@@ -1,13 +1,12 @@
 import type { IconKey } from "@/lib/types";
 import { Icon } from "./Icon";
-import { Petals } from "./Petals";
 import { Embers } from "./Embers";
 import { Mist, Rays } from "./home/art";
 import { MaskWords } from "./MaskWords";
 
 /**
  * Shared opening band for inner pages, in the homepage's night palette:
- * soft rays, rising embers, drifting petals, and mist melting into the page.
+ * soft rays, a few rising embers, and mist melting into the page. Kept quiet on purpose.
  */
 export function PageIntro({
   title,
@@ -23,23 +22,10 @@ export function PageIntro({
   return (
     <section data-parallax className="on-dark relative isolate overflow-hidden pb-24 pt-[calc(72px+4.5rem)] md:pb-28">
       <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-50" />
-      <svg data-speed="0.25" aria-hidden viewBox="0 0 600 600" className="pointer-events-none absolute -right-24 top-6 h-[520px] w-[520px] text-gold-bright opacity-[0.08]">
-        {[0, 30, 60, 90, 120, 150].map((r) => (
-          <ellipse key={r} cx="300" cy="300" rx="280" ry="90" transform={`rotate(${r} 300 300)`} fill="none" stroke="currentColor" />
-        ))}
-        <circle cx="300" cy="300" r="60" fill="none" stroke="currentColor" />
-      </svg>
-      <Embers className="absolute inset-0 h-full w-full" density={0.7} />
-      <Petals />
+      <Embers className="absolute inset-0 h-full w-full" density={0.45} />
       <div data-speed="-0.2" className="container-x relative z-10">
         {icon ? <span data-intro-line className="block"><Icon name={icon} size={52} className="mb-6 text-gold-bright" /></span> : null}
         <h1 data-intro-title className="display-lg max-w-[18ch]"><MaskWords text={title} /></h1>
-        {/* A small gold rule with a diamond, like the border of a temple manuscript. */}
-        <span data-intro-line aria-hidden className="mt-6 flex w-28 items-center gap-2 text-gold-bright">
-          <span className="h-px flex-1 bg-current opacity-60" />
-          <span className="h-1.5 w-1.5 rotate-45 border border-current" />
-          <span className="h-px flex-1 bg-current opacity-60" />
-        </span>
         <p data-intro-line className="lede measure mt-6">{intro}</p>
         {children}
       </div>

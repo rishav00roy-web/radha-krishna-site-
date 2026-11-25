@@ -10,44 +10,39 @@ const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities",
 export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary; org: Organisation }) {
   return (
     <footer className="on-dark">
-      <div className="container-x py-16 md:py-20">
-        <div className="grid gap-12 md:grid-cols-[minmax(0,1.3fr)_minmax(0,1fr)_minmax(0,1fr)]">
-          <div>
-            <BrandMark size={52} className="text-gold-bright" />
-            <p className="mt-5 font-display text-3xl leading-tight">{dict.meta.siteName}</p>
-            <p className="mt-2 font-display text-xl text-gold-bright">{dict.meta.tagline}</p>
-            <p className="mt-8 text-forest-soft">{dict.common.initiativeOf}</p>
-            <p className="text-lg">{dict.common.orgName}</p>
+      <div className="container-x py-14 md:py-16">
+        <div className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.1fr)]">
+          <div className="flex items-start gap-4">
+            <BrandMark size={44} className="shrink-0 text-gold-bright" />
+            <div>
+              <p className="font-display text-2xl leading-tight">{dict.meta.siteName}</p>
+              <p className="mt-2 text-sm text-forest-soft">{dict.common.initiativeOf} {dict.common.orgName}</p>
+            </div>
           </div>
 
-          <dl className="grid content-start gap-3 text-[0.95rem]">
-            <div><dt className="text-forest-soft">CIN</dt><dd className="tabular">{org.cin}</dd></div>
-            <div><dt className="text-forest-soft">PAN</dt><dd className="tabular">{org.pan}</dd></div>
-            <div><dt className="text-forest-soft">{dict.organisation.csr}</dt><dd className="tabular">{org.csr}</dd></div>
-            <div><dt className="text-forest-soft">{dict.organisation.darpan}</dt><dd className="tabular">{org.darpan}</dd></div>
-          </dl>
-
-          <div className="grid content-start gap-5 text-[0.95rem]">
+          <div className="grid content-start gap-4 text-[0.95rem]">
+            <address className="not-italic text-forest-soft">{org.address}</address>
             <div>
-              <p className="text-forest-soft">{dict.organisation.office}</p>
-              <address className="not-italic">{org.address}</address>
-            </div>
-            <div>
-              <p className="text-forest-soft">{dict.organisation.contact}</p>
               <a href={`tel:+91${org.phone}`} className="tabular text-lg hover:text-gold-bright">{org.phone}</a>
               {org.email ? <a href={`mailto:${org.email}`} className="block hover:text-gold-bright">{org.email}</a> : null}
             </div>
           </div>
+
+          <nav aria-label={dict.footer.explore} className="grid grid-cols-2 content-start gap-x-6 gap-y-2 text-[0.95rem]">
+            {links.map((k) => (
+              <Link key={k} href={href(locale, k)} className="no-underline hover:text-gold-bright">{dict.nav[k]}</Link>
+            ))}
+          </nav>
         </div>
 
-        <nav aria-label={dict.footer.explore} className="mt-14 flex flex-wrap gap-x-6 gap-y-2 border-t border-[rgb(243_236_220/0.16)] pt-8 text-[0.95rem]">
-          {links.map((k) => (
-            <Link key={k} href={href(locale, k)} className="no-underline hover:text-gold-bright">{dict.nav[k]}</Link>
-          ))}
-        </nav>
-
-        <div className="mt-8 flex flex-wrap items-center justify-between gap-4 text-sm text-forest-soft">
-          <p>© {new Date().getFullYear()} {org.name}. {dict.footer.rights}</p>
+        <div className="mt-12 border-t border-[rgb(243_236_220/0.16)] pt-6 text-xs leading-relaxed text-forest-soft">
+          <dl className="flex flex-wrap gap-x-5 gap-y-1">
+            <div className="flex gap-1.5"><dt>CIN</dt><dd className="tabular">{org.cin}</dd></div>
+            <div className="flex gap-1.5"><dt>PAN</dt><dd className="tabular">{org.pan}</dd></div>
+            <div className="flex gap-1.5"><dt>{dict.organisation.csr}</dt><dd className="tabular">{org.csr}</dd></div>
+            <div className="flex gap-1.5"><dt>{dict.organisation.darpan}</dt><dd className="tabular">{org.darpan}</dd></div>
+          </dl>
+          <p className="mt-3">© {new Date().getFullYear()} {org.name}. {dict.footer.rights}</p>
         </div>
       </div>
     </footer>
