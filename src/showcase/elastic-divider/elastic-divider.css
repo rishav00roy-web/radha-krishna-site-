@@ -1,0 +1,112 @@
+
+
+
+
+.eldv_stage {
+  --eldv-bg: #f2f2ef;
+  --eldv-tile: #fafaf8;
+  --eldv-fg: #141314;
+  --eldv-grey: #9a9a96;
+  --eldv-line: rgba(20, 19, 20, 0.12);
+  --eldv-focus: rgba(16, 16, 16, 0.3);
+  --eldv-margin: clamp(20px, 2.8vw, 48px);
+  --eldv-gutter: clamp(12px, 1.4vw, 24px);
+  --eldv-display: clamp(40px, 4.2vw, 80px);
+  --eldv-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
+  --eldv-serif: var(--font-display), Georgia, serif;
+  color: var(--eldv-fg, #141314);
+  letter-spacing: -0.02em;
+  box-sizing: border-box;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
+  padding: var(--eldv-margin, 40px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--eldv-bg, #f2f2ef);
+  font-family: var(--eldv-sans, var(--font-sans), sans-serif);
+  -webkit-font-smoothing: antialiased;
+  /* The preview template's overlay layer is pointer-events: none; the stage must be hit-testable again. */
+  pointer-events: auto;
+}
+
+.eldv_container {
+  width: 100%;
+}
+
+.eldv_block {
+  display: flex;
+  align-items: flex-end;
+  justify-content: space-between;
+  gap: 40px;
+  /* Sits close above the line, just clear of the string's widest swing. */
+  margin-bottom: -20px;
+}
+
+.eldv_label {
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.02em;
+  color: var(--eldv-fg, #141314);
+}
+
+.eldv_idx {
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  color: var(--eldv-grey, #9a9a96);
+}
+
+.eldv_text {
+  margin: 0;
+  white-space: nowrap;
+  font-family: var(--eldv-serif, Georgia, serif);
+  font-size: var(--eldv-display, 60px);
+  font-weight: 400;
+  line-height: 0.95;
+  letter-spacing: -0.035em;
+  text-align: right;
+  color: var(--eldv-fg, #141314);
+}
+
+/* The separator: as wide as its container, and tall enough that the string has room to swing both ways. */
+.eldv_divider {
+  position: relative;
+  width: 100%;
+  height: 120px;
+  /* A sideways swipe flicks the line; a vertical drag stays with the browser and scrolls the page. */
+  touch-action: pan-y;
+}
+
+.eldv_svg {
+  position: absolute;
+  inset: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+
+.eldv_path {
+  fill: none;
+}
+
+@media (max-width: 767px) {
+
+  .eldv_block {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    margin-bottom: -12px;
+  }
+
+  .eldv_text {
+    white-space: normal;
+    text-align: left;
+  }
+
+  .eldv_divider {
+    height: 96px;
+  }
+}
