@@ -13,7 +13,7 @@ import { Embers } from "@/components/Embers";
 import { RiverLamps } from "@/components/home/RiverLamps";
 import { SparkLotus } from "@/components/home/SparkLotus";
 import { MaskWords } from "@/components/MaskWords";
-import { StackingCards } from "@/components/anm";
+import { ProcessRail, StackingCards } from "@/components/anm";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -236,30 +236,29 @@ export default async function Home({ params }: Props) {
         </div>
       </section>
 
-      {/* Journey */}
-      <section className="section bg-marble-2">
-        <div className="container-x">
-          <h2 data-reveal className="display-lg"><MaskWords text={d.home.journeyTitle} /></h2>
-          <p data-reveal className="lede measure mt-5">{d.home.journeyBody}</p>
-          <ol data-journey className="mt-12 grid grid-cols-2 gap-x-6 gap-y-8 md:grid-cols-4">
-            {milestones.map((m) => (
-              <li key={m.id} className="relative border-t-2 border-marble-3 pt-4 data-[done=true]:border-gold" data-done={m.verified && m.status === "completed"}>
-                <span aria-hidden data-journey-line className="absolute -top-0.5 left-0 h-0.5 w-full origin-left scale-x-0 bg-gold" />
-                <span aria-hidden data-journey-ring className="absolute -left-[7px] -top-[8px] block h-3.5 w-3.5 scale-0 rounded-full border border-gold opacity-0" />
-                <span aria-hidden data-journey-dot className="absolute -top-[5px] left-0 h-2 w-full"><span className="block h-2 w-2 -translate-x-1 scale-0 rounded-full bg-gold shadow-[0_0_10px_rgb(212_169_73/0.9)]" /></span>
-                <div data-journey-text>
-                  <p className="tabular text-sm text-ink-soft">{m.step}</p>
-                  <p className="mt-1 font-display text-xl leading-snug">{t(m.title, locale)}</p>
-                  <p className="mt-1 text-sm text-ink-soft">
-                    {m.verified && m.status === "completed" ? d.journey.statusCompleted : m.verified && m.status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned}
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ol>
-          <Link href={href(locale, "journey")} className="mt-10 inline-block text-gold underline hover:text-ink">
-            {d.nav.journey}
-          </Link>
+      {/* Journey: the pack's process rail. A gold line draws down the stages as you scroll and the bead
+          brightens each one in turn; it marks reading position, not progress. Unverified stages read "Planned". */}
+      <section className="section bg-marble-2" data-no-reveal>
+        <div className="container-x grid gap-8 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:gap-12">
+          <div className="md:sticky md:top-28 md:self-start">
+            <h2 data-reveal className="display-lg"><MaskWords text={d.home.journeyTitle} /></h2>
+            <p data-reveal className="lede measure mt-5">{d.home.journeyBody}</p>
+            <Link href={href(locale, "journey")} className="group mt-8 inline-flex items-center gap-3 border-b border-gold pb-1 font-display text-xl text-ink no-underline">
+              {d.nav.journey}
+              <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
+            </Link>
+          </div>
+          <ProcessRail
+            vertical
+            sticky={false}
+            scrub={0}
+            beadSize={12}
+            steps={milestones.map((m) => {
+              const status = m.verified ? m.status : "planned";
+              const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
+              return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), text: label };
+            })}
+          />
         </div>
       </section>
 

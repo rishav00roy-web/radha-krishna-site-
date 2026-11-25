@@ -145,28 +145,6 @@ export function Motion() {
           );
         });
 
-        // Journey: a gold line draws across the steps, with a glowing bead at its tip.
-        const journey = document.querySelector<HTMLElement>("[data-journey]");
-        if (journey) {
-          const lines = journey.querySelectorAll<HTMLElement>("[data-journey-line]");
-          const dots = journey.querySelectorAll<HTMLElement>("[data-journey-dot]");
-          const rings = journey.querySelectorAll<HTMLElement>("[data-journey-ring]");
-          const texts = journey.querySelectorAll<HTMLElement>("[data-journey-text]");
-          // Steps wait softly until the bead reaches them, then each node answers with a ring.
-          gsap.set(texts, { opacity: 0.45 });
-          const tl = gsap.timeline({ scrollTrigger: { trigger: journey, start: "top 80%", end: "bottom 55%", scrub: true } });
-          lines.forEach((line, i) => {
-            const bead = dots[i].firstElementChild;
-            tl.fromTo(rings[i], { scale: 0.4, opacity: 0.9 }, { scale: 2.8, opacity: 0, ease: "power2.out", duration: 0.6 }, i);
-            tl.to(texts[i], { opacity: 1, ease: "power1.out", duration: 0.35 }, i);
-            tl.to(bead, { scale: 1, duration: 0.15 }, i);
-            tl.to(line, { scaleX: 1, ease: "none", duration: 1 }, i);
-            // The bead's full-width track slides with a transform, never `left`, so scrolling stays layout-free.
-            tl.to(dots[i], { xPercent: 100, ease: "none", duration: 1 }, i);
-            tl.to(bead, { scale: 0, duration: 0.15 }, i + 0.9);
-          });
-        }
-
         const hero = document.querySelector<HTMLElement>("[data-hero]");
         if (hero) {
           // The lotus draws itself and its two lines reach outward, then the title's words rise
