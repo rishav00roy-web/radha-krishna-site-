@@ -11,14 +11,22 @@
   --marble-3: #e8dfcd;
   --ink: #2a2118;
   --ink-soft: #5b4d3d;
-  --gold: #a87a26;
-  --gold-bright: #d4a949;
-  --gold-pale: #efdcab;
-  --night: #0f1318;
-  --mist: #f1dcc4;
+  /* Palette from the 2026-11-25 creative brief: midnight blue, deep forest green, warm ivory,
+     muted saffron, antique gold, earthy browns. --gold is the deepened saffron used for text and
+     buttons on ivory (it passes contrast); --gold-bright is the antique gold used on the night. */
+  --gold: #94652c;
+  --gold-bright: #cfae72;
+  --gold-pale: #ead9b4;
+  --night: #101b29;
+  --mist: #f2e5d0;
+  --ivory: #f2e5d0;
+  --saffron: #c58b43;
+  --antique: #b9955b;
+  --pine: #18251f;
+  --earth: #5b4632;
   /* "forest" tokens now carry the night-blue of Rishav's mockup (names kept so classes stay stable). */
-  --forest: #141b24;
-  --forest-2: #1f2733;
+  --forest: #101b29;
+  --forest-2: #1b2839;
   --forest-ink: #f3ecdc;
   --forest-soft: #c9c0a8;
   --lotus: #d9798f;
@@ -151,7 +159,7 @@
     color: #fffaf0;
   }
   .btn-primary:hover {
-    background: #8f6620;
+    background: #7c5424;
   }
   .btn-quiet {
     border: 1px solid currentColor;
@@ -159,7 +167,7 @@
     background: transparent;
   }
   .btn-quiet:hover {
-    background: rgb(168 122 38 / 0.12);
+    background: rgb(185 149 91 / 0.16);
   }
 
   .proposed-tag {
@@ -297,4 +305,74 @@
 .plaque {
   box-shadow: inset 0 0 0 1px rgb(212 169 73 / 0.55), inset 0 0 0 6px var(--forest), inset 0 0 0 7px rgb(212 169 73 / 0.25), 0 30px 60px -36px rgb(15 19 24 / 0.6);
   background-image: radial-gradient(120% 80% at 100% 0%, rgb(212 169 73 / 0.12), transparent 60%);
+}
+
+/* ───────── The continuous painting (Home) ───────── */
+.scroll-thread > span { animation: scroll-thread 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes scroll-thread { from { transform: translateY(-100%); } to { transform: translateY(200%); } }
+
+.twinkle { animation: twinkle 5s ease-in-out infinite alternate; }
+.twinkle--2 { animation-duration: 7s; animation-delay: -3s; }
+@keyframes twinkle { from { opacity: 1; } to { opacity: 0.35; } }
+
+.bird-drift { animation: bird-drift 26s ease-in-out infinite alternate; will-change: transform; }
+@keyframes bird-drift { from { transform: translate3d(-3%, 0, 0); } to { transform: translate3d(6%, -6%, 0); } }
+
+.flame { animation: flame 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes flame { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(0.94, 1.08); } 70% { transform: scale(1.04, 0.96); } }
+
+/* A lamp on the master-plan panorama: a warm point with a soft halo. */
+.pano-lamp {
+  position: relative;
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff3d6 0%, #f0c27a 45%, #c58b43 100%);
+  box-shadow: 0 0 0 4px rgb(197 139 67 / 0.18), 0 0 22px 8px rgb(240 194 122 / 0.35);
+}
+.pano-lamp::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 14px;
+  background: linear-gradient(180deg, rgb(240 194 122 / 0.6), transparent);
+}
+
+/* Golden path rows. Desktop: lamps alternate at 44% and 56% with the text on the far side.
+   Phones: the path hugs the left edge and every stage reads to its right. */
+.gp-row { position: relative; display: flex; align-items: center; }
+.gp-lamp {
+  position: absolute;
+  top: 50%;
+  left: var(--gp-x);
+  width: 16px;
+  height: 16px;
+  margin: -8px 0 0 -8px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff1cf 0%, #e8c98d 40%, #c58b43 100%);
+  box-shadow: 0 0 0 5px rgb(16 27 41 / 0.9), 0 0 0 6px rgb(207 174 114 / 0.5), 0 0 26px 8px rgb(232 201 141 / 0.35);
+  transition: opacity 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out), scale 0.6s var(--ease-out);
+}
+.gp-text { padding-left: 28%; }
+.gp-row--l { --gp-x: 9%; }
+.gp-row--r { --gp-x: 19%; }
+@media (min-width: 768px) {
+  .gp-row--l { --gp-x: 44%; justify-content: flex-end; }
+  .gp-row--r { --gp-x: 56%; }
+  .gp-row--l .gp-text { padding: 0; width: 38%; margin-right: 62%; text-align: right; }
+  .gp-row--r .gp-text { padding: 0; width: 38%; margin-left: 62%; }
+}
+/* Once Motion has taken over, lamps wait dim until the path reaches them. */
+[data-gp-live] .gp-lamp { opacity: 0.35; scale: 0.7; box-shadow: 0 0 0 5px rgb(16 27 41 / 0.9), 0 0 0 6px rgb(207 174 114 / 0.3); }
+[data-gp-live] .gp-text { opacity: 0.45; transition: opacity 0.6s var(--ease-out); }
+[data-gp-live] [data-lit] .gp-lamp { opacity: 1; scale: 1; box-shadow: 0 0 0 5px rgb(16 27 41 / 0.9), 0 0 0 6px rgb(207 174 114 / 0.6), 0 0 30px 10px rgb(232 201 141 / 0.4); }
+[data-gp-live] [data-lit] .gp-text { opacity: 1; }
+
+[data-offscreen] .twinkle, [data-offscreen] .bird-drift, [data-offscreen] .flame, [data-offscreen] .scroll-thread > span { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .twinkle, .bird-drift, .flame, .scroll-thread > span { animation: none !important; }
 }

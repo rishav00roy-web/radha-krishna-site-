@@ -145,6 +145,26 @@ export function Motion() {
           );
         });
 
+        // Golden path (Home journey): the path draws itself with scroll, a little ahead of the reading
+        // line, and each lamp lights once the path reaches it. Scrub follows Lenis exactly.
+        gsap.utils.toArray<HTMLElement>("[data-golden-path]").forEach((gp) => {
+          gp.setAttribute("data-gp-live", "");
+          const draws = gp.querySelectorAll<SVGPathElement>("[data-gp-draw]");
+          gsap.fromTo(draws, { strokeDasharray: 1, strokeDashoffset: 1 }, {
+            strokeDashoffset: 0,
+            ease: "none",
+            scrollTrigger: { trigger: gp, start: "top 70%", end: "bottom 70%", scrub: true },
+          });
+          gp.querySelectorAll<HTMLElement>("[data-gp-node]").forEach((node) => {
+            ScrollTrigger.create({
+              trigger: node,
+              start: "center 70%",
+              onEnter: () => node.setAttribute("data-lit", ""),
+              onLeaveBack: () => node.removeAttribute("data-lit"),
+            });
+          });
+        });
+
         const hero = document.querySelector<HTMLElement>("[data-hero]");
         if (hero) {
           // The lotus draws itself and its two lines reach outward, then the title's words rise
@@ -193,7 +213,7 @@ export function Motion() {
 
       // Pause the CSS loops (petals, rays, mist, diya, glow) in scenes that are off screen.
       const scenes = new Set<HTMLElement>();
-      document.querySelectorAll<HTMLElement>(".petal, .rays-sway, .mist-drift, .diya-swing, .sun-glow").forEach((el) => {
+      document.querySelectorAll<HTMLElement>(".petal, .rays-sway, .mist-drift, .diya-swing, .sun-glow, .twinkle, .bird-drift, .flame, .scroll-thread").forEach((el) => {
         const scene = el.closest<HTMLElement>("section");
         if (scene) scenes.add(scene);
       });
@@ -203,6 +223,10 @@ export function Motion() {
       scenes.forEach((s) => io.observe(s));
 
       cleanup = () => {
+        document.querySelectorAll("[data-golden-path]").forEach((gp) => {
+          gp.removeAttribute("data-gp-live");
+          gp.querySelectorAll("[data-lit]").forEach((n) => n.removeAttribute("data-lit"));
+        });
         if (onPointer) window.removeEventListener("pointermove", onPointer);
         io.disconnect();
         scenes.forEach((s) => s.removeAttribute("data-offscreen"));

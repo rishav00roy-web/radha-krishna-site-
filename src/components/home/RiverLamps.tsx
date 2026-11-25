@@ -70,9 +70,9 @@ export function RiverLamps({ className = "" }: { className?: string }) {
 
     const water = (t: number) => {
       const g = ctx.createLinearGradient(0, 0, 0, h);
-      g.addColorStop(0, "rgba(20, 27, 36, 0)");
-      g.addColorStop(0.25, "#16202b");
-      g.addColorStop(1, "#0b1016");
+      g.addColorStop(0, "rgba(22, 33, 47, 0)");
+      g.addColorStop(0.25, "#16212f");
+      g.addColorStop(1, "#101b29");
       ctx.fillStyle = g;
       ctx.fillRect(0, 0, w, h);
       // Ripples: faint horizontal strokes that breathe.

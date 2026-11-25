@@ -8,13 +8,14 @@ import type { Dictionary } from "@/i18n";
 import { href, type RouteKey } from "@/lib/routes";
 import "./lotus-menu.css";
 
+// Read down the first column, then the second: the temple first, then the project and the foundation.
 const links: RouteKey[] = [
-  "home", "temple", "architecture", "masterPlan", "activities", "environment",
-  "journey", "gallery", "location", "organisation", "contact", "donate",
+  "home", "temple", "architecture", "activities", "environment",
+  "masterPlan", "journey", "gallery", "location", "organisation",
 ];
 
-// Until the founding membership page exists, the highlighted link goes to the donate page.
-const FOUNDING_ROUTE: RouteKey = "donate";
+// Until the founding membership page exists, the highlighted link opens the contact page.
+const FOUNDING_ROUTE: RouteKey = "contact";
 
 /**
  * The whole site navigation: one lotus button at the bottom centre.
@@ -160,6 +161,12 @@ export function LotusMenu({ locale, dict }: { locale: Locale; dict: Dictionary }
           className="lm-panel"
           inert={!open}
         >
+          <svg aria-hidden viewBox="0 0 48 20" className="lm-crest">
+            <path d="M24 17c-2.6-2.2-3.7-5.4-3-9.6 1.9.7 3 2.2 3 4 0-1.8 1.1-3.3 3-4 .7 4.2-.4 7.4-3 9.6z" />
+            <path d="M24 17c-5 0-8.6-2.4-10-6.6 3-.3 6 .8 7.8 3.2M24 17c5 0 8.6-2.4 10-6.6-3-.3-6 .8-7.8 3.2" />
+            <path d="M2 18h14M32 18h14" strokeOpacity="0.5" />
+          </svg>
+
           <Link href={href(locale, FOUNDING_ROUTE)} className="lm-founding">
             <span>{dict.nav.founding}</span>
             <svg aria-hidden viewBox="0 0 20 20" width="16" height="16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
@@ -177,6 +184,10 @@ export function LotusMenu({ locale, dict }: { locale: Locale; dict: Dictionary }
                 </li>
               ))}
             </ul>
+            <div className="lm-actions">
+              <Link href={href(locale, "donate")} aria-current={isActive("donate") ? "page" : undefined}>{dict.nav.donate}</Link>
+              <Link href={href(locale, "contact")} aria-current={isActive("contact") ? "page" : undefined}>{dict.nav.contact}</Link>
+            </div>
           </nav>
 
           <div className="lm-langs" role="group" aria-label={dict.nav.language}>
