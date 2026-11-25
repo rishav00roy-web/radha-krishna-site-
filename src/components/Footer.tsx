@@ -10,7 +10,7 @@ const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities",
 export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary; org: Organisation }) {
   return (
     <footer className="on-dark">
-      <div className="container-x py-14 md:py-16">
+      <div className="container-x pb-28 pt-14 md:pt-16">
         <div className="grid gap-10 md:grid-cols-[minmax(0,1.2fr)_minmax(0,1fr)_minmax(0,1.1fr)]">
           <div className="flex items-start gap-4">
             <BrandMark size={44} className="shrink-0 text-gold-bright" />

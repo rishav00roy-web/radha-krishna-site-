@@ -6,7 +6,7 @@ import { htmlLang, isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { getOrganisation } from "@/lib/data";
 import { siteUrl } from "@/lib/seo";
-import { Header } from "@/components/Header";
+import { LotusMenu } from "@/components/LotusMenu";
 import { Footer } from "@/components/Footer";
 import { Motion } from "@/components/Motion";
 
@@ -63,7 +63,7 @@ export default async function LocaleLayout({
   return (
     <html lang={htmlLang[locale]} className={fontClasses[locale]}>
       <body>
-        <Header locale={locale} dict={dict} />
+        <LotusMenu locale={locale} dict={dict} />
         <main id="main">{children}</main>
         <Footer locale={locale} dict={dict} org={org} />
         <Motion />

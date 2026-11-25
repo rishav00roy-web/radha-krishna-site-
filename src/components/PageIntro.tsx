@@ -20,7 +20,7 @@ export function PageIntro({
   children?: React.ReactNode;
 }) {
   return (
-    <section data-parallax className="on-dark relative isolate overflow-hidden pb-24 pt-[calc(72px+4.5rem)] md:pb-28">
+    <section data-parallax className="on-dark relative isolate overflow-hidden pb-24 pt-24 md:pt-28 md:pb-28">
       <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-50" />
       <Embers className="absolute inset-0 h-full w-full" density={0.45} />
       <div data-speed="-0.2" className="container-x relative z-10">

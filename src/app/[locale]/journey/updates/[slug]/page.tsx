@@ -24,7 +24,7 @@ export default async function UpdatePage({ params }: Props) {
   const u = getUpdate(slug);
   if (!u) notFound();
   return (
-    <article className="pb-24 pt-[calc(72px+4rem)]">
+    <article className="pb-24 pt-20 md:pt-24">
       <div className="container-x max-w-3xl">
         <Link href={`/${locale}/journey#updates`} className="text-gold underline">{d.common.back}</Link>
         <p className="tabular mt-8 text-sm text-ink-soft">{formatDate(u.published_at, locale)}</p>

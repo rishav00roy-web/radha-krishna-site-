@@ -10,6 +10,7 @@ export const hi: Dictionary = {
     brandMessage: "दिव्य प्रेम, भक्ति और शाश्वत शांति का पावन धाम।",
   },
   nav: {
+    founding: "संस्थापक सदस्य बनें",
     home: "मुखपृष्ठ",
     temple: "मंदिर",
     architecture: "स्थापत्य",

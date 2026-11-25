@@ -7,6 +7,7 @@ export const en = {
     brandMessage: "A Sacred Abode of Divine Love, Devotion and Eternal Peace.",
   },
   nav: {
+    founding: "Become a founding member",
     home: "Home",
     temple: "The temple",
     architecture: "Architecture",
