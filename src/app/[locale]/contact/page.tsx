@@ -42,7 +42,7 @@ export default async function ContactPage({ params }: Props) {
             {org.email ? (
               <>
                 <p className="mt-6 text-forest-soft">{c.email}</p>
-                <a href={`mailto:${org.email}`} className="text-gold-bright underline">{org.email}</a>
+                <a href={`mailto:${org.email}`} className="block w-fit text-gold-bright underline">{org.email}</a>
               </>
             ) : null}
             <a href={`tel:+91${org.phone}`} className="btn btn-primary mt-8">{c.call}</a>

@@ -73,10 +73,7 @@ export default async function Home({ params }: Props) {
           {/* Temple identity, integrated into the artwork. Navigation is the lotus at the bottom. */}
           <Link href={href(locale, "home")} aria-label={d.meta.siteName} className="absolute left-4 top-4 z-40 flex items-center gap-3 text-forest-ink no-underline md:left-8 md:top-6">
             <BrandMark size={38} className="text-gold-bright" />
-            <span className="hidden font-display text-[1.05rem] leading-tight sm:block">
-              {d.meta.siteName.replace(" Prem Mandir", "")}
-              <span className="block text-gold-bright/90">Prem Mandir</span>
-            </span>
+            <span className="hidden max-w-[11rem] font-display text-[1.05rem] leading-tight [text-shadow:0_1px_10px_rgb(0_0_0/0.5)] sm:block">{d.meta.siteName}</span>
           </Link>
 
           {/* Painted artwork. Upper right on wide screens (the painting is wide, so it fades out below), top band on phones. */}
@@ -84,7 +81,6 @@ export default async function Home({ params }: Props) {
             <picture className="block h-full w-full">
               <source type="image/avif" srcSet={HERO_ART_SRCSET("avif")} sizes={HERO_ART_SIZES} />
               <source type="image/webp" srcSet={HERO_ART_SRCSET("webp")} sizes={HERO_ART_SIZES} />
-              {/* eslint-disable-next-line @next/next/no-img-element -- local art, sized variants above */}
               <img
                 src="/art/hero/radha-krishna-1280.jpg"
                 alt={h.heroArt}
@@ -138,7 +134,7 @@ export default async function Home({ params }: Props) {
             ]}
           />
         </div>
-        <div data-speed="-0.25" className="absolute left-[4%] top-[22%] w-[min(42vw,320px)] md:left-[10%] md:top-[14%]">
+        <div data-speed="-0.25" className="absolute right-[8%] top-[44%] w-[36vw] md:right-[34%] md:top-[9%] md:w-[min(22vw,280px)]">
           <Birds className="bird-drift w-full" />
         </div>
 
@@ -178,9 +174,9 @@ export default async function Home({ params }: Props) {
 
       {/* ── 03 Spiritual activities: warm day, a lit clay diya and a peacock feather in the foreground ── */}
       <section data-parallax className="relative isolate bg-[linear-gradient(180deg,#ead6b6_0%,#e6cfa9_55%,#dcc196_100%)] text-ink">
-        <div className="container-x relative grid gap-12 pb-10 pt-6 md:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] md:items-center md:gap-16 md:pb-16">
+        <div className="container-x relative grid gap-10 pb-10 pt-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-16 lg:pb-16">
           {/* Still life: the feather rests behind the lamp; the lamp's flame is the warmest point of the day. */}
-          <div aria-hidden className="relative mx-auto aspect-[5/4] w-full max-w-[460px] md:order-none">
+          <div aria-hidden className="relative mx-auto aspect-[5/4] w-full max-w-[360px] lg:max-w-[460px]">
             <div data-speed="0.1" className="absolute left-[2%] top-[4%] w-[78%] rotate-[-14deg] opacity-90">
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img src="/art/peacock-feather.webp" alt="" width={800} height={685} loading="lazy" className="h-auto w-full" />
@@ -337,7 +333,7 @@ export default async function Home({ params }: Props) {
       {/* ── 07 Closing: midnight, a great peacock feather, the verse, and the invitation ── */}
       <section data-parallax className="relative isolate overflow-hidden bg-night text-forest-ink">
         <Stars className="absolute inset-0 h-full w-full opacity-70" count={90} seed={23} />
-        <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute -left-16 bottom-0 w-[min(92vw,620px)] opacity-90 md:-left-10 md:bottom-10">
+        <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute -left-16 bottom-0 w-[min(78vw,420px)] opacity-80 lg:-left-8 lg:bottom-10 lg:w-[min(40vw,560px)] lg:opacity-90">
           {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img src="/art/peacock-feather.webp" alt="" width={800} height={685} loading="lazy" className="h-auto w-full" />
         </div>
@@ -353,11 +349,11 @@ export default async function Home({ params }: Props) {
           <SparkLotus className="mt-4" />
         </figure>
 
-        <div className="container-x relative pb-24 pt-6 md:pb-32">
-          <div className="mx-auto max-w-xl text-center md:ml-auto md:mr-[6%] md:text-left">
+        <div className="container-x relative pb-[min(70vw,18rem)] pt-6 lg:pb-32">
+          <div className="mx-auto max-w-xl text-center lg:ml-auto lg:mr-[6%] lg:max-w-md lg:text-left">
             <h2 data-reveal className="display-md">{h.visitTitle}</h2>
             <p data-reveal className="mt-3 text-forest-soft">{h.visitBody}</p>
-            <div data-reveal className="mt-7 flex flex-wrap justify-center gap-3 md:justify-start">
+            <div data-reveal className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
               <Link href={href(locale, FOUNDING_ROUTE)} className="btn btn-primary">{d.nav.founding}</Link>
               <Link href={href(locale, "donate")} className="btn btn-quiet">{d.nav.donate}</Link>
             </div>
