@@ -34,6 +34,12 @@ export function PageIntro({
       <div data-speed="-0.2" className="container-x relative z-10">
         {icon ? <span data-intro-line className="block"><Icon name={icon} size={52} className="mb-6 text-gold-bright" /></span> : null}
         <h1 data-intro-title className="display-lg max-w-[18ch]"><MaskWords text={title} /></h1>
+        {/* A small gold rule with a diamond, like the border of a temple manuscript. */}
+        <span data-intro-line aria-hidden className="mt-6 flex w-28 items-center gap-2 text-gold-bright">
+          <span className="h-px flex-1 bg-current opacity-60" />
+          <span className="h-1.5 w-1.5 rotate-45 border border-current" />
+          <span className="h-px flex-1 bg-current opacity-60" />
+        </span>
         <p data-intro-line className="lede measure mt-6">{intro}</p>
         {children}
       </div>

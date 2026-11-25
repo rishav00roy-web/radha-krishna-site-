@@ -1,0 +1,22 @@
+// Typed entry points for the vendored Annnimate components (free starter pack, annnimate.com).
+// They were tested with Playwright against this site's Lenis + ScrollTrigger setup before use;
+// see the PR description for what was changed from the originals.
+import type { ComponentType } from "react";
+import ProcessRailJs from "./ProcessRail";
+import CurtainSliderJs from "./CurtainSlider";
+import StackingCardsJs from "./StackingCards";
+
+export type RailStep = { num?: string; title: string; text: string; image?: string; alt?: string };
+export const ProcessRail = ProcessRailJs as unknown as ComponentType<{
+  steps: RailStep[]; className?: string; scrub?: number; beadSize?: number; sticky?: boolean; stagger?: number; vertical?: boolean;
+}>;
+
+export type CurtainImage = { src: string; alt: string; title: string; label: string };
+export const CurtainSlider = CurtainSliderJs as unknown as ComponentType<{
+  images: CurtainImage[]; className?: string; duration?: number; columns?: number; auto?: number; drag?: boolean;
+}>;
+
+export type StackCard = { src: string; alt: string; label: string; position?: string };
+export const StackingCards = StackingCardsJs as unknown as ComponentType<{
+  cards: StackCard[]; ariaLabel?: string; className?: string; stepHeight?: number; scrub?: number; tilt?: number;
+}>;
