@@ -29,6 +29,8 @@ export function Motion() {
       // One clock for everything: Lenis advances on GSAP's ticker and tells ScrollTrigger when it moves.
       const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
       lenis.on("scroll", ScrollTrigger.update);
+      // Exposed so scroll-to helpers (stacking cards counter) move through Lenis instead of fighting it.
+      (window as unknown as { lenis?: typeof lenis }).lenis = lenis;
       const tick = (time: number) => lenis.raf(time * 1000);
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
@@ -228,6 +230,7 @@ export function Motion() {
         scenes.forEach((s) => s.removeAttribute("data-offscreen"));
         ctx.revert();
         gsap.ticker.remove(tick);
+        delete (window as unknown as { lenis?: unknown }).lenis;
         lenis.destroy();
       };
     })();

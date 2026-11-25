@@ -192,6 +192,14 @@ export const organisation: Organisation = {
   whatsapp: "919864522165",
   leader_name: "Polash Jyoti Bora",
   leader_title: "Chief Executive Officer",
+  // The foundation's donation account, from its cheque leaf (shared by Rishav on 2026-11-25).
+  bank: {
+    account_name: "Gousamuh Gramaya Foundation",
+    bank: "Bank of Maharashtra",
+    account: "60527976497",
+    ifsc: "MAHB0001566",
+    branch: "Jorhat (branch code 01566), Assam 785006",
+  },
 };
 
 // Events and announcements: add entries here when dates are confirmed.

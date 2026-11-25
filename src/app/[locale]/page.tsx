@@ -13,6 +13,7 @@ import { Embers } from "@/components/Embers";
 import { RiverLamps } from "@/components/home/RiverLamps";
 import { SparkLotus } from "@/components/home/SparkLotus";
 import { MaskWords } from "@/components/MaskWords";
+import { StackingCards } from "@/components/anm";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -186,6 +187,24 @@ export default async function Home({ params }: Props) {
         </div>
         {/* A live river of floating diyas and lotus. */}
         <RiverLamps className="relative h-56 w-full md:h-72" />
+      </section>
+
+      {/* 3b. The temple's own artwork: each painting slides over the last as you scroll (stacking cards). */}
+      <section className="relative bg-[#141b24] pt-16 text-forest-ink md:pt-24" data-no-reveal aria-labelledby="art-title">
+        <div className="container-x text-center">
+          <h2 id="art-title" className="display-lg"><MaskWords text={d.gallery.featuredTitle} /></h2>
+          <div className="ornament-rule mx-auto mt-6 max-w-xs text-gold-bright" aria-hidden><Icon name="lotus" size={28} /></div>
+        </div>
+        <StackingCards
+          ariaLabel={d.gallery.featuredTitle}
+          stepHeight={60}
+          cards={[
+            { src: "/art/hero/radha-krishna-1920.webp", alt: h.heroArt, label: d.gallery.featured[0].title, position: "50% 25%" },
+            { src: "/art/temple-concept.jpg", alt: h.templeArt, label: `${d.gallery.featured[1].title} · ${d.gallery.featured[1].label}`, position: "50% 30%" },
+            { src: "/art/hanging-diya.jpg", alt: d.gallery.featured[2].title, label: d.gallery.featured[2].title, position: "50% 55%" },
+            { src: "/art/peacock-feather.jpg", alt: d.gallery.featured[3].title, label: d.gallery.featured[3].title },
+          ]}
+        />
       </section>
 
       {/* 4. Closing verse: peacock feather */}

@@ -292,3 +292,9 @@
     display: none;
   }
 }
+
+/* Donation plaque: a double gold frame, like a temple's engraved offering board. */
+.plaque {
+  box-shadow: inset 0 0 0 1px rgb(212 169 73 / 0.55), inset 0 0 0 6px var(--forest), inset 0 0 0 7px rgb(212 169 73 / 0.25), 0 30px 60px -36px rgb(15 19 24 / 0.6);
+  background-image: radial-gradient(120% 80% at 100% 0%, rgb(212 169 73 / 0.12), transparent 60%);
+}

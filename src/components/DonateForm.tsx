@@ -8,6 +8,7 @@ type Strings = {
   name: string; mobile: string; amount: string; other: string; otherLabel: string; purpose: string;
   note: string; sendEmail: string; sendWhatsApp: string; howEmail: string; howWhatsApp: string;
   required: string; invalidMobile: string; invalidAmount: string;
+  method: string; methods: readonly string[]; reference: string; referenceHint: string;
 };
 
 const presets = [501, 1100, 2100, 5100, 11000];
@@ -27,6 +28,7 @@ export function DonateForm({
   whatsapp: string;
 }) {
   const [choice, setChoice] = useState<string>(String(presets[1]));
+  const [method, setMethod] = useState<0 | 1>(0);
   const [errors, setErrors] = useState<Partial<Record<"name" | "mobile" | "amount", string>>>({});
   const via = useRef<"email" | "whatsapp">(to ? "email" : "whatsapp");
   const otherRef = useRef<HTMLInputElement>(null);
@@ -53,9 +55,12 @@ export function DonateForm({
       ["Phone", v("mobile")],
       ["Amount", `₹${amount.toLocaleString("en-IN")}`],
       ["Purpose", purpose],
+      // Always sent in English, like the purpose, so the foundation reads one language.
+      ["Given by", method === 0 ? "Bank transfer" : "Cash in person"],
+      ["Transaction reference (UTR)", method === 0 ? v("reference") : ""],
       ["Note", v("note")],
     ]);
-    const subject = `Donation offer: ₹${amount.toLocaleString("en-IN")} for ${purpose}`;
+    const subject = `Donation: ₹${amount.toLocaleString("en-IN")} by ${method === 0 ? "bank transfer" : "cash"} for ${purpose}`;
     window.location.href = via.current === "email" && to ? mailtoHref(to, subject, body) : whatsappHref(whatsapp, `${subject}\n\n${body}`);
   }
 
@@ -64,6 +69,23 @@ export function DonateForm({
 
   return (
     <form onSubmit={onSubmit} noValidate className="grid gap-7">
+      <fieldset>
+        <legend className="label">{strings.method}</legend>
+        <div className="mt-1 grid gap-2 sm:grid-cols-2">
+          {strings.methods.map((label, i) => (
+            <label key={label} className="relative">
+              <input type="radio" name="method" value={i} checked={method === i} onChange={() => setMethod(i as 0 | 1)} className="peer sr-only" />
+              <span className="flex min-h-[52px] cursor-pointer items-center gap-3 rounded-sm border border-line bg-marble px-4 transition-colors duration-200 hover:border-gold peer-checked:border-gold peer-checked:bg-[rgb(168_122_38/0.08)] peer-focus-visible:outline peer-focus-visible:outline-2 peer-focus-visible:outline-offset-2 peer-focus-visible:outline-gold">
+                <span aria-hidden className={`grid h-5 w-5 shrink-0 place-items-center rounded-full border ${method === i ? "border-gold" : "border-ink-soft/50"}`}>
+                  {method === i ? <span className="h-2.5 w-2.5 rounded-full bg-gold" /> : null}
+                </span>
+                {label}
+              </span>
+            </label>
+          ))}
+        </div>
+      </fieldset>
+
       <fieldset aria-describedby={errors.amount ? "de-amount" : undefined}>
         <legend className="label">{strings.amount}</legend>
         <div className="mt-1 flex flex-wrap gap-2">
@@ -130,6 +152,14 @@ export function DonateForm({
           {err("mobile", "de-mobile")}
         </div>
       </div>
+
+      {method === 0 ? (
+        <div>
+          <label htmlFor="d-ref" className="label">{strings.reference}</label>
+          <input id="d-ref" name="reference" autoComplete="off" maxLength={40} aria-describedby="d-ref-hint" className="field tabular sm:max-w-[360px]" />
+          <p id="d-ref-hint" className="mt-1.5 text-sm text-ink-soft">{strings.referenceHint}</p>
+        </div>
+      ) : null}
 
       <div>
         <label htmlFor="d-note" className="label">{strings.note}</label>

@@ -101,6 +101,8 @@ export type Organisation = {
   whatsapp: string;
   leader_name: string;
   leader_title: string;
+  /** The foundation's bank account for donations by transfer. */
+  bank: { account_name: string; bank: string; account: string; ifsc: string; branch: string };
 };
 
 export type LocationInfo = {
