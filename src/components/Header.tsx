@@ -51,6 +51,11 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
     };
   }, [open]);
 
+  // The last two words ("Prem Mandir", "প্ৰেম মন্দিৰ", "प्रेम मंदिर") are the name; the rest sits above it.
+  const words = dict.meta.siteName.split(" ");
+  const nameMain = words.slice(-2).join(" ");
+  const nameTop = words.slice(0, -2).join(" ");
+
   const swap = (l: Locale) => pathname.replace(/^\/(en|as|hi)(?=\/|$)/, `/${l}`);
   const isActive = (k: RouteKey) => {
     const target = href(locale, k);
@@ -64,13 +69,17 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
       </a>
       <header
         className={`fixed inset-x-0 top-0 z-50 transition-[background-color,box-shadow,color] duration-500 ease-out ${
-          solid ? "bg-marble text-ink shadow-[0_1px_0_var(--line)]" : "bg-transparent text-forest-ink"
+          solid ? "bg-marble text-ink shadow-[0_1px_0_var(--line)]" : "bg-[linear-gradient(180deg,rgb(8_10_14/0.55),transparent)] text-forest-ink"
         }`}
       >
-        <div className="container-x flex h-[72px] items-center gap-6">
-          <Link href={href(locale, "home")} className="flex min-w-0 items-center gap-3 no-underline">
-            <BrandMark size={38} className={solid ? "text-gold" : "text-gold-bright"} />
-            <span className="truncate font-display text-lg leading-tight sm:text-xl">{dict.meta.siteName}</span>
+        <div className="container-x flex h-[72px] items-center gap-1 min-[360px]:gap-2 sm:gap-4">
+          {/* Two-line lockup, so the name never gets cut off: "Shri Shri Radha-Krishna" small above "Prem Mandir". */}
+          <Link href={href(locale, "home")} aria-label={dict.meta.siteName} className="flex min-h-[44px] min-w-0 items-center gap-2 no-underline sm:gap-2.5">
+            <BrandMark size={34} className={`hidden shrink-0 min-[360px]:block ${solid ? "text-gold" : "text-gold-bright"}`} />
+            <span aria-hidden className="flex min-w-0 flex-col leading-none">
+              <span className={`truncate ${locale === "en" ? "text-[0.62rem] min-[375px]:text-[0.7rem] sm:text-[0.68rem] sm:uppercase sm:tracking-[0.14em]" : "text-xs"} ${solid ? "text-ink-soft" : "text-forest-soft"}`}>{nameTop}</span>
+              <span className="mt-1 truncate font-display text-xl leading-none">{nameMain}</span>
+            </span>
           </Link>
 
           <nav aria-label="Primary" className="ml-auto hidden items-center gap-1 xl:flex">
@@ -89,7 +98,7 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
           <Link
             href={href(locale, "donate")}
             aria-current={isActive("donate") ? "page" : undefined}
-            className="ml-auto flex min-h-[40px] shrink-0 items-center whitespace-nowrap rounded-full bg-gold px-3 text-sm text-[#fffaf0] no-underline transition-colors duration-200 hover:bg-[#8f6620] sm:min-h-[44px] sm:px-4 sm:text-[0.95rem] xl:ml-2"
+            className="ml-auto flex h-9 shrink-0 items-center whitespace-nowrap rounded-full bg-gold px-3 text-sm font-medium text-[#fffaf0] no-underline transition-[background-color,transform] duration-200 hover:bg-[#8f6620] active:translate-y-px sm:h-10 sm:px-4 xl:ml-3"
           >
             {dict.nav.donate}
           </Link>
@@ -101,13 +110,13 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
               aria-expanded={langOpen}
               aria-haspopup="true"
               aria-label={`${dict.nav.language}: ${localeNames[locale]}`}
-              className="flex min-h-[40px] min-w-[40px] items-center justify-center gap-2 rounded-full border border-current px-2.5 text-[0.95rem] transition-colors duration-200 hover:text-gold sm:min-h-[44px] sm:px-3"
+              className="flex h-11 min-w-[44px] items-center justify-center gap-1.5 rounded-full px-2 text-[0.95rem] transition-colors duration-200 hover:text-gold"
             >
-              <svg aria-hidden viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" strokeWidth="1.5">
+              <svg aria-hidden viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" strokeWidth="1.5">
                 <circle cx="12" cy="12" r="9" />
                 <path d="M3 12h18M12 3c2.5 2.7 3.8 5.7 3.8 9S14.5 18.3 12 21c-2.5-2.7-3.8-5.7-3.8-9S9.5 5.7 12 3z" />
               </svg>
-              <span className="hidden sm:inline">{localeNames[locale]}</span>
+              <span className="hidden xl:inline">{localeNames[locale]}</span>
             </button>
             {langOpen ? (
               <ul className="absolute right-0 top-[calc(100%+8px)] min-w-[160px] overflow-hidden rounded-sm border border-line bg-marble py-1 text-ink shadow-[0_12px_32px_-12px_rgb(42_33_24/0.3)]">
@@ -134,12 +143,12 @@ export function Header({ locale, dict }: { locale: Locale; dict: Dictionary }) {
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
             aria-controls="site-menu"
-            className="flex min-h-[44px] items-center gap-2 rounded-full px-2 text-[0.95rem] transition-colors duration-200 hover:text-gold"
+            className="-mr-2 flex h-11 min-w-[44px] items-center justify-center gap-2 rounded-full px-2 text-[0.95rem] transition-colors duration-200 hover:text-gold"
           >
-            <svg aria-hidden viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round">
-              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 8h16M4 16h16" />}
+            <svg aria-hidden viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round">
+              {open ? <path d="M6 6l12 12M18 6L6 18" /> : <path d="M4 7h16M4 12h16M4 17h10" />}
             </svg>
-            <span className="hidden sm:inline">{open ? dict.nav.close : dict.nav.menu}</span>
+            <span className="sr-only xl:not-sr-only">{open ? dict.nav.close : dict.nav.menu}</span>
           </button>
         </div>
       </header>

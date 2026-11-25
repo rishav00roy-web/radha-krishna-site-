@@ -235,9 +235,9 @@
   position: absolute;
   top: -5%;
   width: 14px;
-  height: 18px;
-  border-radius: 80% 0 80% 0;
-  background: linear-gradient(135deg, #f7d6de, var(--lotus));
+  height: 22px;
+  /* Rishav's painted lotus petal (public/art/petal.webp). */
+  background: url("/art/petal.webp") center / contain no-repeat;
   opacity: 0;
   will-change: transform, opacity;
   animation: petal linear infinite;

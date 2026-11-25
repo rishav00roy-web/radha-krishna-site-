@@ -8,12 +8,12 @@ import { href } from "@/lib/routes";
 import { pageMetadata } from "@/lib/seo";
 import { Petals } from "@/components/Petals";
 import { Icon } from "@/components/Icon";
-import { Hill, Leaves, Mist, Ornament, Rays } from "@/components/home/art";
+import { Hill, Mist, Ornament, Rays } from "@/components/home/art";
 import { Embers } from "@/components/Embers";
 import { RiverLamps } from "@/components/home/RiverLamps";
 import { SparkLotus } from "@/components/home/SparkLotus";
 import { MaskWords } from "@/components/MaskWords";
-import { ProcessRail, StackingCards } from "@/components/anm";
+import { ProcessRail } from "@/components/anm";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -64,31 +64,17 @@ export default async function Home({ params }: Props) {
           </div>
           <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
           <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
-          <div data-speed="-0.25" data-depth="-1.4" className="pointer-events-none absolute -left-10 -top-6 w-[62vw] max-w-[620px] lg:w-[42vw]">
-            <Leaves blur className="h-auto w-full opacity-90" />
-          </div>
-          <Petals />
 
           {/* Copy */}
-          <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[24svh] pt-[50svh] lg:justify-center lg:pb-[22svh] lg:pt-28">
+          <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[7svh] pt-[44svh] lg:justify-center lg:pb-[18svh] lg:pt-28">
             <div className="max-w-[30rem] text-center lg:ml-[4%]">
-              <Ornament className="mb-6" />
+              <Ornament className="mb-3 lg:mb-6" />
               <h1 data-hero-title className="display-xl text-balance [text-shadow:0_2px_18px_rgb(0_0_0/0.45)]"><MaskWords text={h.headline.replace("-", "\u2011")} /></h1>
               <p data-hero-line className="mx-auto mt-5 max-w-[26ch] font-display text-2xl italic leading-snug text-gold-pale">{d.meta.tagline}</p>
-              <p data-hero-line className="mx-auto mt-3 max-w-[34ch] text-forest-soft">{h.subhead}</p>
-              <nav data-hero-line aria-label={h.headline} className="mt-8 flex flex-wrap justify-center gap-2.5">
-                <Link href={href(locale, "temple")} className="btn btn-primary !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaExplore}</Link>
-                <Link href="#vision" className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaVision}</Link>
-                <Link href={href(locale, "masterPlan")} className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaPlan}</Link>
-                <Link href={href(locale, "activities")} className="btn btn-quiet !min-h-[44px] !px-5 !py-2 text-[0.95rem]">{h.ctaActivities}</Link>
+              <nav data-hero-line aria-label={h.headline} className="mt-6 flex flex-wrap justify-center gap-2 lg:mt-8 lg:gap-2.5">
+                <Link href={href(locale, "temple")} className="btn btn-primary !min-h-[44px] !px-4 !py-2 text-[0.9rem] lg:!px-5 lg:text-[0.95rem]">{h.ctaExplore}</Link>
+                <Link href={href(locale, "masterPlan")} className="btn btn-quiet !min-h-[44px] !px-4 !py-2 text-[0.9rem] lg:!px-5 lg:text-[0.95rem]">{h.ctaPlan}</Link>
               </nav>
-              <a data-hero-line href="#vision" className="mx-auto mt-8 flex w-max flex-col items-center gap-3 text-sm text-forest-soft no-underline hover:text-gold-pale">
-                <span aria-hidden className="h-10 w-px bg-[linear-gradient(transparent,currentColor)]" />
-                {h.scroll}
-                <span aria-hidden className="grid h-8 w-5 justify-center rounded-full border border-current pt-1.5">
-                  <span className="scroll-wheel block h-1.5 w-0.5 rounded-full bg-current" />
-                </span>
-              </a>
             </div>
           </div>
         </div>
@@ -97,21 +83,19 @@ export default async function Home({ params }: Props) {
           <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_0%,rgb(241_220_196/0.55)_55%,var(--mist)_100%)]" />
           <Mist className="absolute inset-x-0 bottom-0 h-full w-full" />
         </div>
-        <p className="absolute bottom-[22svh] left-4 right-4 z-30 text-right text-[0.7rem] leading-snug text-forest-soft/80 md:text-xs">{h.heroArt}</p>
       </section>
 
       {/* 2. About the temple: concept temple among trees */}
       {/* Pulled up under the hero's mist, so the night melts straight into this scene with no seam. */}
       <section id="vision" data-parallax className="relative isolate z-10 -mt-[20svh] scroll-mt-20 overflow-hidden bg-[linear-gradient(180deg,transparent_0%,var(--mist)_20svh,#ead2b6_100%)] pb-0">
         <div className="container-x relative grid items-end gap-10 pt-[6svh] md:grid-cols-[minmax(0,0.9fr)_minmax(0,1.1fr)] md:pt-[7svh]">
-          <div className="pb-10 md:pb-48">
+          <div className="pb-2 md:pb-48">
             <p data-reveal className="flex items-center gap-3 font-display text-xl text-gold">
               <span aria-hidden className="h-px w-10 bg-gold" />
               {h.aboutLabel}
             </p>
             <h2 data-reveal className="display-lg mt-4"><MaskWords text={h.aboutTitle} /></h2>
             <p data-reveal className="lede measure mt-6 !text-ink-soft">{h.aboutBody}</p>
-            <p data-reveal className="mt-4 font-display text-2xl text-gold">{d.meta.brandMessage}</p>
             <Link data-reveal href={href(locale, "temple")} className="group mt-8 inline-flex items-center gap-3 border-b border-gold pb-1 font-display text-xl text-ink no-underline">
               {d.common.learnMore}
               <span aria-hidden className="transition-transform duration-300 group-hover:translate-x-1.5">⟶</span>
@@ -171,16 +155,16 @@ export default async function Home({ params }: Props) {
           </div>
           <div data-speed="-0.2" aria-hidden className="relative order-first mx-auto w-[min(56vw,260px)] md:order-none md:-mt-16 md:w-[300px]">
             <div className="diya-swing relative">
-              <span className="flame-glow absolute left-[21%] top-[48%] h-40 w-40 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)]" />
+              <span className="flame-glow absolute left-1/2 top-[57%] h-48 w-48 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[radial-gradient(circle,rgb(255_196_110/0.55),rgb(255_170_80/0.12)_45%,transparent_70%)]" />
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img
-                src="/art/hanging-diya.jpg"
+                src="/art/hanging-diya.webp"
                 alt=""
-                width={480}
-                height={580}
+                width={640}
+                height={770}
                 loading="lazy"
                 className="relative h-auto w-full"
-                style={{ maskImage: "radial-gradient(closest-side at 52% 52%, #000 55%, transparent 100%), linear-gradient(180deg, transparent 0%, #000 22%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
+                style={{ maskImage: "linear-gradient(180deg, transparent 0%, #000 18%)" }}
               />
             </div>
           </div>
@@ -189,36 +173,17 @@ export default async function Home({ params }: Props) {
         <RiverLamps className="relative h-56 w-full md:h-72" />
       </section>
 
-      {/* 3b. The temple's own artwork: each painting slides over the last as you scroll (stacking cards). */}
-      <section className="relative bg-[#141b24] pt-16 text-forest-ink md:pt-24" data-no-reveal aria-labelledby="art-title">
-        <div className="container-x text-center">
-          <h2 id="art-title" className="display-lg"><MaskWords text={d.gallery.featuredTitle} /></h2>
-          <div className="ornament-rule mx-auto mt-6 max-w-xs text-gold-bright" aria-hidden><Icon name="lotus" size={28} /></div>
-        </div>
-        <StackingCards
-          ariaLabel={d.gallery.featuredTitle}
-          stepHeight={60}
-          cards={[
-            { src: "/art/hero/radha-krishna-1920.webp", alt: h.heroArt, label: d.gallery.featured[0].title, position: "50% 25%" },
-            { src: "/art/temple-concept.jpg", alt: h.templeArt, label: `${d.gallery.featured[1].title} · ${d.gallery.featured[1].label}`, position: "50% 30%" },
-            { src: "/art/hanging-diya.jpg", alt: d.gallery.featured[2].title, label: d.gallery.featured[2].title, position: "50% 55%" },
-            { src: "/art/peacock-feather.jpg", alt: d.gallery.featured[3].title, label: d.gallery.featured[3].title },
-          ]}
-        />
-      </section>
-
       {/* 4. Closing verse: peacock feather */}
       <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#0b1016_0%,#22262c_100%)] text-forest-ink">
         <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute bottom-16 -left-10 w-[min(70vw,520px)] opacity-90 md:-left-4">
           {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img
-            src="/art/peacock-feather.jpg"
+            src="/art/peacock-feather.webp"
             alt=""
-            width={640}
-            height={552}
+            width={800}
+            height={685}
             loading="lazy"
             className="h-auto w-full"
-            style={{ maskImage: "radial-gradient(closest-side at 45% 52%, #000 50%, transparent 100%)" }}
           />
         </div>
         <Petals />
@@ -253,6 +218,7 @@ export default async function Home({ params }: Props) {
             sticky={false}
             scrub={0}
             beadSize={12}
+            className="prl_compact"
             steps={milestones.map((m) => {
               const status = m.verified ? m.status : "planned";
               const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
