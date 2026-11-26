@@ -96,11 +96,13 @@ export default async function Home({ params }: Props) {
             </picture>
           </div>
           <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
+          {/* Carving over the rays, kept off Radha-Krishna (top band on phones, right side on wide screens). */}
+          <TouchSurface className="[mask-image:linear-gradient(180deg,transparent_40%,#000_58%)] lg:[mask-image:linear-gradient(90deg,#000_40%,transparent_58%)]" />
           <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
 
-          <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[9svh] pt-[44svh] lg:justify-center lg:pb-[18svh] lg:pt-28">
+          <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[9svh] pt-[38svh] lg:justify-center lg:pb-[18svh] lg:pt-28">
             <div className="max-w-[30rem] text-center lg:ml-[4%]">
-              <Ornament className="mb-3 lg:mb-6" />
+              <Ornament className="-my-1 mb-1 lg:mb-4" />
               <h1 data-hero-title className="display-xl text-balance [text-shadow:0_2px_18px_rgb(0_0_0/0.45)]"><MaskWords text={h.headline.replace("-", "‑")} /></h1>
               <p data-hero-line className="mx-auto mt-5 max-w-[26ch] pb-1 font-display text-2xl italic leading-snug text-gold-pale">{d.meta.tagline}</p>
               <nav data-hero-line aria-label={h.headline} className="mt-6 flex flex-wrap justify-center gap-2 lg:mt-8 lg:gap-2.5">
@@ -123,7 +125,7 @@ export default async function Home({ params }: Props) {
       </section>
 
       {/* ── 02 About the temple: ivory dawn mist, far hills, birds, the temple emerging ── */}
-      <section id="vision" data-parallax className="relative isolate z-10 -mt-[20svh] scroll-mt-20 bg-[linear-gradient(180deg,transparent_0%,var(--mist)_20svh,#efdfc4_70%,#ead6b6_100%)] text-ink">
+      <section id="vision" data-parallax className="relative isolate z-10 -mt-[12svh] scroll-mt-20 lg:-mt-[20svh] bg-[linear-gradient(180deg,transparent_0%,var(--mist)_20svh,#efdfc4_70%,#ead6b6_100%)] text-ink">
         <TouchSurface tone="light" />
         {/* Far ridges sit behind the temple and run under the text, so the land carries on across the page. */}
         <div data-speed="0.12" className="absolute inset-x-0 bottom-[8%] -z-10 h-[46%]">
@@ -152,7 +154,7 @@ export default async function Home({ params }: Props) {
               <span aria-hidden className="sun-glow absolute left-1/2 top-[18%] h-[70%] w-[80%] -translate-x-1/2 rounded-full bg-[radial-gradient(closest-side,rgb(255_228_178/0.8),rgb(242_210_160/0.25)_55%,transparent)]" />
               {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
               <img
-                src="/art/temple-concept.jpg"
+                src="/art/temple-concept.webp"
                 alt={h.templeArt}
                 width={984}
                 height={1040}

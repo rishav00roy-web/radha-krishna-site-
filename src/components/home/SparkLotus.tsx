@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { afterLoad } from "@/lib/idle";
 
 /** The ornament's lotus (viewBox 48), shared by the crisp SVG and the spark targets. */
 const LOTUS = [
@@ -29,7 +30,29 @@ function rng(seed: number) {
  * the lotus waits there first, so the eye knows where the sparks are going.
  * Reduced motion: the finished lotus, no canvas.
  */
-export function SparkLotus({ className = "" }: { className?: string }) {
+export function SparkLotus({
+  className = "",
+  paths = LOTUS,
+  vb = [48, 48],
+  size = SIZE,
+  box = [W, H],
+  line = 1.6,
+  svgClassName = "drop-shadow-[0_0_10px_rgb(255_206_128/0.45)]",
+}: {
+  className?: string;
+  /** The mark the sparks settle into (defaults to the ornament lotus); Rishav's logo in the hero. */
+  paths?: readonly string[];
+  vb?: readonly [number, number];
+  /** Mark width in CSS px. */
+  size?: number;
+  /** Canvas box in CSS px: sparks start from its left and right edges. */
+  box?: readonly [number, number];
+  /** Stroke width in viewBox units. */
+  line?: number;
+  svgClassName?: string;
+}) {
+  const [W, H] = box;
+  const markH = (size * vb[1]) / vb[0];
   const wrap = useRef<HTMLDivElement>(null);
   const ref = useRef<HTMLCanvasElement>(null);
   const [done, setDone] = useState(false);
@@ -61,14 +84,14 @@ export function SparkLotus({ className = "" }: { className?: string }) {
       setDone(true);
       return;
     }
-    const k = SIZE / 48;
-    o.translate((W - SIZE) / 2, (H - SIZE) / 2);
+    const k = size / vb[0];
+    o.translate((W - size) / 2, (H - markH) / 2);
     o.scale(k, k);
-    o.lineWidth = 1.6;
+    o.lineWidth = line;
     o.lineCap = "round";
     o.lineJoin = "round";
     o.strokeStyle = "#000";
-    LOTUS.forEach((d) => o.stroke(new Path2D(d)));
+    paths.forEach((d) => o.stroke(new Path2D(d)));
     const data = o.getImageData(0, 0, W, H).data;
     const rand = rng(108);
     const pts: { x: number; y: number }[] = [];
@@ -150,34 +173,38 @@ export function SparkLotus({ className = "" }: { className?: string }) {
       },
       { threshold: 0.7 },
     );
-    io.observe(box);
+    const cancelIdle = afterLoad(() => io.observe(box));
     return () => {
+      cancelIdle();
       io.disconnect();
       cancelAnimationFrame(raf);
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- the mark is fixed for the component's life
   }, []);
 
   return (
-    <div ref={wrap} aria-hidden className={`relative mx-auto flex h-[200px] w-full max-w-[360px] items-center justify-center text-gold-bright ${className}`}>
+    <div ref={wrap} aria-hidden style={{ height: H, maxWidth: W }} className={`relative mx-auto flex w-full items-center justify-center text-gold-bright ${className}`}>
       <canvas
         ref={ref}
         width={W}
         height={H}
-        className={`absolute left-1/2 top-0 h-[200px] w-[360px] -translate-x-1/2 transition-opacity duration-700 ${done ? "opacity-0" : "opacity-100"}`}
+        style={{ width: W, height: H }}
+        className={`absolute left-1/2 top-0 -translate-x-1/2 transition-opacity duration-700 ${done ? "opacity-0" : "opacity-100"}`}
       />
       <svg
-        viewBox="0 0 48 48"
-        width={SIZE}
-        height={SIZE}
+        data-spark-svg
+        viewBox={`0 0 ${vb[0]} ${vb[1]}`}
+        width={size}
+        height={markH}
         fill="none"
         stroke="currentColor"
-        strokeWidth="1.4"
+        strokeWidth={line * 0.9}
         strokeLinecap="round"
         strokeLinejoin="round"
         strokeDasharray={done ? undefined : "1 2"}
-        className={`relative drop-shadow-[0_0_10px_rgb(255_206_128/0.45)] transition-opacity duration-700 ${done ? "opacity-100" : "opacity-20"}`}
+        className={`relative ${svgClassName} transition-opacity duration-700 ${done ? "opacity-100" : "opacity-20"}`}
       >
-        {LOTUS.map((d) => <path key={d} d={d} />)}
+        {paths.map((d) => <path key={d} d={d} />)}
       </svg>
     </div>
   );

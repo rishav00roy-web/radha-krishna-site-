@@ -2,6 +2,7 @@
 
 import { useEffect } from "react";
 import { usePathname } from "next/navigation";
+import { afterLoad } from "@/lib/idle";
 
 /**
  * Lenis smooth scrolling, GSAP reveals for [data-reveal] blocks and parallax for [data-speed] layers.
@@ -49,20 +50,106 @@ export function Motion() {
             onComplete: () => el.querySelectorAll<HTMLElement>(".mask-w").forEach((w) => (w.style.overflow = "visible")),
           });
 
-        // Hand-placed reveals.
-        gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach((el) => {
-          if (el.querySelector("[data-mask-word]")) {
-            riseWords(el, { scrollTrigger: { trigger: el, start: "top 90%", once: true } });
-            return;
-          }
-          gsap.from(el, {
-            y: 28,
-            opacity: 0,
-            duration: 0.9,
-            ease: "expo.out",
-            scrollTrigger: { trigger: el, start: "top 90%", once: true },
+        // Everything below the first screen is wired up once the page has loaded and gone idle, so
+        // measuring dozens of triggers never delays the first paint. Anything already on screen by
+        // then is left as it is rather than hidden and replayed.
+        const onScreen = (el: Element) => el.getBoundingClientRect().top < window.innerHeight;
+        const below = () => {
+          // Hand-placed reveals.
+          gsap.utils.toArray<HTMLElement>("[data-reveal]").filter((el) => !onScreen(el)).forEach((el) => {
+            if (el.querySelector("[data-mask-word]")) {
+              riseWords(el, { scrollTrigger: { trigger: el, start: "top 90%", once: true } });
+              return;
+            }
+            gsap.from(el, {
+              y: 28,
+              opacity: 0,
+              duration: 0.9,
+              ease: "expo.out",
+              scrollTrigger: { trigger: el, start: "top 90%", once: true },
+            });
           });
-        });
+
+          // Site-wide reveals: every heading, paragraph, list item, picture and form row in the page body,
+          // except inside the hero, page headers, hand-placed reveals and anything marked data-no-reveal.
+          const skip = "[data-hero], [data-intro-line], [data-intro-title], [data-reveal], [data-no-reveal], header, footer, [role=dialog]";
+          const pick = (sel: string) =>
+            gsap.utils.toArray<HTMLElement>(sel).filter((el) => !el.closest(skip) && !el.querySelector("[data-reveal]") && !onScreen(el));
+          const pictures = pick("main figure, main [data-reveal-image]");
+          const blocks = pick("main section h2, main section h3, main section p, main section li, main section dl, main section form > *, main section aside, main section .btn")
+            // Animate the outermost match only, so nested items don't double up.
+            .filter((el, _i, all) => !all.some((o) => o !== el && o.contains(el)) && !pictures.some((f) => f.contains(el)));
+
+          gsap.set(blocks, { opacity: 0, y: 24 });
+          ScrollTrigger.batch(blocks, {
+            start: "top 92%",
+            once: true,
+            onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", stagger: 0.07, overwrite: true }),
+          });
+          // Shutter reveal: the picture opens through vertical slats, each widening from its own
+          // centre line, left to right a beat apart. One clip-path polygon, so it works on masked art too.
+          const SLATS = phone ? 5 : 7;
+          const slatClip = (open: number[]) => {
+            const pts: string[] = [];
+            open.forEach((o, i) => {
+              const c = ((i + 0.5) / SLATS) * 100;
+              const half = (o * 50) / SLATS + (o > 0 && o < 1 ? 0.02 : 0);
+              const l = (c - half).toFixed(3), r = (c + half).toFixed(3);
+              pts.push(`${l}% 100%`, `${l}% 0%`, `${r}% 0%`, `${r}% 100%`);
+            });
+            return `polygon(${pts.join(", ")})`;
+          };
+          const closed = slatClip(new Array(SLATS).fill(0));
+          gsap.set(pictures, { clipPath: closed });
+          ScrollTrigger.batch(pictures, {
+            start: "top 92%",
+            once: true,
+            onEnter: (batch) =>
+              (batch as HTMLElement[]).forEach((el, i) => {
+                const open = new Array(SLATS).fill(0);
+                const state = { t: 0 };
+                gsap.to(state, {
+                  t: 1,
+                  duration: 1.5,
+                  ease: "none",
+                  delay: i * 0.1,
+                  onUpdate: () => {
+                    // Each slat gets its own expo-out ride inside the shared clock, starting 0.07 later than the one before.
+                    for (let s = 0; s < SLATS; s++) {
+                      const local = Math.min(1, Math.max(0, (state.t * 1.5 - s * 0.07) / 0.95));
+                      open[s] = local === 1 ? 1 : 1 - Math.pow(2, -10 * local);
+                    }
+                    el.style.clipPath = slatClip(open);
+                  },
+                  onComplete: () => { el.style.clipPath = ""; },
+                });
+                const img = el.querySelector("img");
+                if (img) gsap.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 1.6, ease: "expo.out", delay: i * 0.1 });
+              }),
+          });
+
+          // Parallax: every [data-speed] layer drifts with scroll inside its [data-parallax] section.
+          // Positive speeds lag behind the page (far away), negative ones run ahead (close to the eye).
+          gsap.utils.toArray<HTMLElement>("[data-speed]").forEach((layer) => {
+            const section = layer.closest<HTMLElement>("[data-parallax]");
+            if (!section) return;
+            const speed = Number(layer.dataset.speed ?? 0);
+            const isHero = section.hasAttribute("data-hero");
+            const travel = () => section.offsetHeight * speed * (isHero ? 0.6 : 0.35) * (phone ? 0.5 : 1);
+            gsap.fromTo(
+              layer,
+              { y: () => (isHero ? 0 : -travel()) },
+              {
+                y: () => travel(),
+                ease: "none",
+                // scrub: true follows Lenis exactly; a numeric scrub would smooth twice and feel laggy.
+                scrollTrigger: { trigger: section, start: isHero ? "top top" : "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
+              },
+            );
+          });
+
+        };
+        const cancelBelow = afterLoad(() => mmCtx.add(below));
 
         // Inner-page headers rise in on load.
         const introTitle = document.querySelector("[data-intro-title]");
@@ -70,91 +157,13 @@ export function Motion() {
         const intro = gsap.utils.toArray<HTMLElement>("[data-intro-line]");
         if (intro.length) gsap.from(intro, { y: 30, opacity: 0, duration: 1.1, ease: "expo.out", stagger: 0.1, delay: introTitle ? 0.35 : 0.1 });
 
-        // Site-wide reveals: every heading, paragraph, list item, picture and form row in the page body,
-        // except inside the hero, page headers, hand-placed reveals and anything marked data-no-reveal.
-        const skip = "[data-hero], [data-intro-line], [data-intro-title], [data-reveal], [data-no-reveal], header, footer, [role=dialog]";
-        const pick = (sel: string) =>
-          gsap.utils.toArray<HTMLElement>(sel).filter((el) => !el.closest(skip) && !el.querySelector("[data-reveal]"));
-        const pictures = pick("main figure, main [data-reveal-image]");
-        const blocks = pick("main section h2, main section h3, main section p, main section li, main section dl, main section form > *, main section aside, main section .btn")
-          // Animate the outermost match only, so nested items don't double up.
-          .filter((el, _i, all) => !all.some((o) => o !== el && o.contains(el)) && !pictures.some((f) => f.contains(el)));
-
-        gsap.set(blocks, { opacity: 0, y: 24 });
-        ScrollTrigger.batch(blocks, {
-          start: "top 92%",
-          once: true,
-          onEnter: (batch) => gsap.to(batch, { opacity: 1, y: 0, duration: 0.8, ease: "expo.out", stagger: 0.07, overwrite: true }),
-        });
-        // Shutter reveal: the picture opens through vertical slats, each widening from its own
-        // centre line, left to right a beat apart. One clip-path polygon, so it works on masked art too.
-        const SLATS = phone ? 5 : 7;
-        const slatClip = (open: number[]) => {
-          const pts: string[] = [];
-          open.forEach((o, i) => {
-            const c = ((i + 0.5) / SLATS) * 100;
-            const half = (o * 50) / SLATS + (o > 0 && o < 1 ? 0.02 : 0);
-            const l = (c - half).toFixed(3), r = (c + half).toFixed(3);
-            pts.push(`${l}% 100%`, `${l}% 0%`, `${r}% 0%`, `${r}% 100%`);
-          });
-          return `polygon(${pts.join(", ")})`;
-        };
-        const closed = slatClip(new Array(SLATS).fill(0));
-        gsap.set(pictures, { clipPath: closed });
-        ScrollTrigger.batch(pictures, {
-          start: "top 92%",
-          once: true,
-          onEnter: (batch) =>
-            (batch as HTMLElement[]).forEach((el, i) => {
-              const open = new Array(SLATS).fill(0);
-              const state = { t: 0 };
-              gsap.to(state, {
-                t: 1,
-                duration: 1.5,
-                ease: "none",
-                delay: i * 0.1,
-                onUpdate: () => {
-                  // Each slat gets its own expo-out ride inside the shared clock, starting 0.07 later than the one before.
-                  for (let s = 0; s < SLATS; s++) {
-                    const local = Math.min(1, Math.max(0, (state.t * 1.5 - s * 0.07) / 0.95));
-                    open[s] = local === 1 ? 1 : 1 - Math.pow(2, -10 * local);
-                  }
-                  el.style.clipPath = slatClip(open);
-                },
-                onComplete: () => { el.style.clipPath = ""; },
-              });
-              const img = el.querySelector("img");
-              if (img) gsap.fromTo(img, { scale: 1.08 }, { scale: 1, duration: 1.6, ease: "expo.out", delay: i * 0.1 });
-            }),
-        });
-
-        // Parallax: every [data-speed] layer drifts with scroll inside its [data-parallax] section.
-        // Positive speeds lag behind the page (far away), negative ones run ahead (close to the eye).
-        gsap.utils.toArray<HTMLElement>("[data-speed]").forEach((layer) => {
-          const section = layer.closest<HTMLElement>("[data-parallax]");
-          if (!section) return;
-          const speed = Number(layer.dataset.speed ?? 0);
-          const isHero = section.hasAttribute("data-hero");
-          const travel = () => section.offsetHeight * speed * (isHero ? 0.6 : 0.35) * (phone ? 0.5 : 1);
-          gsap.fromTo(
-            layer,
-            { y: () => (isHero ? 0 : -travel()) },
-            {
-              y: () => travel(),
-              ease: "none",
-              // scrub: true follows Lenis exactly; a numeric scrub would smooth twice and feel laggy.
-              scrollTrigger: { trigger: section, start: isHero ? "top top" : "top bottom", end: "bottom top", scrub: true, invalidateOnRefresh: true },
-            },
-          );
-        });
-
         const hero = document.querySelector<HTMLElement>("[data-hero]");
         if (hero) {
           // The lotus draws itself and its two lines reach outward, then the title's words rise
           // through their cut line, then the rest follows.
           const ornament = hero.querySelector("[data-ornament]");
           if (ornament) {
-            ornament.querySelectorAll<SVGPathElement>("path").forEach((p, i) => {
+            ornament.querySelectorAll<SVGPathElement>("svg:not([data-spark-svg]) path").forEach((p, i) => {
               const len = p.getTotalLength();
               gsap.fromTo(p, { strokeDasharray: len, strokeDashoffset: len }, { strokeDashoffset: 0, duration: 1.4, ease: "power2.inOut", delay: 0.1 + i * 0.08, onComplete: () => gsap.set(p, { clearProps: "strokeDasharray,strokeDashoffset" }) });
             });
@@ -176,6 +185,7 @@ export function Motion() {
             gsap.fromTo(art, { scale: 1.08 }, { scale: 1, duration: 2.4, ease: "expo.out" });
           }
         }
+        return cancelBelow;
       });
 
       // Desktop: hero layers lean gently toward the pointer, at different depths.

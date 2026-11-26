@@ -6,7 +6,7 @@ import type { IconKey } from "@/lib/types";
  * symbol at its place on the schematic (pos_x / pos_y, 0-100). A concept only: the title block says
  * "proposed" and "not to scale", and nothing here is a surveyed or approved drawing. Static SVG, no JS.
  */
-export type BlueprintArea = { id: string; code: string; name: string; icon: IconKey; x: number; y: number };
+type BlueprintArea = { id: string; code: string; name: string; icon: IconKey; x: number; y: number };
 
 const VW = 1000;
 const VH = 620;

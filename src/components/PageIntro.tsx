@@ -7,7 +7,7 @@ import { TouchSurface } from "./painting/TouchSurface";
 import { Flame, Moon, Ridges, Stars } from "./painting/scenery";
 
 /** One piece of Rishav's art that stands for the page, painted into its night scene. */
-export type IntroArt = "temple" | "hangingDiya" | "lotus" | "feather" | "clayDiya" | "radhaKrishna" | "moon";
+type IntroArt = "temple" | "hangingDiya" | "lotus" | "feather" | "clayDiya" | "radhaKrishna" | "moon";
 
 const HERO_SRCSET = [828, 1280, 1920].map((w) => `/art/hero/radha-krishna-${w}.webp ${w}w`).join(", ");
 
@@ -18,7 +18,7 @@ function Art({ art }: { art: IntroArt }) {
       return (
         // eslint-disable-next-line @next/next/no-img-element -- local art
         <img
-          src="/art/temple-concept.jpg"
+          src="/art/temple-concept.webp"
           alt=""
           width={984}
           height={1040}

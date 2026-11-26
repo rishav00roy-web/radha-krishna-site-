@@ -18,7 +18,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
 
 const FEATURED = [
   { src: "/art/hero/radha-krishna-1920.webp", alt: (d: Dictionary) => d.home.heroArt },
-  { src: "/art/temple-concept.jpg", alt: (d: Dictionary) => d.home.templeArt },
+  { src: "/art/temple-concept.webp", alt: (d: Dictionary) => d.home.templeArt },
   { src: "/art/hanging-diya.jpg", alt: (d: Dictionary) => d.gallery.featured[2].title },
   { src: "/art/peacock-feather.jpg", alt: (d: Dictionary) => d.gallery.featured[3].title },
 ];
