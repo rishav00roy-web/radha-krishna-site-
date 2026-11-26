@@ -14,8 +14,8 @@ const links: RouteKey[] = [
   "masterPlan", "journey", "gallery", "location", "organisation",
 ];
 
-// Until the founding membership page exists, the highlighted link opens the contact page.
-const FOUNDING_ROUTE: RouteKey = "contact";
+// The highlighted link: people who give land for the temple become its founding members.
+const FOUNDING_ROUTE: RouteKey = "foundingMember";
 
 /**
  * The whole site navigation: one lotus button at the bottom centre.
