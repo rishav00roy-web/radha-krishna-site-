@@ -2,7 +2,7 @@
 
 The official website of the proposed Shri Shri Radha-Krishna Prem Mandir at Dorikamari Gaon, near the Kakodunga River, Jorhat, Assam. The project is implemented by Gousamuh Gramaya Foundation (GGF).
 
-It is a static site with no database, no login and no server-side forms. It is available in English, Assamese and Hindi.
+It is a static site with no database, no login and no server-side forms. It is available in English, Assamese and Hindi (`/en`, `/as`, `/hi`; a path without a language goes to English).
 
 ## Run it
 
@@ -13,7 +13,13 @@ npm run build && npm start
 npm run typecheck && npm run lint
 ```
 
-It deploys to any Next.js host, such as Vercel or Netlify, with no environment variables. Set `NEXT_PUBLIC_SITE_URL` to the live domain once there is one.
+It is hosted on Hostinger as a Node.js web app (Business or Cloud plan), which builds it from this repository. It also deploys to any other Next.js host.
+
+### The site address
+
+The live site is **https://rkpm.org**. That address is written in `src/lib/seo.ts`, and the site uses it in the links it gives Google (canonical and language links) and in the preview shown when a page is shared on WhatsApp or Facebook. No setting is needed on Hostinger.
+
+If the domain ever changes, change it in `src/lib/seo.ts`. To run a test copy at another address, set the environment variable `NEXT_PUBLIC_SITE_URL` there instead (on Hostinger: hPanel → Websites → the site → Environment variables → Add, then save and redeploy; the value is fixed when the site is built).
 
 ## Editing content
 
@@ -24,7 +30,9 @@ All content is in code. Edit it and redeploy.
 | Page text in all three languages | `src/i18n/dictionaries/{en,as,hi}.ts` |
 | Facilities (A–H), milestones, gallery, events, announcements, project updates | `src/lib/content.ts` |
 | Organisation details, contact email, WhatsApp number | `organisation` in `src/lib/content.ts` |
-| Photos and their photographer credits | `photos` in `src/lib/content.ts` |
+| Bank account shown on the Donate page | `organisation.bank` in `src/lib/content.ts` |
+| Photos and their photographer credits | `photos` and `journeyPhotos` in `src/lib/content.ts` |
+| Painted artwork | `public/art/` |
 
 ### Honesty rules (from the brief)
 
@@ -37,14 +45,26 @@ All content is in code. Edit it and redeploy.
 
 Photos come from [Unsplash](https://unsplash.com/license). They are illustrative and are not of this temple, so every photo on the site carries that caption and credits its photographer. To swap one, change its `id` (the `photo-…` part of an `images.unsplash.com` URL), `alt` and `credit`. When official renders and site photos arrive, put them in `public/` and replace the stock photos.
 
+### Artwork
+
+The painted pieces are image files in `public/art/`. They include the Radha-Krishna hero (`hero/`, in several sizes and formats), the temple concept, the foliage band, the diyas, lotus and peacock feather, the carved relief, and the ghat scene in the footer. The site labels the hero as artwork, not a photograph of the temple's deities, and the temple concept as an artistic concept, not the final design. Keep those labels when replacing either.
+
+The scenery layers (hills, stars, moon, birds), the campus blueprint and the icons are SVG drawn in code (`src/components/painting/`, `src/components/Icon.tsx`).
+
 ## Contact and donation forms
 
-Neither form sends anything from the website. Each one checks the input and then opens the visitor's email app, addressed to `organisation.email`, with the details filled in. The visitor presses send. A "Send on WhatsApp" button does the same through WhatsApp to `organisation.whatsapp`.
+Neither form sends anything from the website. Each one checks the input and then opens the visitor's email app, addressed to `organisation.email` (gokulgramaya@gmail.com), with the details filled in. The visitor presses send. A "Send on WhatsApp" button does the same through WhatsApp to `organisation.whatsapp`.
 
-The donation form asks for the amount, purpose, name and phone number. It takes no payment. The foundation contacts the donor to complete the donation.
+If `organisation.email` is set to `null`, the forms offer WhatsApp only and no email address is shown on the site.
 
-**`organisation.email` is a placeholder (`info@example.org`). Replace it with the foundation's real address before launch.** If it is set to `null`, the forms fall back to WhatsApp only.
+The donation form asks how the visitor is giving (bank transfer or cash), the amount, purpose, name and phone number, with an optional transaction reference (UTR) and note. It takes no payment. The foundation contacts the donor to acknowledge the gift.
+
+## Component showcase (`/showcase`)
+
+`/showcase` is a private page for trying out the free [Annnimate](https://annnimate.com) Starter Pack components (`src/showcase/`) with the mandir's artwork. It is not linked from the site and is hidden from search engines, but anyone who types the address can open it. Remove `src/app/showcase/` and `src/showcase/` once the choice of components is done; the `three` package is used only by the showcase.
+
+The components the site actually uses are copied into `src/components/anm/` (curtain slider, accordion) and adapted.
 
 ## Stack
 
-Next.js 15 (App Router, statically generated), React 19, TypeScript, Tailwind CSS, GSAP with ScrollTrigger, and Lenis. The icons and the temple illustration are original SVG.
+Next.js 15 (App Router, statically generated), React 19, TypeScript, Tailwind CSS, GSAP with ScrollTrigger, and Lenis.

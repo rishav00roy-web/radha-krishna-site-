@@ -199,8 +199,9 @@ export const organisation: Organisation = {
   darpan: "AS/2025/0586563",
   address: "Horucharai Ali, Pulibor, P.O. Probotia, Jorhat – 785006, Assam, India",
   phone: "9864522165",
-  // PLACEHOLDER: replace with the foundation's real address. Contact and donation forms send to it.
-  email: "info@example.org",
+  // The foundation's email, from its donation poster. Contact and donation forms send to it.
+  // Set it to null to make the forms WhatsApp-only and hide the address.
+  email: "gokulgramaya@gmail.com",
   whatsapp: "919864522165",
   leader_name: "Polash Jyoti Bora",
   leader_title: "Chief Executive Officer",
