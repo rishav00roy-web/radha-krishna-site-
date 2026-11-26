@@ -285,7 +285,7 @@ export const en = {
     faq: [
       { q: "Is any payment taken on this website?", a: "No. This page only shows how to give. Money goes straight to the foundation's bank account, or by hand at its office." },
       { q: "What should I write as the transfer remark?", a: "Your name and the purpose, for example “Gau seva”, so the foundation can recognise your gift." },
-      { q: "How will the foundation know I gave?", a: "Send your name, amount and transaction reference with the form on this page, by email or WhatsApp." },
+      { q: "How will the foundation know I gave?", a: "Send your name, amount and transaction reference with the form on this page." },
       { q: "Who receives the donation?", a: "Gousamuh Gramaya Foundation, a not-for-profit Section 8 company in Jorhat that is implementing the proposed Prem Mandir. The account is in the foundation's name." },
     ],
     name: "Name",
