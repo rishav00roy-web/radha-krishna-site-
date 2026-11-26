@@ -1,6 +1,6 @@
 # Donation sheet: setting it up
 
-This connects rkpm.org to a Google Sheet in the foundation's Google account. Each money donation (from the Donate page) and each land offer (from the "Become a founding partner" page) arrives as a row in the sheet, and the foundation gets an email about it. When someone ticks **Verified**, the donor is emailed a PDF receipt, and the row gets a **Send on WhatsApp** link that sends the same receipt on WhatsApp.
+This connects rkpm.org to a Google Sheet in the foundation's Google account. Each money donation (from the Donate page) and each land offer (from the "Become a founding member" page) arrives as a row in the sheet, and the foundation gets an email about it. When someone ticks **Verified**, the donor is emailed a PDF receipt, and the row gets a **Send on WhatsApp** link that sends the same receipt on WhatsApp.
 
 It takes about 15 minutes and costs nothing.
 
@@ -26,7 +26,7 @@ Sign in to Google as **gokulgramaya@gmail.com**. Receipts are sent from the acco
    - make the receipts folder and save PDFs in Google Drive
    - send email as you (the receipts and the new-entry alerts)
    - run when the sheet is edited (to notice the Verified tick)
-4. Go back to the spreadsheet tab and reload it. It now has two tabs, **Donations** and **Founding partners**, and a **GGF receipts** menu. A **GGF donation receipts** folder appears in Google Drive.
+4. Go back to the spreadsheet tab and reload it. It now has two tabs, **Donations** and **Founding members**, and a **GGF receipts** menu. A **GGF donation receipts** folder appears in Google Drive.
 
 ## 4. Put the sheet online for the website
 
@@ -73,8 +73,8 @@ Delete the test row afterwards. Receipt numbers carry on from the last one used,
 - Don't delete rows that have a receipt number. Write a note instead, so the numbers stay accounted for.
 - Receipt numbers restart at 0001 every April (2026-27, 2027-28 and so on).
 
-**Founding partners (land)**
-- Land offers from the "Become a founding partner" page go to the **Founding partners** tab. There is no receipt, because land is only given through a registered deed.
+**Founding members (land)**
+- Land offers from the "Become a founding member" page go to the **Founding members** tab. There is no receipt, because land is only given through a registered deed.
 - Use **Message on WhatsApp** to contact them. Track progress in **Status**: New, Contacted, Papers checked, Deed registered or Not going ahead.
 
 **Privacy**

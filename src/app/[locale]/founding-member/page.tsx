@@ -15,11 +15,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { locale } = await params;
   if (!isLocale(locale)) return {};
   const d = getDictionary(locale);
-  return pageMetadata(locale, "/founding-partner", d.founding.title, d.founding.intro);
+  return pageMetadata(locale, "/founding-member", d.founding.title, d.founding.intro);
 }
 
-/** People who give land for the temple become its founding partners. They offer the land here. */
-export default async function FoundingPartnerPage({ params }: Props) {
+/** People who give land for the temple become its founding members. They offer the land here. */
+export default async function FoundingMemberPage({ params }: Props) {
   const locale = (await params).locale as Locale;
   const d = getDictionary(locale);
   const org = getOrganisation();

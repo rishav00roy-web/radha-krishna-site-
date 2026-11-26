@@ -13,7 +13,7 @@ export const routes = {
   organisation: "/organisation",
   contact: "/contact",
   donate: "/donate",
-  foundingPartner: "/founding-partner",
+  foundingMember: "/founding-member",
 } as const;
 export type RouteKey = keyof typeof routes;
 

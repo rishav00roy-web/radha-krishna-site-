@@ -14,8 +14,8 @@ const links: RouteKey[] = [
   "masterPlan", "journey", "gallery", "location", "organisation",
 ];
 
-// The highlighted link: people who give land for the temple become its founding partners.
-const FOUNDING_ROUTE: RouteKey = "foundingPartner";
+// The highlighted link: people who give land for the temple become its founding members.
+const FOUNDING_ROUTE: RouteKey = "foundingMember";
 
 /**
  * The whole site navigation: one lotus button at the bottom centre.

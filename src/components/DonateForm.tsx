@@ -72,7 +72,7 @@ export function DonateForm({
   whatsapp,
   sheetUrl,
 }: {
-  /** "money" on the Donate page; "land" on the founding partner page. */
+  /** "money" on the Donate page; "land" on the founding member page. */
   kind: "money" | "land";
   /** The Donate page's text in the visitor's language. */
   g: D;

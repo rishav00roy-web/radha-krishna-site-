@@ -7,8 +7,8 @@ import { BrandMark } from "./BrandMark";
 import { Embers } from "./Embers";
 import { TouchSurface } from "./painting/TouchSurface";
 
-// People who give land for the temple become its founding partners.
-const FOUNDING_ROUTE: RouteKey = "foundingPartner";
+// People who give land for the temple become its founding members.
+const FOUNDING_ROUTE: RouteKey = "foundingMember";
 
 const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities", "environment", "journey", "gallery", "location", "organisation", "contact", "donate"];
 
