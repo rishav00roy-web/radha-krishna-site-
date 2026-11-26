@@ -2,7 +2,7 @@
 
 The official website of the proposed Shri Shri Radha-Krishna Prem Mandir at Dorikamari Gaon, near the Kakodunga River, Jorhat, Assam. The project is implemented by Gousamuh Gramaya Foundation (GGF).
 
-It is a static site with no database and no login. The only thing it sends anywhere is the Donate form, to the foundation's Google Sheet (see below). It is available in English, Assamese and Hindi (`/en`, `/as`, `/hi`; a path without a language goes to English).
+It is a static site with no database and no login. The only things it sends anywhere are the Donate and founding partner forms, to the foundation's Google Sheet (see below). It is available in English, Assamese and Hindi (`/en`, `/as`, `/hi`; a path without a language goes to English).
 
 ## Run it
 
@@ -56,21 +56,21 @@ The scenery layers (hills, stars, moon, birds), the campus blueprint and the ico
 
 The contact form sends nothing from the website. It checks the input and then opens the visitor's email app, addressed to `organisation.email` (gokulgramaya@gmail.com), with the details filled in. The visitor presses send. A "Send on WhatsApp" button does the same through WhatsApp to `organisation.whatsapp`. If `organisation.email` is set to `null`, the form offers WhatsApp only and no email address is shown on the site.
 
-## Donate form and receipts
+## Donate and founding partner forms
 
-The Donate form asks what the visitor is giving:
-- **Money:** bank transfer or cash, the amount, purpose, transfer date, bank or app, and UTR.
-- **Land:** the owner as in the land records, district, revenue circle, mouza, village, dag and patta numbers, patta type, area in bigha, katha and lessa, land type, papers held, and any loan or dispute.
+**Donate page (money):** bank transfer or cash, the amount, purpose, transfer date, bank or app, and UTR.
 
-Both kinds also ask for the donor's name, father's or spouse's name, organisation, phone, email, full address and PAN, and for consent to keep the details. No payment is taken on the website.
+**Become a founding partner page (land):** people who give land for the temple become its founding partners. The form asks for the owner as in the land records, district, revenue circle, mouza, village, dag and patta numbers, patta type, area in bigha, katha and lessa, land type, papers held, and any loan or dispute. The menu's highlighted link and the footer button lead here.
 
-The form sends the details to a Google Sheet in the foundation's account, run by the script in [`google-sheet/Code.gs`](google-sheet/Code.gs):
-- Money goes to the **Donations** tab and land to **Land offers**, and the foundation is emailed about each new entry.
+Both forms also ask for the donor's name, father's or spouse's name, organisation, phone, email, full address and PAN, and for consent to keep the details. Both use `src/components/DonateForm.tsx`. No payment is taken on the website.
+
+The forms send the details to a Google Sheet in the foundation's account, run by the script in [`google-sheet/Code.gs`](google-sheet/Code.gs):
+- Money goes to the **Donations** tab and land to **Founding partners**, and the foundation is emailed about each new entry.
 - When someone at the foundation has checked the bank statement (or counted the cash), they tick **Verified**. The donor is then emailed a numbered PDF receipt (GGF/2026-27/0001 and so on), and the row gets a one-tap link to send the same receipt on WhatsApp.
-- Land offers get no receipt, because a gift of land is completed only by a registered deed.
+- Founding partners get no receipt, because a gift of land is completed only by a registered deed.
 - The foundation is not registered under Section 80G, and the receipt says so.
 
-To set it up, follow [`google-sheet/SETUP.md`](google-sheet/SETUP.md), then put the web-app address in `donationSheetUrl` in `src/lib/content.ts`. Until it is set, the Donate form works like the contact form: it opens email or WhatsApp with every detail filled in.
+To set it up, follow [`google-sheet/SETUP.md`](google-sheet/SETUP.md), then put the web-app address in `donationSheetUrl` in `src/lib/content.ts`. Until it is set, both forms work like the contact form: they open email or WhatsApp with every detail filled in.
 
 ## Component showcase (`/showcase`)
 

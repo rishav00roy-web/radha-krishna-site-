@@ -7,8 +7,8 @@ import { BrandMark } from "./BrandMark";
 import { Embers } from "./Embers";
 import { TouchSurface } from "./painting/TouchSurface";
 
-// Until the founding membership page exists, the call opens the contact page (same as Home).
-const FOUNDING_ROUTE: RouteKey = "contact";
+// People who give land for the temple become its founding partners.
+const FOUNDING_ROUTE: RouteKey = "foundingPartner";
 
 const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities", "environment", "journey", "gallery", "location", "organisation", "contact", "donate"];
 

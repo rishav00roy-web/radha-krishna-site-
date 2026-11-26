@@ -64,6 +64,7 @@ const ERROR_ORDER = [
 ] as const;
 
 export function DonateForm({
+  kind,
   g,
   en,
   locale,
@@ -71,6 +72,8 @@ export function DonateForm({
   whatsapp,
   sheetUrl,
 }: {
+  /** "money" on the Donate page; "land" on the founding partner page. */
+  kind: "money" | "land";
   /** The Donate page's text in the visitor's language. */
   g: D;
   /** The same text in English, for the values sent to the foundation. */
@@ -81,7 +84,6 @@ export function DonateForm({
   /** The foundation's Google Sheet web app. Null until it is set up: the form then uses email or WhatsApp. */
   sheetUrl: string | null;
 }) {
-  const [kind, setKind] = useState(0); // 0 money, 1 land
   const [method, setMethod] = useState(0); // 0 bank transfer, 1 cash
   const [choice, setChoice] = useState<string>(String(presets[1]));
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -91,7 +93,7 @@ export function DonateForm({
   const otherRef = useRef<HTMLInputElement>(null);
   const doneRef = useRef<HTMLDivElement>(null);
   const failRef = useRef<HTMLDivElement>(null);
-  const money = kind === 0;
+  const money = kind === "money";
   const bank = money && method === 0;
 
   useEffect(() => {
@@ -146,7 +148,7 @@ export function DonateForm({
     }
 
     const entry: Entry = {
-      kind: en.kinds[kind],
+      kind: en.kinds[money ? 0 : 1],
       name: v("name"), relative: v("relative"), organisation: v("organisation"), mobile, email: v("email"),
       address: v("address"), district: v("district"), state: v("state"), pin: v("pin"), pan,
       note: v("note"),
@@ -221,8 +223,6 @@ export function DonateForm({
           <input name="website" tabIndex={-1} autoComplete="off" />
         </label>
       </div>
-
-      <Choice legend={g.kind} name="kind" options={g.kinds} value={kind} onChange={(i) => { setKind(i); setErrors({}); }} />
 
       {money ? (
         <Section key="money" title={g.giftTitle}>
@@ -454,7 +454,7 @@ function Select({ id, name, label, options, className = "" }: { id: string; name
   );
 }
 
-/** Large radio buttons, as used for "What are you giving?" and "How are you giving?". */
+/** Large radio buttons, as used for "How are you giving?". */
 function Choice({ legend, name, options, value, onChange }: { legend: string; name: string; options: readonly string[]; value: number; onChange: (i: number) => void }) {
   return (
     <fieldset>

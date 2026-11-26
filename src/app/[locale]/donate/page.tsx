@@ -94,7 +94,7 @@ export default async function DonatePage({ params }: Props) {
             <h2 data-reveal className="display-md">{g.formTitle}</h2>
             <p data-reveal className="measure mt-3 text-ink-soft">{g.formBody}</p>
             <div className="mt-8">
-              <DonateForm g={g} en={en.donate} locale={locale} to={org.email} whatsapp={org.whatsapp} sheetUrl={donationSheetUrl} />
+              <DonateForm kind="money" g={g} en={en.donate} locale={locale} to={org.email} whatsapp={org.whatsapp} sheetUrl={donationSheetUrl} />
             </div>
           </div>
           <div className="lg:sticky lg:top-28 lg:self-start" data-no-reveal>

@@ -1,16 +1,17 @@
 /**
  * Gousamuh Gramaya Foundation: donation sheet for rkpm.org
  *
- * 1. The Donate form on rkpm.org sends each money donation or land offer here.
- *    Money goes to the "Donations" tab, land to the "Land offers" tab, and the
- *    foundation gets an email about each new entry.
+ * 1. rkpm.org sends two kinds of entry here, and the foundation gets an email about each:
+ *    money donations from the Donate page go to the "Donations" tab, and land offers
+ *    from the "Become a founding partner" page go to the "Founding partners" tab.
  * 2. When someone at GGF has found the money in the bank statement (or counted the
  *    cash), they tick "Verified" on that row. The script then gives it a receipt
  *    number (GGF/2026-27/0001 and so on, starting again each April), makes a PDF
  *    receipt, saves it in Drive, emails it to the donor, and puts a
  *    "Send on WhatsApp" link in the row. Tap the link to send the receipt on WhatsApp.
- * 3. Land offers get no receipt: a gift of land is completed only by a registered
- *    deed. Use the Status column to keep track, and the WhatsApp link to contact the donor.
+ * 3. Founding partners (people giving land) get no receipt: a gift of land is completed
+ *    only by a registered deed. Use the Status column to keep track, and the WhatsApp
+ *    link to contact them.
  *
  * Set-up steps are in google-sheet/SETUP.md in the website repository.
  * The foundation is not registered under Section 80G, so receipts make no tax claim.
@@ -41,7 +42,7 @@ const CONFIG = {
 };
 
 const MONEY_SHEET = 'Donations';
-const LAND_SHEET = 'Land offers';
+const LAND_SHEET = 'Founding partners';
 const LAND_STATUSES = ['New', 'Contacted', 'Papers checked', 'Deed registered', 'Not going ahead'];
 
 // [field from the website, column heading]. Columns are found by their heading,
@@ -241,14 +242,14 @@ function cellValue_(key, value) {
 function notifyFoundation_(entry) {
   const land = entry.kind === 'Land';
   const subject = land
-    ? 'New land offer on rkpm.org: ' + entry.name + ', ' + entry.village + ' (dag ' + entry.dag + ')'
+    ? 'New founding partner on rkpm.org: ' + entry.name + ' offers land in ' + entry.village + ' (dag ' + entry.dag + ')'
     : 'New donation on rkpm.org: Rs. ' + formatIndian_(entry.amount) + ' from ' + entry.name + ' (' + entry.method + ')';
   const columns = land ? LAND_COLUMNS : MONEY_COLUMNS;
   const lines = columns
     .filter(function (c) { return entry[c[0]] !== undefined && entry[c[0]] !== ''; })
     .map(function (c) { return c[1] + ': ' + entry[c[0]]; });
   const next = land
-    ? 'Contact the donor about the land. Keep track with the Status column in the "' + LAND_SHEET + '" tab.'
+    ? 'Contact them about the land. Keep track with the Status column in the "' + LAND_SHEET + '" tab.'
     : 'When the money is in the bank (or the cash is counted), tick "Verified" on this row in the "' +
       MONEY_SHEET + '" tab. The receipt then goes to the donor.';
   MailApp.sendEmail({
@@ -548,8 +549,8 @@ function whatsappReceipt_(e) {
 }
 
 function landGreeting_(e) {
-  return 'Namaskar ' + e.name + ', this is ' + CONFIG.orgName + ' about the land you offered for the ' +
-    CONFIG.project + ' (dag ' + e.dag + ', ' + e.village + '). Thank you. ';
+  return 'Namaskar ' + e.name + ', this is ' + CONFIG.orgName + '. Thank you for offering land as a founding partner of the ' +
+    CONFIG.project + ' (dag ' + e.dag + ', ' + e.village + '). ';
 }
 
 function whatsappUrl_(mobile, text) {
