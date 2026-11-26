@@ -322,26 +322,6 @@
 .flame { animation: flame 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
 @keyframes flame { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(0.94, 1.08); } 70% { transform: scale(1.04, 0.96); } }
 
-/* A lamp on the master-plan panorama: a warm point with a soft halo. */
-.pano-lamp {
-  position: relative;
-  display: block;
-  width: 10px;
-  height: 10px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, #fff3d6 0%, #f0c27a 45%, #c58b43 100%);
-  box-shadow: 0 0 0 4px rgb(197 139 67 / 0.18), 0 0 22px 8px rgb(240 194 122 / 0.35);
-}
-.pano-lamp::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 100%;
-  width: 1px;
-  height: 14px;
-  background: linear-gradient(180deg, rgb(240 194 122 / 0.6), transparent);
-}
-
 [data-offscreen] .twinkle, [data-offscreen] .bird-drift, [data-offscreen] .flame, [data-offscreen] .scroll-thread > span { animation-play-state: paused; }
 
 @media (prefers-reduced-motion: reduce) {
@@ -399,7 +379,5 @@ main > .section.on-dark:last-child::after { display: none; }
 }
 main:has(> .section.on-dark:last-child) + footer .footer-ridge,
 main:has(> .painting) + footer .footer-ridge { display: none; }
-main:has(> .section.on-dark:last-child) + footer > div,
-main:has(> .painting) + footer > div { border-top: 0; }
 /* The section after a night band starts below its mist, so the mist never sits on its first lines. */
 .section.on-dark + .section { padding-top: calc(clamp(110px, 12vw, 170px) + clamp(1.5rem, 3vw, 3rem)); }

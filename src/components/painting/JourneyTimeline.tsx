@@ -12,7 +12,11 @@ import "./journey-timeline.css";
  * Without JS or with reduced motion everything shows and the line is full.
  * Stages stay "Planned" until the foundation verifies them (src/lib/content.ts).
  */
-export type JourneyStage = { num: string; title: string; body?: string; status: string; done: boolean };
+export type JourneyStage = {
+  num: string; title: string; body?: string; status: string; done: boolean;
+  /** An illustrative photo for the stage (Unsplash), with its credit. Falls back to Rishav's art. */
+  photo?: { src: string; srcSet: string; alt: string; credit: string; creditHref: string; siteHref: string };
+};
 
 // Rishav's art, one per stage, cycling. "cover" fills the frame; cut-outs sit on a moonlit backdrop.
 const ART = [
@@ -92,10 +96,20 @@ export function JourneyTimeline({ stages, label }: { stages: JourneyStage[]; lab
                 {s.body ? <p className="tl-body">{s.body}</p> : null}
               </div>
               <span aria-hidden data-tl-dot className="tl-dot"><span /></span>
-              <figure aria-hidden className={`tl-art tl-art--${art.fit}`}>
-                {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
-                <img src={art.src} alt="" width={art.w} height={art.h} loading="lazy" decoding="async" style={"pos" in art ? { objectPosition: art.pos } : undefined} />
-              </figure>
+              {s.photo ? (
+                <figure className="tl-art tl-art--photo">
+                  {/* eslint-disable-next-line @next/next/no-img-element -- Unsplash serves pre-sized images */}
+                  <img src={s.photo.src} srcSet={s.photo.srcSet} sizes="(min-width: 768px) 22rem, 90vw" alt={s.photo.alt} loading="lazy" decoding="async" />
+                  <figcaption className="tl-credit">
+                    <a href={s.photo.creditHref} target="_blank" rel="noopener noreferrer">{s.photo.credit}</a> · <a href={s.photo.siteHref} target="_blank" rel="noopener noreferrer">Unsplash</a>
+                  </figcaption>
+                </figure>
+              ) : (
+                <figure aria-hidden className={`tl-art tl-art--${art.fit}`}>
+                  {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
+                  <img src={art.src} alt="" width={art.w} height={art.h} loading="lazy" decoding="async" style={"pos" in art ? { objectPosition: art.pos } : undefined} />
+                </figure>
+              )}
             </li>
           );
         })}
