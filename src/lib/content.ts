@@ -215,6 +215,14 @@ export const organisation: Organisation = {
   },
 };
 
+/**
+ * The foundation's donation sheet: the web-app address of its Google Apps Script, ending in /exec.
+ * See google-sheet/SETUP.md. With an address here, the Donate form saves each gift to the sheet,
+ * and the receipt goes out once the foundation ticks "Verified". While it is null, the form opens
+ * the visitor's email app or WhatsApp with the details filled in instead.
+ */
+export const donationSheetUrl: string | null = null;
+
 // Events and announcements: add entries here when dates are confirmed.
 // Example: { id: "e-1", title: L("…", "…", "…"), description: L("", "", ""), starts_at: "2027-08-15T18:00:00+05:30", ends_at: null, venue: null }
 export const events: EventItem[] = [];

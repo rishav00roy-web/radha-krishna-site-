@@ -2,7 +2,7 @@
 
 The official website of the proposed Shri Shri Radha-Krishna Prem Mandir at Dorikamari Gaon, near the Kakodunga River, Jorhat, Assam. The project is implemented by Gousamuh Gramaya Foundation (GGF).
 
-It is a static site with no database, no login and no server-side forms. It is available in English, Assamese and Hindi (`/en`, `/as`, `/hi`; a path without a language goes to English).
+It is a static site with no database and no login. The only thing it sends anywhere is the Donate form, to the foundation's Google Sheet (see below). It is available in English, Assamese and Hindi (`/en`, `/as`, `/hi`; a path without a language goes to English).
 
 ## Run it
 
@@ -31,6 +31,7 @@ All content is in code. Edit it and redeploy.
 | Facilities (A–H), milestones, gallery, events, announcements, project updates | `src/lib/content.ts` |
 | Organisation details, contact email, WhatsApp number | `organisation` in `src/lib/content.ts` |
 | Bank account shown on the Donate page | `organisation.bank` in `src/lib/content.ts` |
+| Donation sheet address (Google Apps Script web app) | `donationSheetUrl` in `src/lib/content.ts` |
 | Photos and their photographer credits | `photos` and `journeyPhotos` in `src/lib/content.ts` |
 | Painted artwork | `public/art/` |
 
@@ -51,13 +52,25 @@ The painted pieces are image files in `public/art/`. They include the Radha-Kris
 
 The scenery layers (hills, stars, moon, birds), the campus blueprint and the icons are SVG drawn in code (`src/components/painting/`, `src/components/Icon.tsx`).
 
-## Contact and donation forms
+## Contact form
 
-Neither form sends anything from the website. Each one checks the input and then opens the visitor's email app, addressed to `organisation.email` (gokulgramaya@gmail.com), with the details filled in. The visitor presses send. A "Send on WhatsApp" button does the same through WhatsApp to `organisation.whatsapp`.
+The contact form sends nothing from the website. It checks the input and then opens the visitor's email app, addressed to `organisation.email` (gokulgramaya@gmail.com), with the details filled in. The visitor presses send. A "Send on WhatsApp" button does the same through WhatsApp to `organisation.whatsapp`. If `organisation.email` is set to `null`, the form offers WhatsApp only and no email address is shown on the site.
 
-If `organisation.email` is set to `null`, the forms offer WhatsApp only and no email address is shown on the site.
+## Donate form and receipts
 
-The donation form asks how the visitor is giving (bank transfer or cash), the amount, purpose, name and phone number, with an optional transaction reference (UTR) and note. It takes no payment. The foundation contacts the donor to acknowledge the gift.
+The Donate form asks what the visitor is giving:
+- **Money:** bank transfer or cash, the amount, purpose, transfer date, bank or app, and UTR.
+- **Land:** the owner as in the land records, district, revenue circle, mouza, village, dag and patta numbers, patta type, area in bigha, katha and lessa, land type, papers held, and any loan or dispute.
+
+Both kinds also ask for the donor's name, father's or spouse's name, organisation, phone, email, full address and PAN, and for consent to keep the details. No payment is taken on the website.
+
+The form sends the details to a Google Sheet in the foundation's account, run by the script in [`google-sheet/Code.gs`](google-sheet/Code.gs):
+- Money goes to the **Donations** tab and land to **Land offers**, and the foundation is emailed about each new entry.
+- When someone at the foundation has checked the bank statement (or counted the cash), they tick **Verified**. The donor is then emailed a numbered PDF receipt (GGF/2026-27/0001 and so on), and the row gets a one-tap link to send the same receipt on WhatsApp.
+- Land offers get no receipt, because a gift of land is completed only by a registered deed.
+- The foundation is not registered under Section 80G, and the receipt says so.
+
+To set it up, follow [`google-sheet/SETUP.md`](google-sheet/SETUP.md), then put the web-app address in `donationSheetUrl` in `src/lib/content.ts`. Until it is set, the Donate form works like the contact form: it opens email or WhatsApp with every detail filled in.
 
 ## Component showcase (`/showcase`)
 

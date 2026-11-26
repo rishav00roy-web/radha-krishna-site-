@@ -4,6 +4,7 @@ import { getDictionary } from "@/i18n";
 import { en } from "@/i18n/dictionaries/en";
 import { pageMetadata } from "@/lib/seo";
 import { getOrganisation } from "@/lib/data";
+import { donationSheetUrl } from "@/lib/content";
 import { whatsappHref } from "@/lib/compose";
 import { PageIntro } from "@/components/PageIntro";
 import { DonateForm } from "@/components/DonateForm";
@@ -93,17 +94,7 @@ export default async function DonatePage({ params }: Props) {
             <h2 data-reveal className="display-md">{g.formTitle}</h2>
             <p data-reveal className="measure mt-3 text-ink-soft">{g.formBody}</p>
             <div className="mt-8">
-              <DonateForm
-                to={org.email}
-                whatsapp={org.whatsapp}
-                purposes={g.purposes.map((label, i) => ({ label, value: en.donate.purposes[i] }))}
-                strings={{
-                  name: g.name, mobile: g.mobile, amount: g.amount, other: g.other, otherLabel: g.otherLabel, purpose: g.purpose,
-                  note: g.note, sendEmail: g.sendEmail, sendWhatsApp: g.sendWhatsApp, howEmail: g.howEmail, howWhatsApp: g.howWhatsApp,
-                  required: g.required, invalidMobile: g.invalidMobile, invalidAmount: g.invalidAmount,
-                  method: g.method, methods: g.methods, reference: g.reference, referenceHint: g.referenceHint,
-                }}
-              />
+              <DonateForm g={g} en={en.donate} locale={locale} to={org.email} whatsapp={org.whatsapp} sheetUrl={donationSheetUrl} />
             </div>
           </div>
           <div className="lg:sticky lg:top-28 lg:self-start" data-no-reveal>
