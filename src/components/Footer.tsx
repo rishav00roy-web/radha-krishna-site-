@@ -20,7 +20,6 @@ export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary
       <div className="relative">
         <picture>
           <source media="(max-width: 767px)" srcSet="/art/footer/ghat-tall-720.webp 720w, /art/footer/ghat-tall-1080.webp 1080w" sizes="100vw" />
-          {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img
             src="/art/footer/ghat-wide-1600.webp"
             srcSet="/art/footer/ghat-wide-1600.webp 1600w, /art/footer/ghat-wide-2400.webp 2400w"
