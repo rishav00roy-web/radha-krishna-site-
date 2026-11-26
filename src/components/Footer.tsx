@@ -6,47 +6,48 @@ import { href, type RouteKey } from "@/lib/routes";
 import { BrandMark } from "./BrandMark";
 import { Embers } from "./Embers";
 import { TouchSurface } from "./painting/TouchSurface";
-import { Stars } from "./painting/scenery";
 
 // Until the founding membership page exists, the call opens the contact page (same as Home).
 const FOUNDING_ROUTE: RouteKey = "contact";
-const HERO_SRCSET = [828, 1280, 1920].map((w) => `/art/hero/radha-krishna-${w}.webp ${w}w`).join(", ");
 
 const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities", "environment", "journey", "gallery", "location", "organisation", "contact", "donate"];
 
 export function Footer({ locale, dict, org }: { locale: Locale; dict: Dictionary; org: Organisation }) {
   return (
-    <footer className="on-dark relative isolate overflow-x-clip bg-[linear-gradient(180deg,#101b29_0%,#0d1622_55%,#0b131d_100%)]">
+    <footer className="on-dark relative isolate overflow-x-clip bg-[linear-gradient(180deg,#101b29_0%,#0a1424_40%,#08101c_100%)]">
       <div aria-hidden className="footer-ridge" />
-      {/* A second hero: every page closes on the night scene, Radha-Krishna in the moonlight, and the invitation. */}
-      <Stars className="absolute inset-x-0 top-0 h-[70%] w-full opacity-70" count={80} seed={31} />
-      <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-[62svh] overflow-hidden opacity-45 lg:left-auto lg:h-[100svh] lg:w-[58%] lg:opacity-80">
-        {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
-        <img
-          src="/art/hero/radha-krishna-1280.webp"
-          srcSet={HERO_SRCSET}
-          sizes="(min-width: 1024px) 58vw, 100vw"
-          alt=""
-          width={1920}
-          height={1298}
-          loading="lazy"
-          decoding="async"
-          className="h-full w-full object-cover object-[50%_25%] [filter:brightness(0.7)_saturate(0.85)]"
-          style={{ maskImage: "radial-gradient(70% 70% at 60% 45%, #000 30%, transparent 78%), linear-gradient(180deg, transparent 0%, #000 22%)", maskComposite: "intersect", WebkitMaskComposite: "source-in" }}
-        />
-      </div>
-      <TouchSurface />
-      <Embers className="absolute inset-0 h-full w-full" density={0.3} />
+      {/* A second hero: every page closes at the temple ghat by night (Rishav's art), with the invitation. */}
+      <div className="relative">
+        <picture>
+          <source media="(max-width: 767px)" srcSet="/art/footer/ghat-tall-720.webp 720w, /art/footer/ghat-tall-1080.webp 1080w" sizes="100vw" />
+          {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
+          <img
+            src="/art/footer/ghat-wide-1600.webp"
+            srcSet="/art/footer/ghat-wide-1600.webp 1600w, /art/footer/ghat-wide-2400.webp 2400w"
+            sizes="100vw"
+            alt=""
+            aria-hidden
+            width={1600}
+            height={679}
+            loading="lazy"
+            decoding="async"
+            className="pointer-events-none absolute inset-0 h-full w-full object-cover object-[60%_0%] md:object-[85%_50%]"
+            style={{ maskImage: "linear-gradient(180deg, transparent 0%, #000 12%, #000 82%, transparent 100%)" }}
+          />
+        </picture>
+        <TouchSurface />
+        <Embers className="absolute inset-0 h-full w-full" density={0.25} />
 
-      <div className="container-x relative z-10 flex min-h-[86svh] flex-col justify-end pb-16 pt-[34svh] lg:justify-center lg:pb-24 lg:pt-24">
-        <div className="max-w-[32rem] text-center lg:ml-[4%]">
-          <BrandMark size={58} className="mx-auto text-[#e2c486]" />
-          <p className="mt-4 font-display text-lg italic text-gold-pale">{dict.meta.siteName}</p>
-          <h2 data-reveal className="display-xl mt-3 text-balance [text-shadow:0_2px_18px_rgb(0_0_0/0.45)]">{dict.home.visitTitle}</h2>
-          <p data-reveal className="mx-auto mt-5 max-w-[34ch] text-lg text-forest-soft">{dict.home.visitBody}</p>
-          <div data-reveal className="mt-8 flex flex-wrap justify-center gap-3">
-            <Link href={href(locale, FOUNDING_ROUTE)} className="btn btn-primary">{dict.nav.founding}</Link>
-            <Link href={href(locale, "donate")} className="btn btn-quiet bg-[rgb(16_27_41/0.45)] backdrop-blur-sm">{dict.nav.donate}</Link>
+        <div className="container-x relative z-10 flex min-h-[96svh] flex-col justify-end pb-14 pt-[56svh] md:min-h-[86svh] lg:justify-center lg:pb-24 lg:pt-24">
+          <div className="max-w-[32rem] text-center md:text-left lg:ml-[2%]">
+            <BrandMark size={58} className="mx-auto text-[#e2c486] md:mx-0" />
+            <p className="mt-4 font-display text-lg italic text-gold-pale">{dict.meta.siteName}</p>
+            <h2 data-reveal className="display-xl mt-3 text-balance [text-shadow:0_2px_18px_rgb(0_0_0/0.5)]">{dict.home.visitTitle}</h2>
+            <p data-reveal className="mt-5 max-w-[34ch] text-lg text-forest-soft max-md:mx-auto">{dict.home.visitBody}</p>
+            <div data-reveal className="mt-8 flex flex-wrap justify-center gap-3 md:justify-start">
+              <Link href={href(locale, FOUNDING_ROUTE)} className="btn btn-primary">{dict.nav.founding}</Link>
+              <Link href={href(locale, "donate")} className="btn btn-quiet bg-[rgb(16_27_41/0.45)] backdrop-blur-sm">{dict.nav.donate}</Link>
+            </div>
           </div>
         </div>
       </div>
