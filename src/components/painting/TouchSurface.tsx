@@ -110,9 +110,10 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
     // The relief is soft, so 1x is enough on every screen; the reveal mask is soft too and runs at 1/4.
     const dpr = 1;
     const MS = 0.25;
-    const LIFE = 2600; // ms a touched spot takes to sink back
+    const LIFE = 1800; // ms a touched spot takes to sink back
+    const TAU = 300; // fade time constant (ms); time based, so slow phones fade as fast as fast laptops
     const cell = coarse ? 130 : 175;
-    const radius = coarse ? 120 : 170;
+    const radius = coarse ? 72 : 92; // a small, soft pool of light around the cursor or finger
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -134,6 +135,8 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
     let W = 0, H = 0;
     let raf = 0;
     let lastInput = 0;
+    let lastFrame = 0;
+    let prev: [number, number, number, number] | null = null; // last frame's dirty rectangle
     let last: { x: number; y: number } | null = null;
     const queue: { x: number; y: number }[] = [];
     const recent: { x: number; y: number; t: number }[] = []; // drives the dirty rectangle
@@ -170,8 +173,8 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
     const bctx = brush.getContext("2d");
     if (bctx) {
       const g = bctx.createRadialGradient(br, br, 0, br, br, br);
-      g.addColorStop(0, "rgba(0,0,0,0.5)");
-      g.addColorStop(0.55, "rgba(0,0,0,0.24)");
+      g.addColorStop(0, "rgba(0,0,0,0.42)");
+      g.addColorStop(0.5, "rgba(0,0,0,0.16)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       bctx.fillStyle = g;
       bctx.fillRect(0, 0, br * 2, br * 2);
@@ -183,6 +186,8 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
     const frame = (now: number) => {
       raf = 0;
       if (!pattern || !mask || !mctx) return;
+      const dt = lastFrame ? Math.min(100, now - lastFrame) : 16;
+      lastFrame = now;
       while (queue.length) {
         const p = queue.shift()!;
         recent.push({ x: p.x, y: p.y, t: now });
@@ -194,6 +199,8 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
       if (!recent.length) {
         ctx.clearRect(0, 0, W, H);
         mctx.clearRect(0, 0, mask.width, mask.height);
+        prev = null;
+        lastFrame = 0;
         return;
       }
       x0 = Math.max(0, Math.floor(x0 - radius - 4)); y0 = Math.max(0, Math.floor(y0 - radius - 4));
@@ -201,8 +208,24 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
       const bw = x1 - x0, bh = y1 - y0;
       if (bw <= 0 || bh <= 0) { if (now - lastInput < LIFE) raf = requestAnimationFrame(frame); return; }
       const mx = Math.floor(x0 * MS), my = Math.floor(y0 * MS), mw = Math.ceil(bw * MS) + 1, mh = Math.ceil(bh * MS) + 1;
+      // Whatever the rectangle just let go of is wiped at once, so no strip of pattern is left behind.
+      if (prev) {
+        const [px, py, pw, ph] = prev;
+        if (px < x0 || py < y0 || px + pw > x1 || py + ph > y1) {
+          for (const [c, k] of [[ctx, 1], [mctx, MS]] as const) {
+            c.save();
+            c.beginPath();
+            c.rect(px * k - 1, py * k - 1, pw * k + 2, ph * k + 2);
+            c.rect(x0 * k, y0 * k, bw * k, bh * k);
+            c.clip("evenodd");
+            c.clearRect(px * k - 1, py * k - 1, pw * k + 2, ph * k + 2);
+            c.restore();
+          }
+        }
+      }
+      prev = [x0, y0, bw, bh];
       mctx.globalCompositeOperation = "destination-out";
-      mctx.fillStyle = "rgba(0,0,0,0.035)";
+      mctx.fillStyle = `rgba(0,0,0,${Math.max(0.08, 1 - Math.exp(-dt / TAU)).toFixed(3)})`;
       mctx.fillRect(mx, my, mw, mh);
       mctx.globalCompositeOperation = "source-over";
       for (const p of recent) if (p.t === now) stamp(p.x, p.y);
@@ -220,6 +243,8 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
         ctx.clearRect(0, 0, W, H);
         mctx.clearRect(0, 0, mask.width, mask.height);
         recent.length = 0;
+        prev = null;
+        lastFrame = 0;
       }
     };
 
@@ -272,5 +297,6 @@ export function TouchSurface({ className = "", tone = "dark" }: { className?: st
     };
   }, [tone]);
 
-  return <canvas ref={ref} aria-hidden className={`pointer-events-none absolute inset-x-0 top-0 w-full ${className}`} />;
+  // Kept low so the carving stays a whisper under the words.
+  return <canvas ref={ref} aria-hidden style={{ opacity: tone === "light" ? 0.5 : 0.55 }} className={`pointer-events-none absolute inset-x-0 top-0 w-full ${className}`} />;
 }

@@ -44,6 +44,18 @@ export const photos = {
 } satisfies Record<string, Photo>;
 export type PhotoKey = keyof typeof photos;
 
+/** Illustrative Unsplash photos for the eight journey stages, in order. Not of this project. */
+export const journeyPhotos: Photo[] = [
+  { id: "photo-1763575648374-4aa2da800fac", credit: credit("Kwami Fattah Al Sissi", "kwami_heude_50"), alt: L("Hands sketching a design in a notebook", "নোটবুকত ডিজাইন আঁকি থকা হাত", "नोटबुक में डिज़ाइन का रेखाचित्र बनाते हाथ") },
+  { id: "photo-1624702331407-fddcb819d904", credit: credit("Narayan Adhikary", "narayan7"), alt: L("Green land under a cloudy sky in Assam", "অসমত ডাৱৰীয়া আকাশৰ তলত সেউজ মাটি", "असम में बादलों भरे आकाश के नीचे हरी भूमि") },
+  { id: "photo-1781888688940-5730c3fd5baf", credit: credit("Jonathan Borba", "jonathanborba"), alt: L("Architectural drawings on a desk", "মেজত স্থাপত্যৰ নক্সা", "मेज़ पर स्थापत्य नक्शे") },
+  { id: "photo-1763729805496-b5dbf7f00c79", credit: credit("Jakub Żerdzicki", "jakubzerdzicki"), alt: L("A hand signing a document", "নথিত চহী কৰি থকা হাত", "दस्तावेज़ पर हस्ताक्षर करता हाथ") },
+  { id: "photo-1746003870948-d48c87d8d694", credit: credit("Fahri Maulana", "fahrimaul"), alt: L("Workers on a construction site", "নিৰ্মাণস্থলীত শ্ৰমিক", "निर्माण स्थल पर कामगार") },
+  { id: "photo-1766937545904-8cabd8e6c7a9", credit: credit("Suhas Hanjar", "suhashanjar"), alt: L("A carved stone temple pillar", "খোদিত শিলৰ মন্দিৰ-স্তম্ভ", "नक्काशीदार पत्थर का मंदिर स्तंभ") },
+  { id: "photo-1542601906990-b4d3fb778b09", credit: credit("Noah Buscher", "noahbuscher"), alt: L("Hands holding a seedling in soil", "মাটিত পুলি ধৰি থকা হাত", "मिट्टी में पौधा थामे हाथ") },
+  { id: "photo-1764173517657-0e7d94d94a4b", credit: credit("Pratyush Mishra", "devpratyush"), alt: L("An evening aarti with lamps", "চাকিৰে সন্ধিয়াৰ আৰতি", "दीपों के साथ संध्या आरती") },
+];
+
 export const facilities: Facility[] = [
   {
     id: "f-a", code: "A", slug: "main-temple", icon: "temple", status: "proposed", pos_x: 50, pos_y: 46, photo: photos.whiteMarble, sort: 1,

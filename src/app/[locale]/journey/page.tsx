@@ -7,6 +7,8 @@ import { getMilestones, getUpdates } from "@/lib/data";
 import { formatDate } from "@/lib/view";
 import { PageIntro } from "@/components/PageIntro";
 import { JourneyTimeline } from "@/components/painting/JourneyTimeline";
+import { journeyPhotos } from "@/lib/content";
+import { stagePhoto } from "@/lib/photo";
 
 type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -33,11 +35,11 @@ export default async function JourneyPage({ params }: Props) {
           <div className="mx-auto max-w-5xl">
             <JourneyTimeline
               label={d.journey.title}
-              stages={milestones.map((m) => {
+              stages={milestones.map((m, i) => {
                 const status = m.verified ? m.status : "planned";
                 const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
                 const verified = m.verified && m.verified_on ? `, ${d.journey.verifiedOn} ${formatDate(m.verified_on, locale)}` : "";
-                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), body: t(m.description, locale), status: `${label}${verified}`, done: status === "completed" };
+                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), body: t(m.description, locale), status: `${label}${verified}`, done: status === "completed" , photo: journeyPhotos[i] ? stagePhoto(journeyPhotos[i], t(journeyPhotos[i].alt, locale)) : undefined };
               })}
             />
           </div>

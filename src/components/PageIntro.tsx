@@ -119,6 +119,11 @@ export function PageIntro({
         </div>
       </div>
 
+      {/* The same thread of light as Home: a quiet hint that the page goes on. */}
+      <span aria-hidden className="scroll-thread absolute bottom-[clamp(7.5rem,13vw,10.5rem)] left-1/2 z-10 h-12 w-px -translate-x-1/2 overflow-hidden bg-[rgb(242_229_208/0.18)]">
+        <span className="block h-1/2 w-full bg-[linear-gradient(180deg,transparent,#cfae72)]" />
+      </span>
+
       {/* Hills, far to near, then the mist that becomes the page. */}
       <div data-speed="0.06" aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 z-[5]">
         <Ridges

@@ -17,6 +17,9 @@ import { MaskWords } from "@/components/MaskWords";
 import { Birds, Flame, Moon, Ridges, Stars } from "@/components/painting/scenery";
 import { JourneyTimeline } from "@/components/painting/JourneyTimeline";
 import { TouchSurface } from "@/components/painting/TouchSurface";
+import { CampusBlueprint } from "@/components/painting/CampusBlueprint";
+import { photoSrc, photoSrcSet, photographerUrl, stagePhoto, unsplashUrl } from "@/lib/photo";
+import { journeyPhotos } from "@/lib/content";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -32,9 +35,6 @@ const HERO_ART_SRCSET = (ext: string) => HERO_ART_WIDTHS.map((w) => `/art/hero/r
 // Phones show it cover-cropped in a tall band, so it renders about two screen-widths wide.
 const HERO_ART_SIZES = "(min-width: 1024px) 60vw, 200vw";
 
-// Until the founding membership page exists, "Become a founding member" opens the contact page,
-// so people can ask the foundation about it. Donate stays its own, second action.
-const FOUNDING_ROUTE = "contact" as const;
 
 // The four programmes that best show daily devotional life (indices into dictionary activities.programmes).
 const ACTIVITY_PICKS = [0, 5, 1, 7];
@@ -96,8 +96,6 @@ export default async function Home({ params }: Props) {
             </picture>
           </div>
           <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
-          {/* Carving reads over the rays but stays off Radha-Krishna (top band on phones, right side on wide screens). */}
-          <TouchSurface className="opacity-75 [mask-image:linear-gradient(180deg,transparent_42%,#000_60%)] lg:[mask-image:linear-gradient(90deg,#000_36%,transparent_56%)]" />
           <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
 
           <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[9svh] pt-[44svh] lg:justify-center lg:pb-[18svh] lg:pt-28">
@@ -210,21 +208,28 @@ export default async function Home({ params }: Props) {
         </div>
         {/* The land rises toward the eye: far hills, then forest, then the dark tree line that the evening grows out of. */}
         <div className="relative -mb-px">
-          <Ridges
-            height={300}
-            className="h-[150px] md:h-[240px]"
-            layers={[
-              { seed: 41, base: 150, amp: 40, freq: 0.8, fill: "#a7a387", opacity: 0.55 },
-              { kind: "trees", seed: 52, base: 200, amp: 46, freq: 40, fill: "#4f5d4a", opacity: 0.7 },
-              { kind: "trees", seed: 63, base: 240, amp: 54, freq: 30, fill: "#2a3a30" },
-              { kind: "trees", seed: 74, base: 275, amp: 40, freq: 24, fill: "#18251f" },
-            ]}
-          />
+          {/* Rishav's foliage (Gemini): the ivory haze fades into the day above, the dark undergrowth into the night below. */}
+          <picture>
+            <source media="(max-width: 767px)" srcSet="/art/foliage/foliage-phone-900.webp 900w, /art/foliage/foliage-phone-1400.webp 1400w" sizes="100vw" />
+            <img
+              src="/art/foliage/foliage-wide-1920.webp"
+              srcSet="/art/foliage/foliage-wide-1920.webp 1920w, /art/foliage/foliage-wide-2880.webp 2880w"
+              sizes="100vw"
+              alt=""
+              aria-hidden
+              width={1920}
+              height={444}
+              loading="lazy"
+              decoding="async"
+              className="pointer-events-none block h-auto w-full [mask-image:linear-gradient(180deg,transparent_0%,#000_30%)]"
+            />
+          </picture>
+          <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-0 h-[22%] bg-[linear-gradient(180deg,transparent,#0f160f)]" />
         </div>
       </section>
 
       {/* ── 04 Krishna Janmashtami: through the trees into a moonlit evening, a hanging diya, the river of lamps ── */}
-      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#18251f_0%,#1a2833_14%,#1b2738_45%,#17222f_80%,#16212f_100%)] text-forest-ink">
+      <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#0f160f_0%,#16222a_10%,#1b2738_42%,#17222f_80%,#16212f_100%)] text-forest-ink">
         <TouchSurface />
         <Stars className="absolute inset-x-0 top-0 h-[60%] w-full opacity-80" count={60} seed={9} />
         <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[16%] h-[40%] bg-[radial-gradient(60%_50%_at_30%_100%,rgb(197_139_67/0.16),transparent_70%)]" />
@@ -258,7 +263,7 @@ export default async function Home({ params }: Props) {
         <RiverLamps className="relative h-52 w-full md:h-72" />
       </section>
 
-      {/* ── 05 Campus master plan: blue hour over the land, each proposed area a lamp on the panorama ── */}
+      {/* ── 05 Campus master plan: blue hour, the campus as a concept blueprint and each proposed area in a photo ── */}
       <section data-parallax className="relative isolate bg-[linear-gradient(180deg,#16212f_0%,#14212e_55%,#111c28_100%)] text-forest-ink">
         <TouchSurface />
         <div className="container-x relative pt-16 md:pt-24">
@@ -268,46 +273,51 @@ export default async function Home({ params }: Props) {
           </div>
         </div>
 
-        {/* The panorama. Lamps sit where each area is on the schematic plan: further back = higher and smaller. */}
-        <div className="relative mt-10 bg-[linear-gradient(180deg,transparent_0%,#1f3044_38%,#2a3d52_52%,#14212e_70%)] md:mt-6" data-no-reveal>
-          <span aria-hidden className="pointer-events-none absolute inset-x-0 top-[20%] h-[50%] bg-[radial-gradient(50%_60%_at_18%_80%,rgb(197_139_67/0.14),transparent_70%)]" />
-          <div data-speed="0.1">
-            <Ridges
-              height={420}
-              className="h-[260px] md:h-[400px]"
-              layers={[
-                { seed: 81, base: 160, amp: 40, freq: 0.6, fill: "#34475d", opacity: 0.8 },
-                { seed: 92, base: 205, amp: 30, freq: 0.8, fill: "#263850" },
-                { kind: "trees", seed: 13, base: 235, amp: 22, freq: 22, fill: "#1a2a39" },
-                { seed: 24, base: 270, amp: 14, freq: 0.5, fill: "#14212e" },
-              ]}
+        {/* The campus as a blueprint (concept only), then each proposed area with an illustrative photo. */}
+        <div className="container-x relative mt-10 md:mt-14" data-no-reveal>
+          {/* On phones the plan keeps a readable size and scrolls sideways. */}
+          <div data-reveal className="-mx-4 overflow-x-auto px-4 pb-2 [scrollbar-width:thin] sm:mx-0 sm:overflow-visible sm:px-0">
+            <CampusBlueprint
+              className="w-[680px] sm:w-auto"
+              title={d.meta.siteName}
+              note={h.blueprintNote}
+              proposed={d.common.proposed}
+              areas={facilities.map((f) => ({ id: f.id, code: f.code, name: t(f.name, locale), icon: f.icon, x: f.pos_x, y: f.pos_y }))}
             />
           </div>
-          <ul aria-label={d.masterPlan.facilitiesTitle} className="absolute inset-0">
-            {facilities.map((f) => {
-              const depth = f.pos_y / 100; // 0 = far, 1 = near
-              const top = 62 + depth * 30;
-              const size = 0.7 + depth * 0.6;
-              return (
-                <li key={f.id} className="absolute -translate-x-1/2 -translate-y-1/2" style={{ left: `${8 + f.pos_x * 0.84}%`, top: `${top}%` }}>
-                  <span className="pano-lamp" style={{ scale: String(size) }} aria-hidden />
-                  <span className="sr-only">{t(f.name, locale)}, {d.common.proposed}</span>
-                  <span aria-hidden className="absolute left-1/2 top-full mt-1.5 -translate-x-1/2 font-display text-sm text-gold-pale/80">{f.code}</span>
-                </li>
-              );
-            })}
-          </ul>
         </div>
 
-        <div className="container-x relative pb-16 md:pb-20">
-          <ol className="grid grid-cols-1 gap-x-8 gap-y-4 sm:grid-cols-2 lg:grid-cols-4" data-no-reveal>
+        <div className="container-x relative pb-16 pt-10 md:pb-20 md:pt-14">
+          <ol aria-label={d.masterPlan.facilitiesTitle} className="grid grid-cols-2 gap-x-4 gap-y-7 sm:gap-x-6 lg:grid-cols-4" data-no-reveal>
             {facilities.map((f) => (
-              <li key={f.id} className="flex items-baseline gap-3">
-                <span className="font-display text-xl text-gold-bright tabular">{f.code}</span>
-                <span className="text-[0.98rem] leading-snug text-forest-ink/90">{t(f.name, locale)}</span>
+              <li key={f.id} data-reveal className="group">
+                <div className="relative aspect-[4/3] overflow-hidden rounded-[14px] bg-[#1b2a3c] shadow-[inset_0_0_0_1px_rgb(207_174_114/0.2)]">
+                  {f.photo ? (
+                    /* eslint-disable-next-line @next/next/no-img-element -- Unsplash serves pre-sized images */
+                    <img
+                      src={photoSrc(f.photo, 640)}
+                      srcSet={photoSrcSet(f.photo, [400, 640, 960])}
+                      sizes="(min-width: 1024px) 22vw, 46vw"
+                      alt={t(f.photo.alt, locale)}
+                      loading="lazy"
+                      decoding="async"
+                      className="h-full w-full object-cover saturate-[0.85] transition-transform duration-700 ease-out group-hover:scale-[1.04]"
+                    />
+                  ) : null}
+                  <span aria-hidden className="absolute left-2.5 top-2.5 grid h-8 w-8 place-items-center rounded-full bg-[rgb(16_27_41/0.7)] font-display text-base text-gold-bright backdrop-blur-sm">{f.code}</span>
+                </div>
+                <p className="mt-3 text-[0.98rem] leading-snug text-forest-ink">{t(f.name, locale)}</p>
+                {f.photo ? (
+                  <p className="mt-1 text-xs text-forest-soft/80">
+                    <a href={photographerUrl(f.photo)} target="_blank" rel="noopener noreferrer" className="underline decoration-forest-soft/40 hover:text-gold-bright">{f.photo.credit.name}</a>
+                    {" · "}
+                    <a href={unsplashUrl} target="_blank" rel="noopener noreferrer" className="underline decoration-forest-soft/40 hover:text-gold-bright">Unsplash</a>
+                  </p>
+                ) : null}
               </li>
             ))}
           </ol>
+          <p className="mt-6 text-sm text-forest-soft">{h.campusPhotosNote}</p>
           <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
             <span className="proposed-tag !border-gold-bright/70 !text-gold-bright">{d.common.proposed}</span>
             <p className="max-w-[60ch] text-sm text-forest-soft">{d.masterPlan.disclaimer}</p>
@@ -327,10 +337,10 @@ export default async function Home({ params }: Props) {
           <div className="mx-auto mt-10 max-w-5xl md:mt-14">
             <JourneyTimeline
               label={h.journeyTitle}
-              stages={milestones.map((m) => {
+              stages={milestones.map((m, i) => {
                 const status = m.verified ? m.status : "planned";
                 const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
-                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), body: t(m.description, locale), status: label, done: status === "completed" };
+                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), body: t(m.description, locale), status: label, done: status === "completed" , photo: journeyPhotos[i] ? stagePhoto(journeyPhotos[i], t(journeyPhotos[i].alt, locale)) : undefined };
               })}
             />
           </div>
@@ -358,19 +368,7 @@ export default async function Home({ params }: Props) {
           <SparkLotus className="mt-4" />
         </figure>
 
-        <div className="container-x relative pb-[min(70vw,18rem)] pt-6 lg:pb-32">
-          <div className="mx-auto max-w-xl text-center lg:ml-auto lg:mr-[6%] lg:max-w-md lg:text-left">
-            <h2 data-reveal className="display-md">{h.visitTitle}</h2>
-            <p data-reveal className="mt-3 text-forest-soft">{h.visitBody}</p>
-            <div data-reveal className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
-              <Link href={href(locale, FOUNDING_ROUTE)} className="btn btn-primary">{d.nav.founding}</Link>
-              <Link href={href(locale, "donate")} className="btn btn-quiet">{d.nav.donate}</Link>
-            </div>
-            <p data-reveal className="mt-7 text-sm text-forest-soft">
-              {d.common.initiativeOf} {d.common.orgName}
-            </p>
-          </div>
-        </div>
+        <div aria-hidden className="pb-[min(70vw,18rem)] lg:pb-40" />
       </section>
     </div>
   );

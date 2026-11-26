@@ -70,6 +70,8 @@ export const en = {
       "The proposed Prem Mandir is planned as a white-marble Radha-Krishna temple at the heart of a green campus. Gardens, a gaushala, a water body and spaces for learning and celebration are planned to grow around it, rooted in Assamese tradition.",
     pillarsTitle: "What the temple is for",
     campusTitle: "The campus that will surround it",
+    blueprintNote: "Concept layout, not to scale",
+    campusPhotosNote: "Illustrative photos from Unsplash, not of this temple.",
     campusBody:
       "Eight proposed areas, each serving the temple's spirit of seva, devotion and care for the land.",
     journeyTitle: "Where the project stands",
