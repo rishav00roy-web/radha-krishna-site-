@@ -72,7 +72,7 @@ export default async function Home({ params }: Props) {
         <div className="relative min-h-[100svh]">
           {/* Temple identity, integrated into the artwork. Navigation is the lotus at the bottom. */}
           <Link href={href(locale, "home")} aria-label={d.meta.siteName} className="absolute left-4 top-4 z-40 flex items-center gap-3 text-forest-ink no-underline md:left-8 md:top-6">
-            <BrandMark size={38} className="text-gold-bright" />
+            <BrandMark size={46} className="text-[#e2c486]" />
             <span className="hidden max-w-[11rem] font-display text-[1.05rem] leading-tight [text-shadow:0_1px_10px_rgb(0_0_0/0.5)] sm:block">{d.meta.siteName}</span>
           </Link>
 

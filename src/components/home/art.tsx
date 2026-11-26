@@ -1,3 +1,4 @@
+import { LotusLogo } from "../BrandMark";
 /**
  * Decorative layers for the homepage scenes. The painted artwork comes from Rishav's own
  * mockup (public/art); these SVG layers add depth for parallax. All are aria-hidden.
@@ -8,13 +9,7 @@ export function Ornament({ className = "" }: { className?: string }) {
   return (
     <div aria-hidden data-ornament className={`flex items-center justify-center gap-4 text-gold-bright ${className}`}>
       <span data-ornament-line className="h-px w-16 origin-right bg-[linear-gradient(90deg,transparent,currentColor)] opacity-70 md:w-24" />
-      <svg viewBox="0 0 48 48" width="34" height="34" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
-        <path d="M24 36c-3.5-3-5-7.5-4-13.5 2.5 1 4 3 4 5.5 0-2.5 1.5-4.5 4-5.5 1 6-.5 10.5-4 13.5z" />
-        <path d="M24 36c-6.5 0-11.5-3.5-13.5-9.5 4-.5 8 1 10.5 4.5" />
-        <path d="M24 36c6.5 0 11.5-3.5 13.5-9.5-4-.5-8 1-10.5 4.5" />
-        <path d="M24 36c-9 1-15.5-1-19-6 4.5-2 9-1.5 12.5 1M24 36c9 1 15.5-1 19-6-4.5-2-9-1.5-12.5 1" />
-        <path d="M10 41c4.5-2 9.5-3 14-3s9.5 1 14 3" />
-      </svg>
+      <LotusLogo width={96} strokeWidth={2.6} glow className="text-[#e2c486] md:h-[66px] md:w-[120px]" />
       <span data-ornament-line className="h-px w-16 origin-left bg-[linear-gradient(270deg,transparent,currentColor)] opacity-70 md:w-24" />
     </div>
   );
