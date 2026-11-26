@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 import { getMilestones, getUpdates } from "@/lib/data";
 import { formatDate } from "@/lib/view";
 import { PageIntro } from "@/components/PageIntro";
-import { ProcessRail } from "@/components/anm";
+import { JourneyTimeline } from "@/components/painting/JourneyTimeline";
 
 type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -24,24 +24,23 @@ export default async function JourneyPage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.journey.title} intro={d.journey.intro} icon="conch" />
+      <PageIntro art="feather" title={d.journey.title} intro={d.journey.intro} icon="conch" />
 
-      {/* Stages along a gold line that draws itself as you scroll; each stage brightens as the bead reaches it.
+      {/* The same alternating timeline as Home: the line draws down and each stage rises as it is reached.
           Unverified progress is never shown: it falls back to "Planned". */}
-      <section className="section !pt-6" data-no-reveal>
-        <div className="container-x [&>*]:max-w-4xl">
-          <ProcessRail
-            vertical
-            sticky={false}
-            scrub={0}
-            beadSize={12}
-            steps={milestones.map((m) => {
-              const status = m.verified ? m.status : "planned";
-              const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
-              const verified = m.verified && m.verified_on ? ` · ${d.journey.verifiedOn} ${formatDate(m.verified_on, locale)}` : "";
-              return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), text: `${t(m.description, locale)} ${label}${verified}.` };
-            })}
-          />
+      <section className="on-dark section" data-no-reveal>
+        <div className="container-x">
+          <div className="mx-auto max-w-5xl">
+            <JourneyTimeline
+              label={d.journey.title}
+              stages={milestones.map((m) => {
+                const status = m.verified ? m.status : "planned";
+                const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
+                const verified = m.verified && m.verified_on ? `, ${d.journey.verifiedOn} ${formatDate(m.verified_on, locale)}` : "";
+                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), body: t(m.description, locale), status: `${label}${verified}`, done: status === "completed" };
+              })}
+            />
+          </div>
         </div>
       </section>
 

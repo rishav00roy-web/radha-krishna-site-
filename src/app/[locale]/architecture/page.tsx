@@ -26,7 +26,7 @@ export default async function ArchitecturePage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.architecture.title} intro={d.architecture.intro} icon="temple" />
+      <PageIntro art="temple" title={d.architecture.title} intro={d.architecture.intro} icon="temple" />
 
       <section className="section">
         <div className="container-x">

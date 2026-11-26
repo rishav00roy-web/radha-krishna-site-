@@ -1,16 +1,17 @@
 
+
 /* the scroll track; JS makes it tall where the stage sticks, auto elsewhere */
 .prl_wrap {
   position: relative;
   width: 100%;
   height: var(--prl-track, auto);
-  --prl-bg: var(--marble);
+  --prl-bg: #f2f2ef;
   --prl-tile: #fafaf8;
   --prl-tile-2: #e8e8e4;
-  --prl-fg: var(--ink);
-  --prl-grey: var(--ink-soft);
-  --prl-line: var(--marble-3);
-  --prl-focus: var(--gold);
+  --prl-fg: #141314;
+  --prl-grey: #9a9a96;
+  --prl-line: rgba(20, 19, 20, 0.12);
+  --prl-focus: rgba(16, 16, 16, 0.3);
   --prl-accent: #33452d;
   --prl-on-accent: #dee1da;
   --prl-margin: clamp(20px, 2.8vw, 48px);
@@ -18,11 +19,11 @@
   --prl-col: calc((100% - 2 * var(--prl-margin, 40px) - 11 * var(--prl-gutter, 20px)) / 12);
   --prl-display: clamp(40px, 4.2vw, 80px);
   --prl-label: clamp(18px, 1.4vw, 28px);
-  --prl-sans: var(--font-sans), system-ui, sans-serif;
+  --prl-sans: var(--font-sans), -apple-system, BlinkMacSystemFont, sans-serif;
   --prl-serif: var(--font-display), Georgia, serif;
   background: var(--prl-bg, #f2f2ef);
   color: var(--prl-fg, #141314);
-  font-family: var(--prl-sans, 'Switzer', sans-serif);
+  font-family: var(--prl-sans, var(--font-sans), sans-serif);
   font-weight: 400;
   letter-spacing: -0.02em;
   -webkit-font-smoothing: antialiased;
@@ -247,42 +248,6 @@
   }
 }
 
-/* vertical prop: the stacked layout at every width */
-/* phones never stick: the stacked steps are taller than the screen */
-.prl_vertical .prl_stage {
-  position: relative;
-  padding: var(--prl-margin, 20px);
-}
-
-/* the steps stack beside a vertical line JS fits to them */
-.prl_vertical .prl_rail {
-  padding-left: 72px;
-  padding-bottom: 0;
-}
-
-.prl_vertical .prl_svg_desktop {
-  display: none;
-}
-
-.prl_vertical .prl_svg_mobile {
-  display: block;
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 72px;
-  height: 100%;
-}
-
-/* equal-height rows: every step holds the room its image needs, so nothing
-   shifts when an image comes in and the bead spacing stays even */
-.prl_vertical .prl_steps {
-  grid-auto-flow: row;
-  grid-auto-rows: 1fr;
-  row-gap: 48px;
-  column-gap: 0;
-  margin-top: 0;
-}
-
 @media (prefers-reduced-motion: reduce) {
   .prl_bead,
   .prl_step,
@@ -291,20 +256,3 @@
     will-change: auto;
   }
 }
-
-/* Prem Mandir theme: a gold line and bead, site type for titles. */
-.prl_wrap .prl_path { stroke: var(--gold); stroke-width: 2; }
-.prl_wrap .prl_bead { background: var(--gold); box-shadow: 0 0 0 5px var(--prl-bg), 0 0 14px 4px rgb(212 169 73 / 0.7); }
-.prl_wrap .prl_step_title { font-family: var(--font-display), Georgia, serif; font-size: clamp(1.6rem, 2.4vw, 2.1rem); letter-spacing: -0.01em; }
-.prl_wrap .prl_step_text { font-size: 1rem; line-height: 1.6; letter-spacing: 0; }
-.prl_wrap .prl_step_num { font-size: 0.875rem; color: var(--gold); }
-.prl_wrap { letter-spacing: 0; }
-
-/* Compact: the home page's short version (title and status only), so eight stages fit in
-   about one and a half phone screens instead of three. */
-.prl_vertical.prl_compact .prl_steps,
-.prl_compact.prl_vertical .prl_steps {
-  grid-auto-rows: auto;
-  row-gap: 28px;
-}
-.prl_compact.prl_vertical .prl_stage { padding-top: 8px; padding-bottom: 8px; }

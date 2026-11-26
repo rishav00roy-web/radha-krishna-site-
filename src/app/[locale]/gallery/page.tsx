@@ -29,7 +29,7 @@ export default async function GalleryPage({ params }: Props) {
   const items = getGallery();
   return (
     <>
-      <PageIntro title={d.gallery.title} intro={d.gallery.intro} icon="feather" />
+      <PageIntro art="radhaKrishna" title={d.gallery.title} intro={d.gallery.intro} icon="feather" />
       {/* The temple's own artwork in a curtain slider (arrows, drag or keyboard), ahead of the stock photos. */}
       <section className="section !pb-0" data-no-reveal>
         <div className="container-x">

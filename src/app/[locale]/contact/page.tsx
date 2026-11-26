@@ -21,7 +21,7 @@ export default async function ContactPage({ params }: Props) {
   const c = d.contact;
   return (
     <>
-      <PageIntro title={c.title} intro={c.intro} icon="conch" />
+      <PageIntro art="hangingDiya" title={c.title} intro={c.intro} icon="conch" />
       <section className="section">
         <div className="container-x grid gap-14 lg:grid-cols-[minmax(0,1.4fr)_minmax(0,1fr)] lg:gap-20">
           <ContactForm
@@ -42,7 +42,7 @@ export default async function ContactPage({ params }: Props) {
             {org.email ? (
               <>
                 <p className="mt-6 text-forest-soft">{c.email}</p>
-                <a href={`mailto:${org.email}`} className="text-gold-bright underline">{org.email}</a>
+                <a href={`mailto:${org.email}`} className="block w-fit text-gold-bright underline">{org.email}</a>
               </>
             ) : null}
             <a href={`tel:+91${org.phone}`} className="btn btn-primary mt-8">{c.call}</a>

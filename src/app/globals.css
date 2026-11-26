@@ -6,19 +6,30 @@
 @tailwind utilities;
 
 :root {
-  --marble: #fbf8f2;
-  --marble-2: #f4eee2;
-  --marble-3: #e8dfcd;
+  /* Paper of the inner pages: a lighter cousin of the brief's warm ivory (#f2e5d0), so long text
+     stays easy to read while the page still belongs to the painting's dawn. */
+  --marble: #f8f1e4;
+  --marble-2: #f0e5d1;
+  --marble-3: #e3d6bd;
+  --treeline: url("data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1600 120' preserveAspectRatio='none'><path d='M-40 120 L-40 62 C-38 50 -31 39 -25 39 C-21 31 -11 31 -7 34 C-0 37 5 52 7 62 C6 50 23 44 37 44 C46 36 71 36 81 39 C98 42 109 52 115 58 C102 50 113 45 122 45 C128 41 145 41 151 44 C162 47 170 52 173 56 C167 50 180 44 191 44 C198 38 217 38 224 41 C238 44 247 52 251 58 C241 50 249 37 256 37 C260 32 272 32 277 35 C285 38 291 52 293 56 C287 50 294 46 299 46 C303 39 312 39 316 42 C322 45 327 52 329 57 C328 50 344 49 356 49 C365 44 388 44 397 47 C413 50 424 52 429 59 C417 50 427 59 436 59 C441 55 457 55 463 58 C473 61 480 52 484 59 C476 50 485 45 491 45 C496 37 508 37 513 40 C522 43 527 52 530 59 C527 50 543 63 556 63 C565 57 589 57 597 60 C614 63 624 52 630 59 C617 50 628 64 637 64 C643 56 658 56 664 59 C675 62 682 52 686 60 C681 50 700 58 715 58 C724 52 751 52 761 55 C780 58 792 52 798 61 C785 50 800 57 812 57 C820 52 843 52 851 55 C866 58 876 52 881 57 C870 50 880 65 888 65 C894 56 909 56 914 59 C924 62 931 52 934 59 C927 50 936 60 943 60 C948 53 961 53 965 56 C974 59 980 52 983 57 C979 50 993 52 1004 52 C1012 44 1033 44 1040 47 C1055 50 1064 52 1069 58 C1058 50 1068 48 1076 48 C1081 43 1096 43 1101 46 C1111 49 1118 52 1121 61 C1114 50 1124 49 1131 49 C1136 43 1150 43 1155 46 C1165 49 1171 52 1174 58 C1170 50 1184 37 1196 37 C1203 29 1224 29 1232 32 C1246 35 1256 52 1261 57 C1250 50 1261 53 1270 53 C1276 44 1293 44 1299 47 C1310 50 1318 52 1322 60 C1313 50 1320 40 1326 40 C1330 31 1341 31 1344 34 C1352 37 1357 52 1359 58 C1357 50 1374 38 1388 38 C1397 30 1421 30 1430 33 C1447 36 1459 52 1464 58 C1452 50 1468 33 1480 33 C1488 29 1511 29 1519 32 C1535 35 1545 52 1550 61 C1541 50 1558 41 1573 41 C1582 36 1609 36 1618 39 C1636 42 1648 52 1654 61 C1639 50 1648 58 1654 58 C1659 52 1671 52 1676 55 C1684 58 1690 52 1693 60 L1640 120 Z' fill='%232f4054' opacity='.45'/><path d='M-40 120 L-40 80 C-37 67 -27 78 -19 78 C-14 71 1 71 6 75 C16 78 23 69 26 79 C20 67 31 66 40 66 C47 57 63 57 70 60 C81 63 89 69 93 74 C83 67 88 73 92 73 C94 65 101 65 104 69 C109 72 112 69 114 78 C111 67 118 68 123 68 C126 60 136 60 139 63 C146 66 150 69 153 77 C149 67 157 66 163 66 C167 62 179 62 183 65 C191 68 196 69 198 80 C194 67 206 41 215 41 C222 35 239 35 245 38 C257 41 264 69 268 77 C261 67 273 65 282 65 C289 58 306 58 313 62 C325 65 333 69 337 74 C329 67 342 71 353 71 C360 65 380 65 387 68 C400 71 409 69 413 78 C405 67 418 69 429 69 C436 63 456 63 464 66 C477 69 486 69 491 76 C479 67 485 60 490 60 C493 51 502 51 505 54 C511 58 515 69 517 75 C514 67 521 64 527 64 C532 55 543 55 547 59 C554 62 559 69 562 80 C558 67 570 67 579 67 C586 63 603 63 609 66 C621 69 629 69 633 75 C625 67 635 69 644 69 C649 61 665 61 670 64 C681 67 688 69 691 79 C685 67 698 62 708 62 C715 54 733 54 740 58 C753 61 761 69 765 79 C755 67 762 68 768 68 C772 62 782 62 786 65 C793 68 797 69 800 79 C794 67 800 56 804 56 C807 50 815 50 818 53 C823 56 826 69 828 74 C826 67 834 54 841 54 C845 45 857 45 862 48 C870 51 876 69 879 74 C874 67 885 66 893 66 C899 59 915 59 920 63 C931 66 938 69 942 75 C935 67 948 69 958 69 C964 61 983 61 989 64 C1002 67 1010 69 1014 78 C1004 67 1010 82 1015 82 C1018 74 1027 74 1030 78 C1036 81 1040 69 1042 79 C1041 67 1054 73 1065 73 C1072 67 1091 67 1098 70 C1111 74 1120 69 1125 76 C1115 67 1127 84 1136 84 C1142 75 1159 75 1166 78 C1177 81 1185 69 1189 78 C1179 67 1186 83 1191 83 C1195 74 1205 74 1209 77 C1215 80 1220 69 1222 79 C1217 67 1222 68 1226 68 C1228 63 1235 63 1238 66 C1243 69 1246 69 1248 75 C1244 67 1248 76 1251 76 C1253 72 1258 72 1260 75 C1264 78 1266 69 1268 80 C1268 67 1279 78 1288 78 C1294 70 1310 70 1316 73 C1327 77 1334 69 1338 75 C1330 67 1337 62 1343 62 C1347 58 1359 58 1363 61 C1370 64 1375 69 1378 76 C1374 67 1385 73 1393 73 C1399 67 1415 67 1420 70 C1431 73 1438 69 1442 76 C1434 67 1444 77 1452 77 C1457 71 1471 71 1476 74 C1486 77 1492 69 1496 77 C1490 67 1502 77 1511 77 C1517 68 1535 68 1541 72 C1553 75 1561 69 1565 75 C1557 67 1569 64 1579 64 C1586 57 1604 57 1611 60 C1624 63 1632 69 1636 79 C1628 67 1642 76 1653 76 C1660 68 1680 68 1688 71 C1702 74 1711 69 1715 74 L1640 120 Z' fill='%231c2a3b' opacity='.8'/><path d='M-40 120 L-40 98 C-38 84 -30 98 -25 98 C-21 90 -10 90 -7 93 C1 96 5 86 8 92 C3 84 10 94 15 94 C19 87 29 87 33 91 C39 94 44 86 46 97 C43 84 52 99 59 99 C64 92 77 92 82 95 C92 99 98 86 101 95 C93 84 99 93 103 93 C106 87 114 87 117 91 C123 94 127 86 128 95 C124 84 129 97 133 97 C136 91 143 91 146 94 C151 98 154 86 155 96 C153 84 161 96 167 96 C172 86 183 86 187 90 C195 93 201 86 203 96 C199 84 209 91 218 91 C223 84 238 84 244 87 C254 90 261 86 265 96 C256 84 260 90 263 90 C266 81 272 81 274 84 C279 87 281 86 283 92 C281 84 289 87 296 87 C300 77 312 77 317 80 C325 84 330 86 333 92 C327 84 333 86 338 86 C342 77 351 77 354 81 C360 84 364 86 366 96 C362 84 368 94 372 94 C375 88 384 88 387 91 C392 94 396 86 398 97 C393 84 396 89 398 89 C399 82 403 82 404 85 C407 89 408 86 409 98 C410 84 420 79 428 79 C433 70 448 70 453 73 C463 77 470 86 473 92 C466 84 476 66 484 66 C489 57 504 57 509 61 C518 64 525 86 528 97 C521 84 529 73 536 73 C540 65 552 65 556 69 C564 72 569 86 572 98 C566 84 572 88 577 88 C580 78 589 78 592 82 C598 85 602 86 604 92 C601 84 610 87 617 87 C622 81 635 81 640 84 C649 88 655 86 658 91 C652 84 661 72 668 72 C673 66 686 66 691 69 C700 73 706 86 709 92 C701 84 704 71 706 71 C708 61 712 61 714 65 C717 68 719 86 720 96 C718 84 723 78 726 78 C728 69 735 69 737 72 C741 76 744 86 746 93 C743 84 749 66 754 66 C757 61 766 61 769 65 C775 68 779 86 781 93 C778 84 789 91 797 91 C802 85 817 85 822 89 C833 92 839 86 843 95 C834 84 838 89 842 89 C844 81 850 81 852 84 C857 88 860 86 861 95 C859 84 867 80 874 80 C878 73 889 73 894 76 C902 80 907 86 910 95 C903 84 906 86 909 86 C911 77 916 77 917 80 C921 83 923 86 924 95 C924 84 934 59 941 59 C947 51 961 51 966 55 C975 58 982 86 985 96 C978 84 985 79 991 79 C995 75 1006 75 1010 78 C1017 81 1022 86 1025 95 C1020 84 1028 89 1034 89 C1039 80 1050 80 1054 84 C1062 87 1068 86 1070 97 C1064 84 1069 81 1073 81 C1075 77 1082 77 1085 80 C1090 84 1093 86 1094 96 C1091 84 1096 92 1100 92 C1103 84 1111 84 1113 87 C1118 91 1122 86 1123 94 C1121 84 1129 94 1136 94 C1140 89 1152 89 1156 93 C1164 96 1170 86 1173 94 C1167 84 1173 88 1179 88 C1182 79 1192 79 1196 82 C1203 86 1207 86 1209 94 C1206 84 1216 80 1223 80 C1229 74 1243 74 1248 77 C1258 81 1264 86 1268 92 C1259 84 1264 98 1268 98 C1270 89 1277 89 1280 92 C1284 95 1288 86 1289 97 C1287 84 1295 92 1302 92 C1306 87 1318 87 1322 91 C1330 94 1335 86 1338 97 C1332 84 1337 91 1342 91 C1345 85 1354 85 1357 89 C1362 92 1366 86 1368 93 C1365 84 1371 89 1376 89 C1380 84 1389 84 1393 87 C1399 91 1403 86 1406 93 C1402 84 1411 93 1419 93 C1424 88 1437 88 1442 91 C1451 95 1458 86 1461 97 C1455 84 1465 93 1473 93 C1478 86 1493 86 1499 89 C1509 93 1516 86 1519 92 C1511 84 1517 90 1522 90 C1525 84 1533 84 1537 87 C1543 91 1547 86 1549 95 C1544 84 1547 99 1549 99 C1550 90 1555 90 1556 94 C1559 97 1561 86 1562 93 C1562 84 1569 91 1575 91 C1579 86 1589 86 1593 89 C1601 93 1605 86 1608 94 C1602 84 1606 94 1609 94 C1611 89 1616 89 1618 92 C1622 96 1625 86 1626 95 C1624 84 1630 84 1635 84 C1639 79 1648 79 1651 82 C1657 86 1661 86 1663 93 L1640 120 Z' fill='%23101b29'/></svg>");
   --ink: #2a2118;
   --ink-soft: #5b4d3d;
-  --gold: #a87a26;
-  --gold-bright: #d4a949;
-  --gold-pale: #efdcab;
-  --night: #0f1318;
-  --mist: #f1dcc4;
+  /* Palette from the 2026-11-25 creative brief: midnight blue, deep forest green, warm ivory,
+     muted saffron, antique gold, earthy browns. --gold is the deepened saffron used for text and
+     buttons on ivory (it passes contrast); --gold-bright is the antique gold used on the night. */
+  --gold: #94652c;
+  --gold-bright: #cfae72;
+  --gold-pale: #ead9b4;
+  --night: #101b29;
+  --mist: #f2e5d0;
+  --ivory: #f2e5d0;
+  --saffron: #c58b43;
+  --antique: #b9955b;
+  --pine: #18251f;
+  --earth: #5b4632;
   /* "forest" tokens now carry the night-blue of Rishav's mockup (names kept so classes stay stable). */
-  --forest: #141b24;
-  --forest-2: #1f2733;
+  --forest: #101b29;
+  --forest-2: #1b2839;
   --forest-ink: #f3ecdc;
   --forest-soft: #c9c0a8;
   --lotus: #d9798f;
@@ -151,7 +162,7 @@
     color: #fffaf0;
   }
   .btn-primary:hover {
-    background: #8f6620;
+    background: #7c5424;
   }
   .btn-quiet {
     border: 1px solid currentColor;
@@ -159,7 +170,7 @@
     background: transparent;
   }
   .btn-quiet:hover {
-    background: rgb(168 122 38 / 0.12);
+    background: rgb(185 149 91 / 0.16);
   }
 
   .proposed-tag {
@@ -275,11 +286,9 @@
 @keyframes flame-glow { 0%, 100% { opacity: 0.75; scale: 1; } 45% { opacity: 1; scale: 1.08; } 70% { opacity: 0.85; scale: 0.97; } }
 .sun-glow { animation: sun-glow 7s ease-in-out infinite; will-change: opacity, scale; }
 @keyframes sun-glow { 0%, 100% { opacity: 0.55; scale: 0.94; } 50% { opacity: 1; scale: 1.06; } }
-.scroll-wheel { animation: scroll-wheel 1.8s ease-in-out infinite; }
-@keyframes scroll-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .rays-sway, .mist-drift, .diya-swing, .flame-glow, .sun-glow, .scroll-wheel { animation: none !important; }
+  .rays-sway, .mist-drift, .diya-swing, .flame-glow, .sun-glow { animation: none !important; }
   *,
   *::before,
   *::after {
@@ -298,3 +307,99 @@
   box-shadow: inset 0 0 0 1px rgb(212 169 73 / 0.55), inset 0 0 0 6px var(--forest), inset 0 0 0 7px rgb(212 169 73 / 0.25), 0 30px 60px -36px rgb(15 19 24 / 0.6);
   background-image: radial-gradient(120% 80% at 100% 0%, rgb(212 169 73 / 0.12), transparent 60%);
 }
+
+/* ───────── The continuous painting (Home) ───────── */
+.scroll-thread > span { animation: scroll-thread 2.6s cubic-bezier(0.65, 0, 0.35, 1) infinite; }
+@keyframes scroll-thread { from { transform: translateY(-100%); } to { transform: translateY(200%); } }
+
+.twinkle { animation: twinkle 5s ease-in-out infinite alternate; }
+.twinkle--2 { animation-duration: 7s; animation-delay: -3s; }
+@keyframes twinkle { from { opacity: 1; } to { opacity: 0.35; } }
+
+.bird-drift { animation: bird-drift 26s ease-in-out infinite alternate; will-change: transform; }
+@keyframes bird-drift { from { transform: translate3d(-3%, 0, 0); } to { transform: translate3d(6%, -6%, 0); } }
+
+.flame { animation: flame 1.8s ease-in-out infinite; transform-origin: 50% 100%; }
+@keyframes flame { 0%, 100% { transform: scale(1, 1); } 40% { transform: scale(0.94, 1.08); } 70% { transform: scale(1.04, 0.96); } }
+
+/* A lamp on the master-plan panorama: a warm point with a soft halo. */
+.pano-lamp {
+  position: relative;
+  display: block;
+  width: 10px;
+  height: 10px;
+  border-radius: 9999px;
+  background: radial-gradient(circle, #fff3d6 0%, #f0c27a 45%, #c58b43 100%);
+  box-shadow: 0 0 0 4px rgb(197 139 67 / 0.18), 0 0 22px 8px rgb(240 194 122 / 0.35);
+}
+.pano-lamp::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 100%;
+  width: 1px;
+  height: 14px;
+  background: linear-gradient(180deg, rgb(240 194 122 / 0.6), transparent);
+}
+
+[data-offscreen] .twinkle, [data-offscreen] .bird-drift, [data-offscreen] .flame, [data-offscreen] .scroll-thread > span { animation-play-state: paused; }
+
+@media (prefers-reduced-motion: reduce) {
+  .twinkle, .bird-drift, .flame, .scroll-thread > span { animation: none !important; }
+}
+
+/* ───────── The painting carried through the inner pages ───────── */
+/* Tinted bands feather into the paper instead of starting at a hard edge. */
+.section.bg-marble-2 {
+  background: linear-gradient(180deg, var(--marble) 0, var(--marble-2) 7rem, var(--marble-2) calc(100% - 7rem), var(--marble) 100%);
+}
+/* Night bands: a dark treeline rises out of the paper above, and the night lifts into mist below,
+   so a dark section reads as dusk falling over the same landscape rather than a box. */
+.section.on-dark {
+  position: relative;
+  isolation: isolate;
+  background: linear-gradient(180deg, var(--night) 0%, #142131 60%, #18263a 100%);
+  margin-top: clamp(56px, 7vw, 96px);
+}
+.section.on-dark::before,
+.section.on-dark::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  pointer-events: none;
+  z-index: -1;
+}
+.section.on-dark::before {
+  bottom: calc(100% - 1px);
+  height: clamp(56px, 7vw, 96px);
+  background: var(--treeline) center bottom / 100% 100% no-repeat;
+}
+.section.on-dark::after {
+  top: calc(100% - 1px);
+  height: clamp(110px, 12vw, 170px);
+  background:
+    radial-gradient(40% 70% at 25% 0%, rgb(242 229 208 / 0.18), transparent 70%),
+    radial-gradient(45% 70% at 75% 0%, rgb(242 229 208 / 0.14), transparent 70%),
+    linear-gradient(180deg, #18263a 0%, #253246 18%, #5a5f68 42%, #a9a397 66%, #e4d9c6 86%, var(--marble) 100%);
+}
+/* The last band before the footer runs straight into it (both are night). */
+main > .section.on-dark:last-child { padding-bottom: clamp(5rem, 9vw, 8rem); background: linear-gradient(180deg, var(--night) 0%, #142131 55%, var(--night) 100%); }
+main > .section.on-dark:last-child::after { display: none; }
+
+/* Footer: the treeline rises out of the last section, so every page ends in the night landscape. */
+.footer-ridge {
+  position: absolute;
+  bottom: calc(100% - 1px);
+  left: 0;
+  right: 0;
+  height: clamp(56px, 7vw, 96px);
+  background: var(--treeline) center bottom / 100% 100% no-repeat;
+  pointer-events: none;
+}
+main:has(> .section.on-dark:last-child) + footer .footer-ridge,
+main:has(> .painting) + footer .footer-ridge { display: none; }
+main:has(> .section.on-dark:last-child) + footer > div,
+main:has(> .painting) + footer > div { border-top: 0; }
+/* The section after a night band starts below its mist, so the mist never sits on its first lines. */
+.section.on-dark + .section { padding-top: calc(clamp(110px, 12vw, 170px) + clamp(1.5rem, 3vw, 3rem)); }

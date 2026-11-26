@@ -35,8 +35,11 @@ export function Motion() {
       gsap.ticker.add(tick);
       gsap.ticker.lagSmoothing(0);
 
-      const ctx = gsap.context(() => {
-        const phone = window.innerWidth < 768;
+      // gsap.matchMedia: phone and desktop get their own setup (fewer shutter slats, half the parallax
+      // travel on phones), and crossing the breakpoint (a tablet rotating) reverts one and builds the other.
+      const mm = gsap.matchMedia();
+      mm.add({ phone: "(max-width: 767px)", desktop: "(min-width: 768px)" }, (mmCtx) => {
+        const phone = Boolean(mmCtx.conditions?.phone);
 
         // Masked type: words rise from behind their cut line, each a beat after the last.
         // Once landed, the windows stop clipping, so shadows and diacritics are never cut off.
@@ -191,9 +194,13 @@ export function Motion() {
         window.addEventListener("pointermove", onPointer, { passive: true });
       }
 
+      // Web fonts (Assamese and Hindi especially) change text heights once they swap in, which moves
+      // every trigger below them; measure again when they are ready.
+      document.fonts?.ready.then(() => { if (!cancelled) ScrollTrigger.refresh(); });
+
       // Pause the CSS loops (petals, rays, mist, diya, glow) in scenes that are off screen.
       const scenes = new Set<HTMLElement>();
-      document.querySelectorAll<HTMLElement>(".petal, .rays-sway, .mist-drift, .diya-swing, .sun-glow").forEach((el) => {
+      document.querySelectorAll<HTMLElement>(".petal, .rays-sway, .mist-drift, .diya-swing, .sun-glow, .twinkle, .bird-drift, .flame, .scroll-thread").forEach((el) => {
         const scene = el.closest<HTMLElement>("section");
         if (scene) scenes.add(scene);
       });
@@ -206,7 +213,7 @@ export function Motion() {
         if (onPointer) window.removeEventListener("pointermove", onPointer);
         io.disconnect();
         scenes.forEach((s) => s.removeAttribute("data-offscreen"));
-        ctx.revert();
+        mm.revert();
         gsap.ticker.remove(tick);
         delete (window as unknown as { lenis?: unknown }).lenis;
         lenis.destroy();

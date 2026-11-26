@@ -15,6 +15,11 @@ export default {
         gold: { DEFAULT: v("gold"), bright: v("gold-bright"), pale: v("gold-pale") },
         forest: { DEFAULT: v("forest"), 2: v("forest-2"), ink: v("forest-ink"), soft: v("forest-soft") },
         lotus: v("lotus"),
+        ivory: v("ivory"),
+        saffron: v("saffron"),
+        antique: v("antique"),
+        pine: v("pine"),
+        earth: v("earth"),
         line: v("line"),
       },
       fontFamily: {

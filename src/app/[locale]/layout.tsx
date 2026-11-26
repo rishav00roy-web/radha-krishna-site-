@@ -6,7 +6,7 @@ import { htmlLang, isLocale, locales } from "@/i18n/config";
 import { getDictionary } from "@/i18n";
 import { getOrganisation } from "@/lib/data";
 import { siteUrl } from "@/lib/seo";
-import { Header } from "@/components/Header";
+import { LotusMenu } from "@/components/LotusMenu";
 import { Footer } from "@/components/Footer";
 import { Motion } from "@/components/Motion";
 
@@ -15,7 +15,7 @@ export function generateStaticParams() {
   return locales.map((locale) => ({ locale }));
 }
 
-export const viewport: Viewport = { themeColor: "#17301f", width: "device-width", initialScale: 1 };
+export const viewport: Viewport = { themeColor: "#101b29", width: "device-width", initialScale: 1 };
 
 export async function generateMetadata({ params }: { params: Promise<{ locale: string }> }): Promise<Metadata> {
   const { locale } = await params;
@@ -63,7 +63,7 @@ export default async function LocaleLayout({
   return (
     <html lang={htmlLang[locale]} className={fontClasses[locale]}>
       <body>
-        <Header locale={locale} dict={dict} />
+        <LotusMenu locale={locale} dict={dict} />
         <main id="main">{children}</main>
         <Footer locale={locale} dict={dict} org={org} />
         <Motion />

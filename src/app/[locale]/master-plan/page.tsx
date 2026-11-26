@@ -24,7 +24,7 @@ export default async function MasterPlanPage({ params }: Props) {
 
   return (
     <>
-      <PageIntro title={d.masterPlan.title} intro={d.masterPlan.intro} icon="kalash" />
+      <PageIntro art="moon" title={d.masterPlan.title} intro={d.masterPlan.intro} icon="kalash" />
       <section className="section !pt-12 md:!pt-16">
         <div className="container-x">
           <MasterPlan

@@ -1,5 +1,4 @@
-/* eslint-disable */
-// @ts-nocheck -- vendored Annnimate component (plain JS); typed at the import site.
+// Demo images are from Arqe (arqe.ai). They are placeholders: swap them for your own before going live. Using them in your own product needs your own Arqe plan.
 'use client';
 
 import { useRef, useCallback } from 'react';
@@ -15,7 +14,36 @@ if (typeof window !== 'undefined') {
   gsap.registerPlugin(useGSAP, ScrollTrigger, MotionPathPlugin, DrawSVGPlugin, CustomEase);
 }
 
-const DEFAULT_STEPS = [];
+const DEFAULT_STEPS = [
+  {
+    num: '01',
+    title: 'Scout',
+    text: 'We walk every route before anyone rides it.',
+    image: '/art/temple-concept.jpg',
+    alt: 'Walker in a blue jacket above misty hills',
+  },
+  {
+    num: '02',
+    title: 'Map',
+    text: 'Climbs, water and shelter marked to the metre.',
+    image: '/art/hero/radha-krishna-1280.jpg',
+    alt: 'Aerial view of a turquoise river through a rust canyon',
+  },
+  {
+    num: '03',
+    title: 'Camp',
+    text: 'A tent pitched at the col before the group arrives.',
+    image: '/art/temple-concept.jpg',
+    alt: 'Open tent door onto snowy peaks',
+  },
+  {
+    num: '04',
+    title: 'Ride',
+    text: 'Six riders, one guide, and the bikes already set up.',
+    image: '/art/peacock-feather.jpg',
+    alt: 'A bird over a deep green canyon',
+  },
+];
 
 const EASE = 'annnimate';
 // extra scroll the sticky stage holds for, in viewport heights
@@ -29,8 +57,7 @@ const MEDIA_DUR = 0.8;
 const ROLL_DUR = 0.6;
 const ROLL_STAGGER = 0.05;
 // opacity tiers: not reached yet, already passed, active is 1
-// raised from 0.42 so not-yet-reached stages stay readable
-const UPCOMING = 0.55;
+const UPCOMING = 0.42;
 const VISITED = 0.72;
 // a step's image scales up from MEDIA_FROM when the bead reaches it, then stays
 const MEDIA_FROM = 0.9;
@@ -85,7 +112,6 @@ export default function ProcessRail({
   sticky = true,
   stagger = 0.08,
   disable = '',
-  vertical = false,
 }) {
   const containerRef = useRef(null);
   const railRef = useRef(null);
@@ -288,8 +314,6 @@ export default function ProcessRail({
       const st = tl.scrollTrigger;
       const t = Math.min(tl.duration(), anchorAt(i) + ARRIVE);
       const top = st.start + (st.end - st.start) * (t / tl.duration());
-      // Through the site's Lenis when it is running, so the two smooth scrollers don't fight.
-      if (window.lenis && !reduced) { window.lenis.scrollTo(top, { duration: 0.9 }); return; }
       const scroller = st.scroller && st.scroller !== window ? st.scroller : window;
       scroller.scrollTo({ top, behavior: reduced ? 'auto' : 'smooth' });
     }
@@ -436,9 +460,8 @@ export default function ProcessRail({
     // into ONE matchMedia call, so any change tears down the previous build
     // (GSAP reverts the last callback's return value) before rebuilding.
     const conditions = {
-      // vertical: the stacked (phone) layout at every width
-      isMobile: vertical ? '(min-width: 0px)' : '(max-width: 767px)',
-      isDesktop: vertical ? 'not all' : '(min-width: 768px)',
+      isMobile: '(max-width: 767px)',
+      isDesktop: '(min-width: 768px)',
       isReduced: '(prefers-reduced-motion: reduce)',
       isFull: '(prefers-reduced-motion: no-preference)',
     };
@@ -489,7 +512,7 @@ export default function ProcessRail({
   }, {
     scope: containerRef,
     revertOnUpdate: true,
-    dependencies: [scrub, beadSize, sticky, stagger, disable, steps, vertical],
+    dependencies: [scrub, beadSize, sticky, stagger, disable, steps],
   });
 
   const handleStepClick = useCallback((i) => {
@@ -499,7 +522,7 @@ export default function ProcessRail({
   return (
     <section
       ref={containerRef}
-      className={`prl_wrap${vertical ? ' prl_vertical' : ''} ${className}`.trim()}
+      className={`prl_wrap ${className}`.trim()}
       style={{ '--prl-bead': beadSize + 'px' }}
       data-anm-process-rail
     >

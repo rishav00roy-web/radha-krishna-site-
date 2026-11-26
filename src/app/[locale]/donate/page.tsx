@@ -25,7 +25,7 @@ export default async function DonatePage({ params }: Props) {
   const g = d.donate;
   return (
     <>
-      <PageIntro title={g.title} intro={g.intro} icon="kalash" />
+      <PageIntro art="clayDiya" title={g.title} intro={g.intro} icon="kalash" />
       {/* Two ways to give: the bank account as a gold-framed plaque, cash beside it. */}
       <section className="section" aria-labelledby="ways">
         <div className="container-x">
