@@ -4,7 +4,8 @@ import { useEffect, useRef } from "react";
 import { LOTUS_PATHS } from "../BrandMark";
 
 /**
- * Touchable surface: the night behind the page is carved. Move the cursor (or drag a finger) and relief
+ * Touchable surface: the wall behind the page is carved (moonlit stone on night sections, ivory plaster
+ * on light ones). Move the cursor (or drag a finger) and relief
  * shapes, lotuses, peacock feathers, leaves and tendrils, rise out of the wall around it, then sink back.
  *
  * How: a relief pattern is painted once (lazily, on first touch) into an offscreen canvas with a
@@ -36,16 +37,41 @@ function rng(seed: number) {
   return () => ((s = (s * 1664525 + 1013904223) >>> 0) / 4294967296);
 }
 
-function paintPattern(ctx: CanvasRenderingContext2D, W: number, H: number, dpr: number, cell: number) {
+type Tone = "dark" | "light";
+
+// Emboss passes per tone: [dx, dy, colour, blur]. Dark = moonlit stone, light = ivory plaster.
+const PASSES: Record<Tone, [number, number, string, number][]> = {
+  dark: [
+    [2.4, 3, "rgba(2,6,12,0.9)", 1.8], // cast shadow
+    [-1.4, -1.6, "rgba(246,222,170,0.62)", 1], // moonlit edge
+    [0, 0, "rgba(74,94,122,0.96)", 1], // raised face
+  ],
+  light: [
+    [2.2, 2.8, "rgba(112,82,44,0.42)", 2], // soft shadow
+    [-1.4, -1.6, "rgba(255,253,247,0.95)", 1], // lit edge
+    [0, 0, "rgba(246,236,218,1)", 1], // plaster face
+  ],
+};
+
+/**
+ * Rishav's carved relief patterns (Gemini), turned into transparent light/shadow layers so they sit on any
+ * section colour. Tiled at TILE_SIZE css px (smaller on phones). Loaded on first touch; the drawn shapes
+ * are the fallback if a tile fails to load.
+ */
+const RELIEF_TILES: Record<Tone, string | null> = { dark: "/art/relief/relief-dark.webp", light: "/art/relief/relief-light.webp" };
+const TILE_SIZE = 560;
+
+function paintTile(ctx: CanvasRenderingContext2D, img: HTMLImageElement, W: number, H: number, dpr: number, scale: number) {
+  const size = Math.round(TILE_SIZE * scale * dpr);
+  for (let y = 0; y < H; y += size) for (let x = 0; x < W; x += size) ctx.drawImage(img, x, y, size, size);
+}
+
+function paintPattern(ctx: CanvasRenderingContext2D, W: number, H: number, dpr: number, cell: number, tone: Tone) {
   const glyphs = makeGlyphs();
   const r = rng(Math.round(W * 7 + H));
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
-  const passes: [number, number, string, number][] = [
-    [2.4, 3, "rgba(2,6,12,0.9)", 1.8], // cast shadow
-    [-1.4, -1.6, "rgba(246,222,170,0.62)", 1], // moonlit edge
-    [0, 0, "rgba(74,94,122,0.96)", 1], // raised face
-  ];
+  const passes = PASSES[tone];
   for (let y = -cell / 2; y < H / dpr + cell; y += cell * 0.86) {
     for (let x = -cell / 2; x < W / dpr + cell; x += cell) {
       const gl = glyphs[Math.floor(r() * glyphs.length)];
@@ -71,7 +97,7 @@ function paintPattern(ctx: CanvasRenderingContext2D, W: number, H: number, dpr: 
   ctx.filter = "none";
 }
 
-export function TouchSurface({ className = "" }: { className?: string }) {
+export function TouchSurface({ className = "", tone = "dark" }: { className?: string; tone?: Tone }) {
   const ref = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
@@ -81,12 +107,27 @@ export function TouchSurface({ className = "" }: { className?: string }) {
     const reduce = window.matchMedia("(prefers-reduced-motion: reduce)");
     if (reduce.matches) return;
     const coarse = window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768;
-    const dpr = coarse ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
+    // The relief is soft, so 1x is enough on every screen; the reveal mask is soft too and runs at 1/4.
+    const dpr = 1;
+    const MS = 0.25;
+    const LIFE = 2600; // ms a touched spot takes to sink back
     const cell = coarse ? 130 : 175;
     const radius = coarse ? 120 : 170;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
+    const tileSrc = RELIEF_TILES[tone];
+    let tileImg: HTMLImageElement | null = null;
+    let tileState: "idle" | "loading" | "ready" | "failed" = tileSrc ? "idle" : "failed";
+    const loadTile = () => {
+      if (tileState !== "idle" || !tileSrc) return;
+      tileState = "loading";
+      tileImg = new Image();
+      tileImg.decoding = "async";
+      tileImg.onload = () => { tileState = "ready"; };
+      tileImg.onerror = () => { tileState = "failed"; };
+      tileImg.src = tileSrc;
+    };
     let pattern: HTMLCanvasElement | null = null;
     let mask: HTMLCanvasElement | null = null;
     let mctx: CanvasRenderingContext2D | null = null;
@@ -95,14 +136,15 @@ export function TouchSurface({ className = "" }: { className?: string }) {
     let lastInput = 0;
     let last: { x: number; y: number } | null = null;
     const queue: { x: number; y: number }[] = [];
+    const recent: { x: number; y: number; t: number }[] = []; // drives the dirty rectangle
 
     const size = () => {
       const r = host.getBoundingClientRect();
-      W = Math.round(r.width * dpr);
-      H = Math.round(Math.min(r.height, 2400) * dpr);
+      W = Math.round(r.width);
+      H = Math.round(Math.min(r.height, 2400));
       canvas.width = W;
       canvas.height = H;
-      canvas.style.height = `${H / dpr}px`;
+      canvas.style.height = `${H}px`;
       pattern = null;
     };
     const build = () => {
@@ -112,44 +154,72 @@ export function TouchSurface({ className = "" }: { className?: string }) {
       pattern.height = H;
       const pctx = pattern.getContext("2d");
       if (!pctx) return false;
-      paintPattern(pctx, W, H, dpr, cell);
+      if (tileState === "ready" && tileImg) paintTile(pctx, tileImg, W, H, dpr, coarse ? 0.75 : 1);
+      else paintPattern(pctx, W, H, dpr, cell, tone);
       mask = document.createElement("canvas");
-      mask.width = W;
-      mask.height = H;
+      mask.width = Math.ceil(W * MS);
+      mask.height = Math.ceil(H * MS);
       mctx = mask.getContext("2d");
       return true;
     };
 
-    const stamp = (x: number, y: number) => {
-      if (!mctx) return;
-      const g = mctx.createRadialGradient(x * dpr, y * dpr, 0, x * dpr, y * dpr, radius * dpr);
+    // One soft brush, drawn once and stamped with drawImage (cheaper than a gradient per stamp).
+    const brush = document.createElement("canvas");
+    const br = Math.ceil(radius * MS);
+    brush.width = brush.height = br * 2;
+    const bctx = brush.getContext("2d");
+    if (bctx) {
+      const g = bctx.createRadialGradient(br, br, 0, br, br, br);
       g.addColorStop(0, "rgba(0,0,0,0.5)");
       g.addColorStop(0.55, "rgba(0,0,0,0.24)");
       g.addColorStop(1, "rgba(0,0,0,0)");
-      mctx.fillStyle = g;
-      mctx.fillRect((x - radius) * dpr, (y - radius) * dpr, radius * 2 * dpr, radius * 2 * dpr);
+      bctx.fillStyle = g;
+      bctx.fillRect(0, 0, br * 2, br * 2);
+    }
+    const stamp = (x: number, y: number) => {
+      if (mctx) mctx.drawImage(brush, x * MS - br, y * MS - br);
     };
 
     const frame = (now: number) => {
       raf = 0;
       if (!pattern || !mask || !mctx) return;
-      mctx.globalCompositeOperation = "destination-out";
-      mctx.fillStyle = "rgba(0,0,0,0.035)";
-      mctx.fillRect(0, 0, W, H);
-      mctx.globalCompositeOperation = "source-over";
       while (queue.length) {
         const p = queue.shift()!;
-        stamp(p.x, p.y);
+        recent.push({ x: p.x, y: p.y, t: now });
       }
-      ctx.globalCompositeOperation = "copy";
-      ctx.drawImage(pattern, 0, 0);
+      while (recent.length && now - recent[0].t > LIFE) recent.shift();
+      // Only the area touched in the last few seconds is redrawn.
+      let x0 = Infinity, y0 = Infinity, x1 = -Infinity, y1 = -Infinity;
+      for (const p of recent) { x0 = Math.min(x0, p.x); y0 = Math.min(y0, p.y); x1 = Math.max(x1, p.x); y1 = Math.max(y1, p.y); }
+      if (!recent.length) {
+        ctx.clearRect(0, 0, W, H);
+        mctx.clearRect(0, 0, mask.width, mask.height);
+        return;
+      }
+      x0 = Math.max(0, Math.floor(x0 - radius - 4)); y0 = Math.max(0, Math.floor(y0 - radius - 4));
+      x1 = Math.min(W, Math.ceil(x1 + radius + 4)); y1 = Math.min(H, Math.ceil(y1 + radius + 4));
+      const bw = x1 - x0, bh = y1 - y0;
+      if (bw <= 0 || bh <= 0) { if (now - lastInput < LIFE) raf = requestAnimationFrame(frame); return; }
+      const mx = Math.floor(x0 * MS), my = Math.floor(y0 * MS), mw = Math.ceil(bw * MS) + 1, mh = Math.ceil(bh * MS) + 1;
+      mctx.globalCompositeOperation = "destination-out";
+      mctx.fillStyle = "rgba(0,0,0,0.035)";
+      mctx.fillRect(mx, my, mw, mh);
+      mctx.globalCompositeOperation = "source-over";
+      for (const p of recent) if (p.t === now) stamp(p.x, p.y);
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(x0, y0, bw, bh);
+      ctx.clip();
+      ctx.clearRect(x0, y0, bw, bh);
+      ctx.drawImage(pattern, x0, y0, bw, bh, x0, y0, bw, bh);
       ctx.globalCompositeOperation = "destination-in";
-      ctx.drawImage(mask, 0, 0);
-      ctx.globalCompositeOperation = "source-over";
-      if (now - lastInput < 2600) raf = requestAnimationFrame(frame);
+      ctx.drawImage(mask, mx, my, mw, mh, mx / MS, my / MS, mw / MS, mh / MS);
+      ctx.restore();
+      if (now - lastInput < LIFE) raf = requestAnimationFrame(frame);
       else {
         ctx.clearRect(0, 0, W, H);
-        mctx.clearRect(0, 0, W, H);
+        mctx.clearRect(0, 0, mask.width, mask.height);
+        recent.length = 0;
       }
     };
 
@@ -157,10 +227,14 @@ export function TouchSurface({ className = "" }: { className?: string }) {
       const r = host.getBoundingClientRect();
       const x = clientX - r.left, y = clientY - r.top;
       if (x < -radius || y < -radius || x > r.width + radius || y > Math.min(r.height, 2400) + radius) return;
-      if (!pattern && !build()) return;
+      if (!pattern) {
+        // Wait (briefly) for the painted tile on first touch; fall back to drawn shapes if it fails.
+        loadTile();
+        if (tileState === "loading" || !build()) return;
+      }
       if (last) {
         const dist = Math.hypot(x - last.x, y - last.y);
-        const steps = Math.min(12, Math.floor(dist / 22));
+        const steps = Math.min(8, Math.floor(dist / (coarse ? 40 : 28)));
         for (let i = 1; i <= steps; i++) queue.push({ x: last.x + ((x - last.x) * i) / (steps + 1), y: last.y + ((y - last.y) * i) / (steps + 1) });
       }
       queue.push({ x, y });
@@ -196,7 +270,7 @@ export function TouchSurface({ className = "" }: { className?: string }) {
       host.removeEventListener("touchmove", onTouch);
       host.removeEventListener("touchend", onLeave);
     };
-  }, []);
+  }, [tone]);
 
   return <canvas ref={ref} aria-hidden className={`pointer-events-none absolute inset-x-0 top-0 w-full ${className}`} />;
 }

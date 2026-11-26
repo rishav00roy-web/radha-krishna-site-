@@ -77,7 +77,6 @@ export default async function Home({ params }: Props) {
             <span className="hidden max-w-[11rem] font-display text-[1.05rem] leading-tight [text-shadow:0_1px_10px_rgb(0_0_0/0.5)] sm:block">{d.meta.siteName}</span>
           </Link>
 
-          <TouchSurface />
           {/* Painted artwork. Upper right on wide screens (the painting is wide, so it fades out below), top band on phones. */}
           <div data-speed="0.18" data-depth="0.6" className="absolute inset-x-0 top-0 h-[68svh] lg:left-auto lg:right-0 lg:h-auto lg:w-[min(60vw,calc(100svh*1.48))] lg:aspect-[2272/1536]">
             <picture className="block h-full w-full">
@@ -97,6 +96,8 @@ export default async function Home({ params }: Props) {
             </picture>
           </div>
           <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
+          {/* Carving reads over the rays but stays off Radha-Krishna (top band on phones, right side on wide screens). */}
+          <TouchSurface className="opacity-75 [mask-image:linear-gradient(180deg,transparent_42%,#000_60%)] lg:[mask-image:linear-gradient(90deg,#000_36%,transparent_56%)]" />
           <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
 
           <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[9svh] pt-[44svh] lg:justify-center lg:pb-[18svh] lg:pt-28">
@@ -125,6 +126,7 @@ export default async function Home({ params }: Props) {
 
       {/* ── 02 About the temple: ivory dawn mist, far hills, birds, the temple emerging ── */}
       <section id="vision" data-parallax className="relative isolate z-10 -mt-[20svh] scroll-mt-20 bg-[linear-gradient(180deg,transparent_0%,var(--mist)_20svh,#efdfc4_70%,#ead6b6_100%)] text-ink">
+        <TouchSurface tone="light" />
         {/* Far ridges sit behind the temple and run under the text, so the land carries on across the page. */}
         <div data-speed="0.12" className="absolute inset-x-0 bottom-[8%] -z-10 h-[46%]">
           <Ridges
@@ -176,6 +178,7 @@ export default async function Home({ params }: Props) {
 
       {/* ── 03 Spiritual activities: warm day, a lit clay diya and a peacock feather in the foreground ── */}
       <section data-parallax className="relative isolate bg-[linear-gradient(180deg,#ead6b6_0%,#e6cfa9_55%,#dcc196_100%)] text-ink">
+        <TouchSurface tone="light" />
         <div className="container-x relative grid gap-10 pb-10 pt-6 lg:grid-cols-[minmax(0,0.85fr)_minmax(0,1.15fr)] lg:items-center lg:gap-16 lg:pb-16">
           {/* Still life: the feather rests behind the lamp; the lamp's flame is the warmest point of the day. */}
           <div aria-hidden className="relative mx-auto aspect-[5/4] w-full max-w-[360px] lg:max-w-[460px]">
@@ -222,6 +225,7 @@ export default async function Home({ params }: Props) {
 
       {/* ── 04 Krishna Janmashtami: through the trees into a moonlit evening, a hanging diya, the river of lamps ── */}
       <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#18251f_0%,#1a2833_14%,#1b2738_45%,#17222f_80%,#16212f_100%)] text-forest-ink">
+        <TouchSurface />
         <Stars className="absolute inset-x-0 top-0 h-[60%] w-full opacity-80" count={60} seed={9} />
         <span aria-hidden className="pointer-events-none absolute inset-x-0 bottom-[16%] h-[40%] bg-[radial-gradient(60%_50%_at_30%_100%,rgb(197_139_67/0.16),transparent_70%)]" />
         <div data-speed="0.3" className="absolute right-[8%] top-[10%] h-20 w-20 md:right-[14%] md:top-[14%] md:h-28 md:w-28">
@@ -256,6 +260,7 @@ export default async function Home({ params }: Props) {
 
       {/* ── 05 Campus master plan: blue hour over the land, each proposed area a lamp on the panorama ── */}
       <section data-parallax className="relative isolate bg-[linear-gradient(180deg,#16212f_0%,#14212e_55%,#111c28_100%)] text-forest-ink">
+        <TouchSurface />
         <div className="container-x relative pt-16 md:pt-24">
           <div className="max-w-2xl">
             <h2 data-reveal className="display-lg"><MaskWords text={h.campusTitle} /></h2>
