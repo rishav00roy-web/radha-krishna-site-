@@ -77,6 +77,7 @@ export default async function Home({ params }: Props) {
             <span className="hidden max-w-[11rem] font-display text-[1.05rem] leading-tight [text-shadow:0_1px_10px_rgb(0_0_0/0.5)] sm:block">{d.meta.siteName}</span>
           </Link>
 
+          <TouchSurface />
           {/* Painted artwork. Upper right on wide screens (the painting is wide, so it fades out below), top band on phones. */}
           <div data-speed="0.18" data-depth="0.6" className="absolute inset-x-0 top-0 h-[68svh] lg:left-auto lg:right-0 lg:h-auto lg:w-[min(60vw,calc(100svh*1.48))] lg:aspect-[2272/1536]">
             <picture className="block h-full w-full">

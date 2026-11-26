@@ -42,9 +42,9 @@ function paintPattern(ctx: CanvasRenderingContext2D, W: number, H: number, dpr: 
   ctx.lineCap = "round";
   ctx.lineJoin = "round";
   const passes: [number, number, string, number][] = [
-    [2.2, 2.8, "rgba(2,6,12,0.75)", 1.6], // cast shadow
-    [-1.3, -1.5, "rgba(236,206,150,0.42)", 1], // moonlit edge
-    [0, 0, "rgba(58,76,100,0.95)", 1], // raised face
+    [2.4, 3, "rgba(2,6,12,0.9)", 1.8], // cast shadow
+    [-1.4, -1.6, "rgba(246,222,170,0.62)", 1], // moonlit edge
+    [0, 0, "rgba(74,94,122,0.96)", 1], // raised face
   ];
   for (let y = -cell / 2; y < H / dpr + cell; y += cell * 0.86) {
     for (let x = -cell / 2; x < W / dpr + cell; x += cell) {
@@ -83,7 +83,7 @@ export function TouchSurface({ className = "" }: { className?: string }) {
     const coarse = window.matchMedia("(pointer: coarse)").matches || window.innerWidth < 768;
     const dpr = coarse ? 1 : Math.min(window.devicePixelRatio || 1, 1.5);
     const cell = coarse ? 130 : 175;
-    const radius = coarse ? 110 : 150;
+    const radius = coarse ? 120 : 170;
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
@@ -123,8 +123,8 @@ export function TouchSurface({ className = "" }: { className?: string }) {
     const stamp = (x: number, y: number) => {
       if (!mctx) return;
       const g = mctx.createRadialGradient(x * dpr, y * dpr, 0, x * dpr, y * dpr, radius * dpr);
-      g.addColorStop(0, "rgba(0,0,0,0.32)");
-      g.addColorStop(0.55, "rgba(0,0,0,0.14)");
+      g.addColorStop(0, "rgba(0,0,0,0.5)");
+      g.addColorStop(0.55, "rgba(0,0,0,0.24)");
       g.addColorStop(1, "rgba(0,0,0,0)");
       mctx.fillStyle = g;
       mctx.fillRect((x - radius) * dpr, (y - radius) * dpr, radius * 2 * dpr, radius * 2 * dpr);
