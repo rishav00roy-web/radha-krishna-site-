@@ -13,11 +13,11 @@ npm run build && npm start
 npm run typecheck && npm run lint
 ```
 
-It deploys to any Next.js host, such as Vercel or Netlify.
+It is hosted on Hostinger as a Node.js web app (Business or Cloud plan), which builds it from this repository. It also deploys to any other Next.js host.
 
 ### Before launch: set the site address
 
-Set the environment variable `NEXT_PUBLIC_SITE_URL` on the host to the live address, for example `https://www.your-domain.org` (no slash at the end). On Vercel this is under Project → Settings → Environment Variables; redeploy after adding it.
+Set the environment variable `NEXT_PUBLIC_SITE_URL` on the host to the live address, for example `https://www.your-domain.org` (no slash at the end). On Hostinger: hPanel → Websites → this site → Environment variables → Add, then save and redeploy. The value is fixed when the site is built, so it only takes effect after a redeploy.
 
 The site uses this address in the links it gives Google (canonical and language links) and in the preview shown when a page is shared on WhatsApp or Facebook. If it is not set, those links point to `http://localhost:3000`, which works for nobody else.
 
