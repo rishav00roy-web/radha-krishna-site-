@@ -4,6 +4,7 @@ import { getDictionary } from "@/i18n";
 import { en } from "@/i18n/dictionaries/en";
 import { pageMetadata } from "@/lib/seo";
 import { getOrganisation } from "@/lib/data";
+import { whatsappHref } from "@/lib/compose";
 import { PageIntro } from "@/components/PageIntro";
 import { DonateForm } from "@/components/DonateForm";
 import { CopyField } from "@/components/CopyField";
@@ -26,7 +27,7 @@ export default async function DonatePage({ params }: Props) {
   return (
     <>
       <PageIntro art="clayDiya" title={g.title} intro={g.intro} icon="kalash" />
-      {/* Two ways to give: the bank account as a gold-framed plaque, cash beside it. */}
+      {/* Three ways to give: the bank account as a gold-framed plaque, cash beside it, in-kind support below. */}
       <section className="section" aria-labelledby="ways">
         <div className="container-x">
           <h2 id="ways" data-reveal className="display-lg text-center">{g.waysTitle}</h2>
@@ -66,6 +67,20 @@ export default async function DonatePage({ params }: Props) {
                 <a href={`tel:+91${org.phone}`} className="btn btn-primary">{d.contact.call}</a>
               </div>
               <p className="mt-auto pt-8 text-sm text-ink-soft">{g.cashNote}</p>
+            </article>
+
+            <article data-reveal className="relative flex flex-col gap-6 rounded border border-gold/40 bg-marble-2 p-7 sm:p-10 lg:col-span-2 lg:flex-row lg:items-center lg:justify-between lg:gap-10">
+              <div className="max-w-[62ch]">
+                <div className="flex items-center gap-4">
+                  <Icon name="tree" size={40} className="shrink-0 text-gold" />
+                  <h3 className="display-md">{g.inkindTitle}</h3>
+                </div>
+                <p className="mt-4 text-ink-soft">{g.inkindBody}</p>
+              </div>
+              <div className="flex flex-wrap gap-3 lg:shrink-0">
+                <a href={`tel:+91${org.phone}`} className="btn btn-primary">{d.contact.call}</a>
+                <a href={whatsappHref(org.whatsapp, g.inkindMessage)} target="_blank" rel="noopener noreferrer" className="btn btn-quiet">{g.inkindWhatsApp}</a>
+              </div>
             </article>
           </div>
         </div>
