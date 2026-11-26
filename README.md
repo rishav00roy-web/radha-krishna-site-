@@ -53,9 +53,9 @@ The scenery layers (hills, stars, moon, birds), the campus blueprint and the ico
 
 ## Contact and donation forms
 
-Neither form sends anything from the website. Each one checks the input and then opens WhatsApp to `organisation.whatsapp` with the details filled in. The visitor presses send.
+Neither form sends anything from the website. Each one checks the input and then opens the visitor's email app, addressed to `organisation.email` (gokulgramaya@gmail.com), with the details filled in. The visitor presses send. A "Send on WhatsApp" button does the same through WhatsApp to `organisation.whatsapp`.
 
-The foundation has no email address yet, so `organisation.email` is `null`: the forms offer WhatsApp only and no email is shown anywhere on the site. When there is an address, put it in `organisation.email`. A "Send by email" button then appears on both forms (opening the visitor's email app, addressed to it) and the address is shown on the Contact and Organisation pages and in the footer.
+If `organisation.email` is set to `null`, the forms offer WhatsApp only and no email address is shown on the site.
 
 The donation form asks how the visitor is giving (bank transfer or cash), the amount, purpose, name and phone number, with an optional transaction reference (UTR) and note. It takes no payment. The foundation contacts the donor to acknowledge the gift.
 
