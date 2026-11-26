@@ -3,6 +3,7 @@ import { Icon } from "./Icon";
 import { Embers } from "./Embers";
 import { Mist, Rays } from "./home/art";
 import { MaskWords } from "./MaskWords";
+import { TouchSurface } from "./painting/TouchSurface";
 import { Flame, Moon, Ridges, Stars } from "./painting/scenery";
 
 /** One piece of Rishav's art that stands for the page, painted into its night scene. */
@@ -94,6 +95,7 @@ export function PageIntro({
   return (
     <section data-parallax className="relative isolate overflow-hidden bg-[linear-gradient(180deg,#0d1622_0%,#101b29_40%,#1a283a_78%,#22324a_100%)] pb-32 pt-24 text-forest-ink md:pb-40 md:pt-28">
       <Stars className="absolute inset-x-0 top-0 h-[70%] w-full opacity-70" count={55} seed={title.length + 3} />
+      <TouchSurface />
       {/* Rays fall from the upper right, over the art, so they never wash over the text. */}
       <div aria-hidden className="pointer-events-none absolute inset-0 -scale-x-100"><Rays className="h-full w-full opacity-20 md:opacity-30" /></div>
       <div data-speed="0.25" className={`absolute h-14 w-14 md:h-20 md:w-20 ${art === "moon" ? "right-[12%] top-[22%] md:right-[18%]" : "right-[6%] top-[12%] md:right-[44%] md:top-[14%]"}`}>

@@ -286,11 +286,9 @@
 @keyframes flame-glow { 0%, 100% { opacity: 0.75; scale: 1; } 45% { opacity: 1; scale: 1.08; } 70% { opacity: 0.85; scale: 0.97; } }
 .sun-glow { animation: sun-glow 7s ease-in-out infinite; will-change: opacity, scale; }
 @keyframes sun-glow { 0%, 100% { opacity: 0.55; scale: 0.94; } 50% { opacity: 1; scale: 1.06; } }
-.scroll-wheel { animation: scroll-wheel 1.8s ease-in-out infinite; }
-@keyframes scroll-wheel { 0% { transform: translateY(0); opacity: 1; } 70% { transform: translateY(7px); opacity: 0; } 100% { transform: translateY(0); opacity: 0; } }
 
 @media (prefers-reduced-motion: reduce) {
-  .rays-sway, .mist-drift, .diya-swing, .flame-glow, .sun-glow, .scroll-wheel { animation: none !important; }
+  .rays-sway, .mist-drift, .diya-swing, .flame-glow, .sun-glow { animation: none !important; }
   *,
   *::before,
   *::after {
@@ -343,36 +341,6 @@
   height: 14px;
   background: linear-gradient(180deg, rgb(240 194 122 / 0.6), transparent);
 }
-
-/* Golden path rows. Desktop: lamps alternate at 44% and 56% with the text on the far side.
-   Phones: the path hugs the left edge and every stage reads to its right. */
-.gp-row { position: relative; display: flex; align-items: center; }
-.gp-lamp {
-  position: absolute;
-  top: 50%;
-  left: var(--gp-x);
-  width: 16px;
-  height: 16px;
-  margin: -8px 0 0 -8px;
-  border-radius: 9999px;
-  background: radial-gradient(circle, #fff1cf 0%, #e8c98d 40%, #c58b43 100%);
-  box-shadow: 0 0 0 5px rgb(16 27 41 / 0.9), 0 0 0 6px rgb(207 174 114 / 0.5), 0 0 26px 8px rgb(232 201 141 / 0.35);
-  transition: opacity 0.6s var(--ease-out), box-shadow 0.6s var(--ease-out), scale 0.6s var(--ease-out);
-}
-.gp-text { padding-left: 28%; }
-.gp-row--l { --gp-x: 9%; }
-.gp-row--r { --gp-x: 19%; }
-@media (min-width: 768px) {
-  .gp-row--l { --gp-x: 44%; justify-content: flex-end; }
-  .gp-row--r { --gp-x: 56%; }
-  .gp-row--l .gp-text { padding: 0; width: 38%; margin-right: 62%; text-align: right; }
-  .gp-row--r .gp-text { padding: 0; width: 38%; margin-left: 62%; }
-}
-/* Once Motion has taken over, lamps wait dim until the path reaches them. */
-[data-gp-live] .gp-lamp { opacity: 0.35; scale: 0.7; box-shadow: 0 0 0 5px rgb(16 27 41 / 0.9), 0 0 0 6px rgb(207 174 114 / 0.3); }
-[data-gp-live] .gp-text { opacity: 0.45; transition: opacity 0.6s var(--ease-out); }
-[data-gp-live] [data-lit] .gp-lamp { opacity: 1; scale: 1; box-shadow: 0 0 0 5px rgb(16 27 41 / 0.9), 0 0 0 6px rgb(207 174 114 / 0.6), 0 0 30px 10px rgb(232 201 141 / 0.4); }
-[data-gp-live] [data-lit] .gp-text { opacity: 1; }
 
 [data-offscreen] .twinkle, [data-offscreen] .bird-drift, [data-offscreen] .flame, [data-offscreen] .scroll-thread > span { animation-play-state: paused; }
 

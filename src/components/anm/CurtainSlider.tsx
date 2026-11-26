@@ -551,7 +551,6 @@ export default function CurtainSlider({
       });
       if (progressFillRef.current) gsap.killTweensOf(progressFillRef.current);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, { scope: containerRef, dependencies: [images, clampedColumns, disable] });
 
   const handlePrevClick = contextSafe(() => { prev(); armAutoResume(); });

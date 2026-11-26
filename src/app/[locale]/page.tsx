@@ -15,7 +15,8 @@ import { RiverLamps } from "@/components/home/RiverLamps";
 import { SparkLotus } from "@/components/home/SparkLotus";
 import { MaskWords } from "@/components/MaskWords";
 import { Birds, Flame, Moon, Ridges, Stars } from "@/components/painting/scenery";
-import { GoldenPath } from "@/components/painting/GoldenPath";
+import { JourneyTimeline } from "@/components/painting/JourneyTimeline";
+import { TouchSurface } from "@/components/painting/TouchSurface";
 
 type Props = { params: Promise<{ locale: string }> };
 
@@ -309,7 +310,7 @@ export default async function Home({ params }: Props) {
         </div>
       </section>
 
-      {/* ── 06 Project journey: a golden path winding down through the night ── */}
+      {/* ── 06 Project journey: an alternating timeline drawing down through the night ── */}
       <section data-parallax className="relative isolate bg-[linear-gradient(180deg,#111c28_0%,#111d2b_50%,#101b29_100%)] text-forest-ink" data-no-reveal>
         <span aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(40%_30%_at_80%_30%,rgb(24_37_31/0.8),transparent_70%),radial-gradient(40%_30%_at_15%_70%,rgb(24_37_31/0.7),transparent_70%)]" />
         <div className="container-x relative pb-20 pt-16 md:pb-28 md:pt-20">
@@ -317,12 +318,13 @@ export default async function Home({ params }: Props) {
             <h2 data-reveal className="display-lg"><MaskWords text={h.journeyTitle} /></h2>
             <p data-reveal className="lede measure mt-5 !text-forest-soft md:mx-auto">{h.journeyBody}</p>
           </div>
-          <div className="mx-auto mt-12 max-w-4xl md:mt-16">
-            <GoldenPath
-              steps={milestones.map((m) => {
+          <div className="mx-auto mt-10 max-w-5xl md:mt-14">
+            <JourneyTimeline
+              label={h.journeyTitle}
+              stages={milestones.map((m) => {
                 const status = m.verified ? m.status : "planned";
                 const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
-                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), status: label, done: status === "completed" };
+                return { num: String(m.step).padStart(2, "0"), title: t(m.title, locale), body: t(m.description, locale), status: label, done: status === "completed" };
               })}
             />
           </div>
@@ -333,6 +335,7 @@ export default async function Home({ params }: Props) {
       {/* ── 07 Closing: midnight, a great peacock feather, the verse, and the invitation ── */}
       <section data-parallax className="relative isolate overflow-hidden bg-night text-forest-ink">
         <Stars className="absolute inset-0 h-full w-full opacity-70" count={90} seed={23} />
+        <TouchSurface />
         <div data-speed="-0.3" aria-hidden className="pointer-events-none absolute -left-16 bottom-0 w-[min(78vw,420px)] opacity-80 lg:-left-8 lg:bottom-10 lg:w-[min(40vw,560px)] lg:opacity-90">
           {/* eslint-disable-next-line @next/next/no-img-element -- local art */}
           <img src="/art/peacock-feather.webp" alt="" width={800} height={685} loading="lazy" className="h-auto w-full" />

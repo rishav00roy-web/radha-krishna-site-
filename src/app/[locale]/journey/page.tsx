@@ -6,7 +6,7 @@ import { pageMetadata } from "@/lib/seo";
 import { getMilestones, getUpdates } from "@/lib/data";
 import { formatDate } from "@/lib/view";
 import { PageIntro } from "@/components/PageIntro";
-import { GoldenPath } from "@/components/painting/GoldenPath";
+import { JourneyTimeline } from "@/components/painting/JourneyTimeline";
 
 type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -26,13 +26,14 @@ export default async function JourneyPage({ params }: Props) {
     <>
       <PageIntro art="feather" title={d.journey.title} intro={d.journey.intro} icon="conch" />
 
-      {/* The same golden path as Home, with each stage's description. It draws itself as you scroll and each
-          lamp lights as the path reaches it. Unverified progress is never shown: it falls back to "Planned". */}
+      {/* The same alternating timeline as Home: the line draws down and each stage rises as it is reached.
+          Unverified progress is never shown: it falls back to "Planned". */}
       <section className="on-dark section" data-no-reveal>
         <div className="container-x">
-          <div className="mx-auto max-w-4xl">
-            <GoldenPath
-              steps={milestones.map((m) => {
+          <div className="mx-auto max-w-5xl">
+            <JourneyTimeline
+              label={d.journey.title}
+              stages={milestones.map((m) => {
                 const status = m.verified ? m.status : "planned";
                 const label = status === "completed" ? d.journey.statusCompleted : status === "in_progress" ? d.journey.statusInProgress : d.journey.statusPlanned;
                 const verified = m.verified && m.verified_on ? `, ${d.journey.verifiedOn} ${formatDate(m.verified_on, locale)}` : "";
