@@ -4,7 +4,7 @@
 import type { ComponentType } from "react";
 import CurtainSliderJs from "./CurtainSlider";
 
-export type CurtainImage = { src: string; alt: string; title: string; label: string };
+type CurtainImage = { src: string; alt: string; title: string; label: string };
 export const CurtainSlider = CurtainSliderJs as unknown as ComponentType<{
   images: CurtainImage[]; className?: string; duration?: number; columns?: number; auto?: number; drag?: boolean;
 }>;

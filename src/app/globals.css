@@ -345,7 +345,7 @@
 .section.bg-marble-2 {
   background: linear-gradient(180deg, var(--marble) 0, var(--marble-2) 7rem, var(--marble-2) calc(100% - 7rem), var(--marble) 100%);
 }
-/* Night bands: a dark treeline rises out of the paper above, and the night lifts into mist below,
+/* Night bands: Rishav's foliage rises out of the paper above, and the night lifts into mist below,
    so a dark section reads as dusk falling over the same landscape rather than a box. */
 .section.on-dark {
   position: relative;
@@ -379,12 +379,9 @@
 main > .section.on-dark:last-child { padding-bottom: clamp(5rem, 9vw, 8rem); background: linear-gradient(180deg, var(--night) 0%, #142131 55%, var(--night) 100%); }
 main > .section.on-dark:last-child::after { display: none; }
 
-/* Footer: the treeline rises out of the last section, so every page ends in the night landscape. */
+/* Footer: the foliage rises out of the last section, so every page ends in the night landscape. */
+/* In the footer's own flow (not hanging above it), so it never covers the end of the page. */
 .footer-ridge {
-  position: absolute;
-  bottom: calc(100% - 1px);
-  left: 0;
-  right: 0;
   height: var(--foliage-h);
   background: var(--foliage-band);
   pointer-events: none;

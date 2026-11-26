@@ -40,7 +40,7 @@ function treePath(seed: number, base: number, amp: number, step: number, w = 160
   return `${d} L${w + 40} ${h} Z`;
 }
 
-export type RidgeLayer = { kind?: "hill" | "trees"; seed: number; base: number; amp: number; freq?: number; fill: string; opacity?: number };
+type RidgeLayer = { kind?: "hill" | "trees"; seed: number; base: number; amp: number; freq?: number; fill: string; opacity?: number };
 
 /** Layered ridges, far to near, in one SVG. Atmospheric perspective comes from the colours passed in. */
 export function Ridges({ layers, className = "", height = 400 }: { layers: RidgeLayer[]; className?: string; height?: number }) {

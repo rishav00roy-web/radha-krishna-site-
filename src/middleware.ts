@@ -1,23 +1,12 @@
 import { NextResponse, type NextRequest } from "next/server";
-import { defaultLocale, isLocale, locales } from "@/i18n/config";
+import { defaultLocale, isLocale } from "@/i18n/config";
 
-function preferredLocale(req: NextRequest) {
-  const cookie = req.cookies.get("NEXT_LOCALE")?.value;
-  if (isLocale(cookie)) return cookie;
-  const accept = req.headers.get("accept-language")?.toLowerCase() ?? "";
-  return locales.find((l) => accept.includes(l)) ?? defaultLocale;
-}
-
+/** A path without a language goes to the same page in English; the language switcher links to /as and /hi. */
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
-  const first = pathname.split("/")[1];
-  if (isLocale(first)) {
-    const res = NextResponse.next();
-    if (req.cookies.get("NEXT_LOCALE")?.value !== first) res.cookies.set("NEXT_LOCALE", first, { path: "/", maxAge: 31536000, sameSite: "lax" });
-    return res;
-  }
+  if (isLocale(pathname.split("/")[1])) return NextResponse.next();
   const url = req.nextUrl.clone();
-  url.pathname = `/${preferredLocale(req)}${pathname === "/" ? "" : pathname}`;
+  url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
   return NextResponse.redirect(url);
 }
 

@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
+import { afterLoad } from "@/lib/idle";
 
 /**
  * Live golden motes drifting upward, like sparks from aarti lamps. One small canvas per scene:
@@ -97,8 +98,9 @@ export function Embers({
       raf = requestAnimationFrame(frame);
     };
 
+    let ready = false;
     const start = () => {
-      if (raf || !visible || document.hidden) return;
+      if (raf || !ready || !visible || document.hidden) return;
       last = performance.now();
       raf = requestAnimationFrame(frame);
     };
@@ -118,8 +120,10 @@ export function Embers({
     io.observe(canvas);
     const onVis = () => (document.hidden ? stop() : start());
     document.addEventListener("visibilitychange", onVis);
+    const cancelIdle = afterLoad(() => { ready = true; start(); });
 
     return () => {
+      cancelIdle();
       stop();
       ro.disconnect();
       io.disconnect();

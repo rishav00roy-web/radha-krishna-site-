@@ -8,7 +8,7 @@ export const LOTUS_PATHS = [
 ];
 
 /** The temple's gold line lotus: five petals over a curved base, drawn from Rishav's logo. */
-export function LotusLogo({ width = 56, className, strokeWidth = 2.8, glow = false }: { width?: number; className?: string; strokeWidth?: number; glow?: boolean }) {
+function LotusLogo({ width = 56, className, strokeWidth = 2.8, glow = false }: { width?: number; className?: string; strokeWidth?: number; glow?: boolean }) {
   return (
     <svg
       viewBox="0 0 110 60"

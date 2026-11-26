@@ -12,7 +12,7 @@ import "./journey-timeline.css";
  * Without JS or with reduced motion everything shows and the line is full.
  * Stages stay "Planned" until the foundation verifies them (src/lib/content.ts).
  */
-export type JourneyStage = {
+type JourneyStage = {
   num: string; title: string; body?: string; status: string; done: boolean;
   /** An illustrative photo for the stage (Unsplash), with its credit. Falls back to Rishav's art. */
   photo?: { src: string; srcSet: string; alt: string; credit: string; creditHref: string; siteHref: string };
@@ -22,7 +22,7 @@ export type JourneyStage = {
 const ART = [
   { src: "/art/hero/radha-krishna-1280.webp", w: 1280, h: 865, fit: "cover", pos: "62% 28%" },
   { src: "/art/lotus-float.webp", w: 800, h: 800, fit: "cutout" },
-  { src: "/art/temple-concept.jpg", w: 984, h: 1040, fit: "cover", pos: "50% 40%" },
+  { src: "/art/temple-concept.webp", w: 984, h: 1040, fit: "cover", pos: "50% 40%" },
   { src: "/art/hanging-diya.jpg", w: 1200, h: 1444, fit: "cover", pos: "50% 45%" },
   { src: "/art/peacock-feather.jpg", w: 1400, h: 1200, fit: "cover", pos: "45% 50%" },
   { src: "/art/diya-float.webp", w: 600, h: 600, fit: "cutout" },

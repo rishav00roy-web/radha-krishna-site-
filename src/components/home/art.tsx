@@ -1,15 +1,25 @@
-import { LotusLogo } from "../BrandMark";
+import { LOTUS_PATHS } from "../BrandMark";
+import { SparkLotus } from "./SparkLotus";
 /**
  * Decorative layers for the homepage scenes. The painted artwork comes from Rishav's own
  * mockup (public/art); these SVG layers add depth for parallax. All are aria-hidden.
  */
 
-/** Line, lotus, line: the mockup's ornament. */
+/** Line, lotus, line: the mockup's ornament, with Rishav's lotus mark gathered from golden sparks. */
 export function Ornament({ className = "" }: { className?: string }) {
   return (
     <div aria-hidden data-ornament className={`flex items-center justify-center gap-4 text-gold-bright ${className}`}>
       <span data-ornament-line className="h-px w-16 origin-right bg-[linear-gradient(90deg,transparent,currentColor)] opacity-70 md:w-24" />
-      <LotusLogo width={96} strokeWidth={2.6} glow className="text-[#e2c486] md:h-[66px] md:w-[120px]" />
+      {/* Golden sparks fly in from both sides and settle into Rishav's lotus mark. */}
+      <SparkLotus
+        paths={LOTUS_PATHS}
+        vb={[110, 60]}
+        size={110}
+        box={[240, 84]}
+        line={2.8}
+        className="!mx-0 w-[240px] shrink-0 !text-[#e2c486]"
+        svgClassName="[filter:drop-shadow(0_0_6px_rgb(16_27_41/0.9))_drop-shadow(0_0_12px_rgb(255_206_128/0.4))]"
+      />
       <span data-ornament-line className="h-px w-16 origin-left bg-[linear-gradient(270deg,transparent,currentColor)] opacity-70 md:w-24" />
     </div>
   );
