@@ -4,9 +4,13 @@ This connects rkpm.org to a Google Sheet in the foundation's Google account. Eac
 
 It takes about 15 minutes and costs nothing.
 
-## 1. Use the foundation's Google account
+## 1. Choose the Google account
 
-Sign in to Google as **gokulgramaya@gmail.com**. Receipts are sent from the account that owns the sheet, so donors see that address.
+The sheet can live in any Google account. Starting with your own and moving it to the foundation's later is fine (see **Moving to another Google account** below).
+
+- Receipts are emailed from the account that owns the sheet, so donors see that address as the sender. The sender name is "Gousamuh Gramaya Foundation", and replies go to gokulgramaya@gmail.com.
+- New-entry alerts go to the account that owns the sheet.
+- The receipt itself always shows the foundation's details, not the account's.
 
 ## 2. Make the sheet and add the script
 
@@ -53,7 +57,7 @@ Commit it and let Hostinger redeploy. Until this is set, the form still works th
 ## 6. Test it
 
 1. On rkpm.org/en/donate, fill in the form with your own details. Use a small amount and your own email.
-2. A new row appears in **Donations**, and an email arrives at gokulgramaya@gmail.com.
+2. A new row appears in **Donations**, and an alert arrives in the inbox of the account that owns the sheet.
 3. Tick **Verified** on that row. Within a few seconds:
    - **Receipt no.** fills in (for example `GGF/2026-27/0001`)
    - **Receipt status** says "Emailed …"
@@ -80,9 +84,21 @@ Delete the test row afterwards. Receipt numbers carry on from the last one used,
 **Privacy**
 - The sheet holds donors' phone numbers, addresses and PAN numbers. Share it only with the people who handle donations.
 
+## Moving to another Google account
+
+For example, from your own account to gokulgramaya@gmail.com:
+
+1. In the current sheet, choose **Share** and add the new account as an editor.
+2. Signed in as the new account, open the sheet and choose **File → Make a copy**. The copy keeps all the rows and the script.
+3. In the copy, do steps 3 and 4 again: run **setup**, then **Deploy → New deployment → Web app**. You get a new web-app URL.
+4. Put the new URL in `donationSheetUrl` in `src/lib/content.ts` and redeploy the site.
+5. In the old account, remove the old deployment (**Deploy → Manage deployments → Archive**), so nothing more arrives there.
+
+Receipt numbers carry on from the highest number already in the copy, so there are no duplicates.
+
 ## Good to know
 
-- A free Gmail account can send about 100 emails a day from a script. That covers receipts plus new-entry alerts. To stop the alerts, set `notifyNewEntries: false` in `CONFIG` at the top of the script.
+- A free Gmail account can send about 100 emails a day from a script. That covers receipts plus new-entry alerts. To stop the alerts, set `notifyNewEntries: false` in `CONFIG` at the top of the script. To send them somewhere other than the owner's inbox, put an address in `alertsTo`.
 - The foundation's details on the receipt (address, phone, CIN, PAN) are in `CONFIG` at the top of the script. If they change, edit them there.
 - **After changing the script:** choose **Deploy → Manage deployments**, click the pencil, set Version to **New version**, then **Deploy**. The web-app URL stays the same.
 - The receipt states that the foundation is not registered under Section 80G. If it registers later, change `taxNote` in `CONFIG` and add the 80G registration number to the receipt.

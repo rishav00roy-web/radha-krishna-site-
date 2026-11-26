@@ -34,8 +34,11 @@ const CONFIG = {
   taxNote:
     'Gousamuh Gramaya Foundation is not registered under Section 80G of the Income-tax Act, 1961, ' +
     'so this donation does not qualify for an income-tax deduction.',
-  // Email the foundation about every new entry from the website.
+  // Email an alert about every new entry from the website.
   notifyNewEntries: true,
+  // Where alerts go. Empty means the Google account that owns this sheet, so they follow
+  // the sheet if it moves to another account. Put an address here to send them elsewhere.
+  alertsTo: '',
   timeZone: 'Asia/Kolkata',
   // More entries than this in one minute are refused, to stop a flood of junk.
   maxEntriesPerMinute: 30,
@@ -253,7 +256,7 @@ function notifyFoundation_(entry) {
     : 'When the money is in the bank (or the cash is counted), tick "Verified" on this row in the "' +
       MONEY_SHEET + '" tab. The receipt then goes to the donor.';
   MailApp.sendEmail({
-    to: CONFIG.email,
+    to: CONFIG.alertsTo || Session.getEffectiveUser().getEmail(),
     subject: subject,
     body: lines.join('\n') + '\n\n' + next + '\n\n' + SpreadsheetApp.getActive().getUrl(),
     name: CONFIG.orgName + ' website',
@@ -319,7 +322,7 @@ function issueReceipt_(sheet, row) {
       return;
     }
     const now = new Date();
-    entry.receiptNo = nextReceiptNo_(now);
+    entry.receiptNo = nextReceiptNo_(now, sheet);
     entry.receiptDate = now;
     sheet.getRange(row, at['Receipt no.']).setValue(cellValue_('receiptNo', entry.receiptNo));
     sheet.getRange(row, at['Receipt date']).setValue(now);
@@ -360,12 +363,25 @@ function deliverReceipt_(sheet, row, entry) {
   }
 }
 
-/** Next number in this financial year (April to March), e.g. GGF/2026-27/0007. */
-function nextReceiptNo_(date) {
+/**
+ * Next number in this financial year (April to March), e.g. GGF/2026-27/0007. It carries on from
+ * the highest number already in the sheet, so a copy of the sheet in another Google account
+ * continues the numbering instead of starting again at 0001.
+ */
+function nextReceiptNo_(date, sheet) {
   const fy = financialYear_(date);
   const props = PropertiesService.getDocumentProperties();
   const key = 'receiptSeq_' + fy;
-  const next = Number(props.getProperty(key) || 0) + 1;
+  let last = Number(props.getProperty(key) || 0);
+  const col = sheet && headerIndex_(sheet)['Receipt no.'];
+  if (col && sheet.getLastRow() > 1) {
+    const pattern = new RegExp('^' + CONFIG.receiptPrefix + '/' + fy + '/(\\d+)$');
+    sheet.getRange(2, col, sheet.getLastRow() - 1, 1).getValues().forEach(function (r) {
+      const m = pattern.exec(String(r[0]).replace(/^'/, ''));
+      if (m) last = Math.max(last, Number(m[1]));
+    });
+  }
+  const next = last + 1;
   props.setProperty(key, String(next));
   return CONFIG.receiptPrefix + '/' + fy + '/' + ('000' + next).slice(-4);
 }

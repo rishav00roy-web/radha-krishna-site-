@@ -65,7 +65,7 @@ The contact form sends nothing from the website. It checks the input and then op
 Both forms also ask for the donor's name, father's or spouse's name, organisation, phone, email, full address and PAN, and for consent to keep the details. Both use `src/components/DonateForm.tsx`. No payment is taken on the website.
 
 The forms send the details to a Google Sheet in the foundation's account, run by the script in [`google-sheet/Code.gs`](google-sheet/Code.gs):
-- Money goes to the **Donations** tab and land to **Founding members**, and the foundation is emailed about each new entry.
+- Money goes to the **Donations** tab and land to **Founding members**. The account that owns the sheet gets an email alert for each new entry.
 - When someone at the foundation has checked the bank statement (or counted the cash), they tick **Verified**. The donor is then emailed a numbered PDF receipt (GGF/2026-27/0001 and so on), and the row gets a one-tap link to send the same receipt on WhatsApp.
 - Founding members get no receipt, because a gift of land is completed only by a registered deed.
 - The foundation is not registered under Section 80G, and the receipt says so.
