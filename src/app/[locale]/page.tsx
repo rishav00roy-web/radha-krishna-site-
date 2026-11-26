@@ -96,6 +96,8 @@ export default async function Home({ params }: Props) {
             </picture>
           </div>
           <Rays className="pointer-events-none absolute inset-0 h-full w-full opacity-80" />
+          {/* Carving reads over the rays but stays off Radha-Krishna (top band on phones, right side on wide screens). */}
+          <TouchSurface className="opacity-75 [mask-image:linear-gradient(180deg,transparent_42%,#000_60%)] lg:[mask-image:linear-gradient(90deg,#000_36%,transparent_56%)]" />
           <Embers className="absolute inset-0 z-10 h-full w-full" density={0.5} />
 
           <div data-speed="-0.35" data-hero-copy className="container-x relative z-30 flex min-h-[100svh] flex-col justify-end pb-[9svh] pt-[44svh] lg:justify-center lg:pb-[18svh] lg:pt-28">
