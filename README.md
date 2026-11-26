@@ -15,11 +15,11 @@ npm run typecheck && npm run lint
 
 It is hosted on Hostinger as a Node.js web app (Business or Cloud plan), which builds it from this repository. It also deploys to any other Next.js host.
 
-### Before launch: set the site address
+### The site address
 
-Set the environment variable `NEXT_PUBLIC_SITE_URL` on the host to the live address, for example `https://www.your-domain.org` (no slash at the end). On Hostinger: hPanel → Websites → this site → Environment variables → Add, then save and redeploy. The value is fixed when the site is built, so it only takes effect after a redeploy.
+The live site is **https://rkpm.org**. That address is written in `src/lib/seo.ts`, and the site uses it in the links it gives Google (canonical and language links) and in the preview shown when a page is shared on WhatsApp or Facebook. No setting is needed on Hostinger.
 
-The site uses this address in the links it gives Google (canonical and language links) and in the preview shown when a page is shared on WhatsApp or Facebook. If it is not set, those links point to `http://localhost:3000`, which works for nobody else.
+If the domain ever changes, change it in `src/lib/seo.ts`. To run a test copy at another address, set the environment variable `NEXT_PUBLIC_SITE_URL` there instead (on Hostinger: hPanel → Websites → the site → Environment variables → Add, then save and redeploy; the value is fixed when the site is built).
 
 ## Editing content
 
