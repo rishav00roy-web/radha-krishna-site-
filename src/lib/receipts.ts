@@ -2,13 +2,17 @@
  * Founding-member sign-ups and donation notices go to the foundation's receipt register:
  * a Google Sheet with an Apps Script web app (see /receipts in the repository).
  *
- * NEXT_PUBLIC_RECEIPTS_ENDPOINT is the web app's URL. Without it the forms run in demo mode:
- * nothing is sent, the visitor sees the reference they would get, and sends the details
- * themselves by email or WhatsApp, as before.
+ * NEXT_PUBLIC_RECEIPTS_ENDPOINT overrides the web app's URL; otherwise DEFAULT_ENDPOINT is used.
+ * The URL is public by design (browsers post to it), so it is safe in the code.
+ * Set the variable to "off" to run the forms in demo mode: nothing is sent, the visitor sees
+ * the reference they would get, and sends the details themselves by email or WhatsApp.
  */
 import type { Locale } from "@/i18n/config";
 
-export const receiptsEndpoint = (process.env.NEXT_PUBLIC_RECEIPTS_ENDPOINT || "").trim();
+const DEFAULT_ENDPOINT =
+  "https://script.google.com/macros/s/AKfycbw0afidnlWL_MzXVcwuai4Sv5xlwSpCuQ_Zc74mtZcwomRxjOQ01kkdseQjsSp0jAjAVA/exec";
+
+export const receiptsEndpoint = (process.env.NEXT_PUBLIC_RECEIPTS_ENDPOINT || DEFAULT_ENDPOINT).trim();
 export const receiptsLive = receiptsEndpoint.startsWith("https://");
 
 export type Kind = "member" | "donation";

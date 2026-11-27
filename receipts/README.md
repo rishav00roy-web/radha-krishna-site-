@@ -26,7 +26,7 @@ Do this signed in to the **foundation's own Google account**, because emails are
    - **Who has access:** Anyone
 
    Press **Deploy** and copy the **Web app URL** (it ends in `/exec`).
-5. Add that URL to the website as the environment variable `NEXT_PUBLIC_RECEIPTS_ENDPOINT`. Do this in Vercel (Project → Settings → Environment Variables) and in Hostinger, then redeploy. Until it is set, the website forms run in demo mode and send nothing.
+5. Put that URL in `DEFAULT_ENDPOINT` in `src/lib/receipts.ts` (or set it as the environment variable `NEXT_PUBLIC_RECEIPTS_ENDPOINT` in Vercel and Hostinger, which overrides it), then redeploy. Setting the variable to `off` puts the forms back in demo mode, where they send nothing.
 6. Reload the sheet. A **Receipts** menu appears. Use **Receipts → Add a test donation row** to try the whole flow on yourself.
 
 After editing `Code.gs` later, use **Deploy → Manage deployments → Edit → Version: New version**. That keeps the same URL.
