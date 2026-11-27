@@ -3,6 +3,7 @@
 import { useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import { lines, mailtoHref, mobilePattern, whatsappHref } from "@/lib/compose";
+import { Honeypot } from "@/components/Honeypot";
 import { makeRef, receiptsLive, recordSubmission, sampleReceiptHref } from "@/lib/receipts";
 import { FormDone, type DoneStrings } from "./FormDone";
 
@@ -49,7 +50,7 @@ export function MemberForm({ strings, locale, to, whatsapp }: { strings: Strings
 
     setState("sending");
     try {
-      await recordSubmission("member", ref, fields);
+      if (!f.get("website")) await recordSubmission("member", ref, fields);
     } catch {
       setState("failed");
       return;
@@ -82,7 +83,8 @@ export function MemberForm({ strings, locale, to, whatsapp }: { strings: Strings
   const aria = (k: Field) => ({ "aria-invalid": errors[k] ? ("true" as const) : undefined, "aria-describedby": errors[k] ? `me-${k}` : undefined });
 
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-6">
+    <form onSubmit={onSubmit} noValidate className="relative grid gap-6">
+      <Honeypot />
       <div className="grid gap-5 sm:grid-cols-2">
         <div>
           <label htmlFor="m-name" className="label">{strings.name}</label>

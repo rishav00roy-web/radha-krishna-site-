@@ -10,14 +10,30 @@ export const dynamic = "force-dynamic";
 
 const ID = /^[A-Z0-9-]{8,40}-[A-Z0-9]{10}$/;
 
-export async function GET(_req: Request, { params }: { params: Promise<{ id: string }> }) {
+// At most 30 receipt lookups per visitor in 10 minutes (kept in memory; enough for one small server).
+const WINDOW = 10 * 60 * 1000, LIMIT = 30;
+const hits = new Map<string, { n: number; until: number }>();
+function tooMany(ip: string) {
+  const now = Date.now();
+  if (hits.size > 5000) for (const [k, v] of hits) if (v.until < now) hits.delete(k);
+  const h = hits.get(ip);
+  if (!h || h.until < now) { hits.set(ip, { n: 1, until: now + WINDOW }); return false; }
+  h.n += 1;
+  return h.n > LIMIT;
+}
+
+export async function GET(req: Request, { params }: { params: Promise<{ id: string }> }) {
+  const ip = (req.headers.get("x-forwarded-for") || "").split(",")[0].trim() || req.headers.get("x-real-ip") || "unknown";
+  if (tooMany(ip)) return new Response("Too many requests. Please try again later.", { status: 429, headers: { "Retry-After": "600" } });
   const id = (await params).id.toUpperCase();
   if (!ID.test(id) || !receiptsLive) return notFound();
   try {
-    const res = await fetch(`${receiptsEndpoint}?r=${encodeURIComponent(id)}`, { cache: "no-store", redirect: "follow" });
+    // Only ever the foundation's own register; the visitor controls nothing but the checked id.
+    const res = await fetch(`${receiptsEndpoint}?r=${encodeURIComponent(id)}`, { cache: "no-store", redirect: "follow", signal: AbortSignal.timeout(15000) });
     const body = (await res.json()) as { ok?: boolean; name?: string; data?: string };
     if (!body.ok || !body.data) return notFound();
     const pdf = Buffer.from(body.data, "base64");
+    if (pdf.subarray(0, 4).toString() !== "%PDF") return notFound();
     const name = (body.name || `${id}.pdf`).replace(/[^\w .-]/g, "");
     return new Response(pdf, {
       headers: {
@@ -25,6 +41,8 @@ export async function GET(_req: Request, { params }: { params: Promise<{ id: str
         "Content-Disposition": `inline; filename="${name}"`,
         "Cache-Control": "private, no-store",
         "X-Robots-Tag": "noindex",
+        "Content-Security-Policy": "default-src 'none'; sandbox",
+        "Referrer-Policy": "no-referrer",
       },
     });
   } catch {

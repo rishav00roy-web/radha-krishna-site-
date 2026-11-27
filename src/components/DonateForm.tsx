@@ -3,6 +3,7 @@
 import { useRef, useState, type FormEvent } from "react";
 import type { Locale } from "@/i18n/config";
 import { lines, mailtoHref, mobilePattern, whatsappHref } from "@/lib/compose";
+import { Honeypot } from "@/components/Honeypot";
 import { makeRef, receiptsLive, recordSubmission, sampleReceiptHref } from "@/lib/receipts";
 import { FormDone, type DoneStrings } from "./FormDone";
 import { emailPattern } from "./MemberForm";
@@ -80,7 +81,7 @@ export function DonateForm({
 
     setState("sending");
     try {
-      await recordSubmission("donation", ref, {
+      if (!f.get("website")) await recordSubmission("donation", ref, {
         name: v("name"), phone: v("mobile"), email: v("email"), amount: String(amount), purpose, mode, utr, pan, note: v("note"), lang: locale,
       });
     } catch {
@@ -115,7 +116,8 @@ export function DonateForm({
     errors[k] ? <p id={id} className="mt-1.5 text-sm text-[#b3261e]">{errors[k]}</p> : null;
 
   return (
-    <form onSubmit={onSubmit} noValidate className="grid gap-7">
+    <form onSubmit={onSubmit} noValidate className="relative grid gap-7">
+      <Honeypot />
       <fieldset>
         <legend className="label">{strings.method}</legend>
         <div className="mt-1 grid gap-2 sm:grid-cols-2">

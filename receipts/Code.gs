@@ -73,6 +73,8 @@ function doPost(e) {
     var ref = clip(p.ref, 24);
     if (!kind || !/^(FM|DN)-\d{6}-[A-Z0-9]{4}$/.test(ref)) return json({ ok: false, error: 'bad request' });
     if (p.website) return json({ ok: true }); // honeypot: bots fill every field
+    // Anyone on the internet can post here, so cap it: 60 submissions an hour in all.
+    if (overLimit('posts', 60, 3600)) return json({ ok: false, error: 'busy' });
 
     var sheet = getSheet();
     if (findRow(sheet, ref)) return json({ ok: true, duplicate: true });
@@ -108,7 +110,12 @@ function doPost(e) {
     sheet.getRange(r, COL['Phone']).setNumberFormat('@').setValue(row['Phone']);
     sheet.getRange(r, COL[TICK]).insertCheckboxes();
 
-    if (email) {
+    // Acknowledgements go out from the foundation's Gmail, so nobody can use the form to flood an inbox:
+    // one per address a day, 20 an hour in all, and never the last few of the daily Gmail quota.
+    var mailBlocked = email && (overLimit('ack-' + email.toLowerCase(), 1, 86400) || overLimit('acks', 20, 3600) || MailApp.getRemainingDailyQuota() < 10);
+    if (email && mailBlocked) {
+      sheet.getRange(r, COL['Acknowledgement']).setValue('Not emailed (limit reached): use the WhatsApp link');
+    } else if (email) {
       try {
         sendAcknowledgement(row);
         sheet.getRange(r, COL['Acknowledgement']).setValue('Emailed ' + fmtDateTime(new Date()));
@@ -131,10 +138,11 @@ function doPost(e) {
 function doGet(e) {
   var id = String((e && e.parameter && e.parameter.r) || '').toUpperCase();
   if (!id) return ContentService.createTextOutput('GGF receipt register is running.' + (CONFIG.DEMO ? ' (DEMO mode)' : ''));
-  // Someone trying many made-up links is shut out: after 20 wrong ones in 10 minutes, every lookup is refused for a while.
+  // Links carry 50 random bits, so guessing is hopeless; as a backstop, after 200 wrong ones in 10 minutes
+  // every lookup is refused for a while. (The website also limits each visitor to 30 lookups in 10 minutes.)
   var cache = CacheService.getScriptCache();
   var misses = Number(cache.get('link-misses') || 0);
-  if (misses >= 20) return json({ ok: false, busy: true });
+  if (misses >= 200) return json({ ok: false, busy: true });
   var fileId = /^[A-Z0-9-]{8,40}-[A-Z0-9]{10}$/.test(id) && PropertiesService.getScriptProperties().getProperty('link-' + id);
   if (!fileId) { cache.put('link-misses', String(misses + 1), 600); return json({ ok: false }); }
   var file = DriveApp.getFileById(fileId);
@@ -230,7 +238,7 @@ function setWhatsApp(sheet, r, phone, text, label) {
 
 function ackWhatsAppText(row) {
   var member = row['Type'] === 'Founding member';
-  return (CONFIG.DEMO ? '[SAMPLE] ' : '') + 'Namaskar ' + row['Name'] + ', thank you. ' + CONFIG.ORG_NAME + ' has received your ' +
+  return (CONFIG.DEMO ? '[SAMPLE] ' : '') + 'Namaskar ' + plain(row['Name']) + ', thank you. ' + CONFIG.ORG_NAME + ' has received your ' +
     (member ? 'founding member registration' : 'donation details') + '. Your reference is ' + row['Reference'] + '. ' +
     (member ? 'Someone from the foundation will call you soon.' : 'We will send your receipt once the gift reaches our account.');
 }
@@ -313,7 +321,7 @@ function sendAcknowledgement(row) {
     ? '<p>Thank you for your interest in becoming a founding member of the proposed Shri Shri Radha-Krishna Prem Mandir. Your registration has reached ' + esc(CONFIG.ORG_NAME) + '. Someone from the foundation will call you to answer your questions and share the full details.</p>'
     : '<p>Thank you for your gift' + (row['Amount (stated)'] ? ' of <strong>' + inr(row['Amount (stated)']) + '</strong>' : '') + (row['Mode'] ? ' by ' + esc(String(row['Mode']).toLowerCase()) : '') + '. Your details have reached ' + esc(CONFIG.ORG_NAME) + '.</p>';
   var html = shell(
-    '<p>Namaskar ' + esc(row['Name']) + ',</p>' + body +
+    '<p>Namaskar ' + esc(plain(row['Name'])) + ',</p>' + body +
     '<p>Your reference number is <strong>' + esc(row['Reference']) + '</strong>. Please quote it when you contact us' + (member ? '' : ', and in your bank transfer remark') + '.</p>' +
     '<p style="background:#f4eee2;padding:10px 12px;border-radius:4px">This email is an acknowledgement, <strong>not a receipt</strong>. The foundation sends an official numbered receipt once ' +
     (member ? 'a payment reaches its account. Payments are made only by bank transfer, to an account the foundation confirms in writing.' : 'your gift reaches its account or is handed over at its office.') + '</p>'
@@ -655,7 +663,24 @@ function inr(n) {
 }
 function fmtDate(d) { return Utilities.formatDate(d, 'Asia/Kolkata', 'd MMMM yyyy'); }
 function fmtDateTime(d) { return Utilities.formatDate(d, 'Asia/Kolkata', 'd MMM yyyy, HH:mm'); }
-function clip(v, n) { return String(v == null ? '' : v).trim().slice(0, n); }
+/**
+ * Trims and shortens what a visitor typed, and makes sure the Sheet stores it as plain text:
+ * a value starting with = + - @ (or a tab / line break) would otherwise run as a formula.
+ */
+function clip(v, n) {
+  var s = String(v == null ? '' : v).replace(/[\u0000-\u0008\u000B\u000C\u000E-\u001F]/g, '').trim().slice(0, n);
+  return /^[=+\-@\t\r\n]/.test(s) ? "'" + s : s;
+}
+/** The visitor's value without the apostrophe clip() may add (for emails, links and checks, not for the Sheet). */
+function plain(v) { return String(v == null ? '' : v).replace(/^'/, ''); }
+
+/** Counts events in a time window; returns true once the limit is passed. */
+function overLimit(key, limit, seconds) {
+  var cache = CacheService.getScriptCache();
+  var n = Number(cache.get(key) || 0) + 1;
+  cache.put(key, String(n), seconds);
+  return n > limit;
+}
 function esc(v) {
   return String(v == null ? '' : v).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 }
