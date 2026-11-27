@@ -422,31 +422,88 @@ function receiptHtml(d) {
     'Shri Shri Radha-Krishna Prem Mandir (proposed) · <b style="color:' + GOLD + '">' + esc(site) + '</b> · ' + esc(CONFIG.ORG_PHONE) +
     (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>';
 
-  if (letterhead) {
-    // Fitted to the letterhead artwork (A4 at 794 x 1123): text between the top lotus and the bottom divider,
-    // the signature just above the divider, the site line just below it, clear of the corner peacocks.
-    var lhSign = '<div style="text-align:center;font-size:11px">' +
-      '<div style="border-top:1px solid ' + INK + ';width:210px;margin:0 auto 5px"></div>' +
-      (CONFIG.SIGNATORY_NAME ? esc(CONFIG.SIGNATORY_NAME) + (CONFIG.SIGNATORY_TITLE ? ', ' + esc(CONFIG.SIGNATORY_TITLE) : '') : 'Authorised signatory: ' + blank) +
-      '<br><span style="color:' + SOFT + '">For ' + esc(CONFIG.ORG_NAME) + '</span></div>';
-    var lhFoot = '<div style="text-align:center;font-size:11px;color:' + SOFT + ';line-height:1.6">' +
-      '<b style="color:' + GOLD + ';font-size:12.5px;letter-spacing:1px">' + esc(site) + '</b><br>' + esc(CONFIG.ORG_PHONE) +
-      (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>';
-    var abs = function (top, left, width, html) {
-      return '<div style="position:absolute;z-index:1;top:' + top + 'px;left:' + left + 'px;width:' + width + 'px">' + html + '</div>';
-    };
-    return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:' + INK + '">' +
-      '<div style="position:relative;width:794px;height:1123px;overflow:hidden">' +
-      '<img src="' + letterhead + '" style="position:absolute;top:0;left:0;width:794px;height:1123px;z-index:0">' +
-      abs(196, 92, 610, header + title + meta + amount.replace('background:' + IVORY, 'background:#fbf3e2').replace('margin-top:16px', 'margin-top:24px') + details + tax) +
-      abs(880, 247, 300, lhSign) +
-      abs(976, 247, 300, lhFoot) +
-      '</div></body></html>';
-  }
+  if (letterhead) return letterheadReceipt(d, letterhead, site, blank);
 
   var body = header + '<div style="padding:0 30px 26px">' + title + meta + amount + details + tax + sign + footer + '</div>';
   return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:' + INK + '">' +
     '<div style="border:2px solid ' + GOLD + ';padding:4px;margin:18px"><div style="border:1px solid ' + LINE + '">' + body + '</div></div></body></html>';
+}
+
+/**
+ * The receipt on the foundation's letterhead (A4 at 794 x 1123 px), laid out like a formal 80G receipt:
+ * text between the artwork's top lotus and bottom divider, signature and seal just above the divider,
+ * the site line just below it, all clear of the corner peacocks.
+ */
+function letterheadReceipt(d, letterhead, site, blank) {
+  var INK = '#231b13', SOFT = '#6f5d47', GOLD = '#a8722f', LINE = '#d6bd8a', SHADE = '#f6ead2';
+  var cap = 'font-size:9.5px;letter-spacing:1.6px;color:' + SOFT;
+  var abs = function (top, left, width, html) {
+    return '<div style="position:absolute;z-index:1;top:' + top + 'px;left:' + left + 'px;width:' + width + 'px">' + html + '</div>';
+  };
+  var kind = d.member ? 'PAYMENT RECEIPT' : 'DONATION RECEIPT';
+
+  var head = '<div style="text-align:center">' +
+    '<div style="font-size:24px;letter-spacing:0.4px">' + esc(CONFIG.ORG_NAME) + '</div>' +
+    '<div style="font-size:10px;color:' + SOFT + ';margin-top:5px;line-height:1.55">(A Section 8 company) · ' + esc(CONFIG.ORG_ADDRESS) + '</div>' +
+    '</div>';
+
+  var title = '<table style="width:100%;border-collapse:collapse;margin-top:16px"><tr>' +
+    '<td style="width:28%;vertical-align:middle"><div style="border-top:1px solid ' + LINE + '"></div></td>' +
+    '<td style="text-align:center;font-size:15px;font-weight:bold;letter-spacing:4px;color:' + GOLD + ';padding:0 12px;white-space:nowrap;vertical-align:middle">' + kind + '</td>' +
+    '<td style="width:28%;vertical-align:middle"><div style="border-top:1px solid ' + LINE + '"></div></td></tr></table>' +
+    (CONFIG.DEMO ? '<div style="text-align:center;font-size:9.5px;letter-spacing:1.5px;color:#a32a1f;margin-top:5px">SAMPLE · FOR DEMONSTRATION ONLY · NOT VALID</div>' : '');
+
+  var meta = '<table style="width:100%;border-collapse:collapse;margin-top:14px;font-size:12px"><tr>' +
+    '<td><span style="' + cap + '">RECEIPT NO.</span><br><b style="font-size:13px">' + esc(d.number) + '</b></td>' +
+    '<td style="text-align:right"><span style="' + cap + '">DATE</span><br><b style="font-size:13px">' + fmtDate(d.date) + '</b></td></tr></table>';
+
+  var cell = 'border:1px solid ' + LINE + ';padding:8px 11px;font-size:12px;vertical-align:top';
+  var tr = function (k, v) {
+    return '<tr><td style="' + cell + ';background:' + SHADE + ';color:' + SOFT + ';width:34%">' + k + '</td><td style="' + cell + '">' + v + '</td></tr>';
+  };
+  var details = '<table style="width:100%;border-collapse:collapse;margin-top:12px">' +
+    tr('Received with thanks from', '<b>' + esc(d.name) + '</b>') +
+    (d.pan ? tr(d.member ? 'PAN' : 'Donor PAN', esc(d.pan)) : '') +
+    tr(d.member ? 'Towards' : 'Purpose of donation', esc(d.towards) + (d.towards === 'Founding membership' ? ': ' + blank : '')) +
+    tr('Mode of payment', esc(d.mode)) +
+    (d.utr ? tr('Transaction reference (UTR)', esc(d.utr)) : '') +
+    tr('Website reference', esc(d.ref)) +
+    '</table>';
+
+  var amount = '<table style="width:100%;border-collapse:collapse;margin-top:16px"><tr>' +
+    '<td style="border:1.5px solid ' + GOLD + ';background:#fbf3e2;padding:10px 14px;width:34%;vertical-align:middle">' +
+    '<div style="' + cap + '">AMOUNT</div><div style="font-size:24px;margin-top:2px">' + inr(d.amount) + '<span style="font-size:13px">.00</span></div></td>' +
+    '<td style="border:1.5px solid ' + GOLD + ';border-left:none;background:#fbf3e2;padding:10px 14px;vertical-align:middle">' +
+    '<div style="' + cap + '">AMOUNT IN WORDS</div><div style="font-size:12.5px;font-style:italic;margin-top:4px">' + rupeesInWords(d.amount) + '</div></td>' +
+    '</tr></table>';
+
+  var tax = '<table style="width:100%;border-collapse:collapse;margin-top:16px"><tr>' +
+    '<td style="border-left:3px solid ' + GOLD + ';padding:6px 0 6px 12px;font-size:10.5px;line-height:1.6;color:' + INK + '">' +
+    '<b>' + (d.member ? 'Please note' : 'Tax exemption under section 80G') + '.</b> ' + esc(taxLine(d)) + '<br>' +
+    '<span style="color:' + SOFT + '">' + esc(CONFIG.ORG_IDS) + '</span></td></tr></table>' +
+    '<div style="text-align:center;font-size:13px;font-style:italic;color:' + GOLD + ';margin-top:26px">With heartfelt gratitude for your support of the Shri Shri Radha-Krishna Prem Mandir.</div>';
+
+  var sign = '<table style="width:100%;border-collapse:collapse"><tr>' +
+    '<td style="width:50%;vertical-align:bottom"><div style="width:84px;height:84px;border:1px dashed ' + LINE + ';border-radius:42px;text-align:center;font-size:9px;letter-spacing:1px;color:' + SOFT + ';line-height:84px">SEAL</div></td>' +
+    '<td style="text-align:center;vertical-align:bottom;font-size:11px">' +
+    '<div style="border-top:1px solid ' + INK + ';width:220px;margin:0 auto 5px"></div>' +
+    (CONFIG.SIGNATORY_NAME ? '<b>' + esc(CONFIG.SIGNATORY_NAME) + '</b>' + (CONFIG.SIGNATORY_TITLE ? '<br>' + esc(CONFIG.SIGNATORY_TITLE) : '') : 'Authorised signatory: ' + blank) +
+    '<br><span style="color:' + SOFT + '">For ' + esc(CONFIG.ORG_NAME) + '</span></td></tr></table>';
+
+  var note = '<div style="text-align:center;font-size:9.5px;color:' + SOFT + ';font-style:italic">This is a computer-generated receipt, issued after the payment was confirmed in the foundation\'s account.</div>';
+
+  var foot = '<div style="text-align:center;font-size:10.5px;color:' + SOFT + ';line-height:1.6">' +
+    '<b style="color:' + GOLD + ';font-size:12.5px;letter-spacing:1.5px">' + esc(site) + '</b><br>' + esc(CONFIG.ORG_PHONE) +
+    (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>';
+
+  return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,\'Times New Roman\',serif;color:' + INK + '">' +
+    '<div style="position:relative;width:794px;height:1123px;overflow:hidden">' +
+    '<img src="' + letterhead + '" style="position:absolute;top:0;left:0;width:794px;height:1123px;z-index:0">' +
+    abs(190, 100, 594, head + title + meta + details + amount + tax) +
+    abs(790, 130, 534, sign) +
+    abs(918, 190, 414, note) +
+    abs(976, 247, 300, foot) +
+    '</div></body></html>';
 }
 
 // ─────────────────────────────────────── Helpers ───────────────────────────────────────
