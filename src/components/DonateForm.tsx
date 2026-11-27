@@ -1,10 +1,14 @@
 "use client";
 
 import { useRef, useState, type FormEvent } from "react";
+import type { Locale } from "@/i18n/config";
 import { lines, mailtoHref, mobilePattern, whatsappHref } from "@/lib/compose";
-import { SendButtons } from "./SendButtons";
+import { makeRef, receiptsLive, recordSubmission, sampleReceiptHref } from "@/lib/receipts";
+import { FormDone, type DoneStrings } from "./FormDone";
+import { emailPattern } from "./MemberForm";
 
-type Strings = {
+type Strings = DoneStrings & {
+  email: string; emailHint: string; invalidEmail: string; send: string; sending: string; howDirect: string; failed: string;
   name: string; mobile: string; amount: string; other: string; otherLabel: string; purpose: string;
   note: string; sendEmail: string; sendWhatsApp: string; howEmail: string; howWhatsApp: string;
   required: string; invalidMobile: string; invalidAmount: string;
@@ -20,8 +24,10 @@ export function DonateForm({
   purposes,
   to,
   whatsapp,
+  locale,
 }: {
   strings: Strings;
+  locale: Locale;
   /** label: shown to the visitor; value: the English label sent to the foundation */
   purposes: { label: string; value: string }[];
   to: string | null;
@@ -29,11 +35,12 @@ export function DonateForm({
 }) {
   const [choice, setChoice] = useState<string>(String(presets[1]));
   const [method, setMethod] = useState<0 | 1>(0);
-  const [errors, setErrors] = useState<Partial<Record<"name" | "mobile" | "amount", string>>>({});
-  const via = useRef<"email" | "whatsapp">(to ? "email" : "whatsapp");
+  const [errors, setErrors] = useState<Partial<Record<"name" | "mobile" | "amount" | "email", string>>>({});
+  const [state, setState] = useState<"idle" | "sending" | "failed">("idle");
+  const [done, setDone] = useState<null | { ref: string; sample: string; wa: string; mail: string | null }>(null);
   const otherRef = useRef<HTMLInputElement>(null);
 
-  function onSubmit(e: FormEvent<HTMLFormElement>) {
+  async function onSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     const f = new FormData(e.currentTarget);
     const v = (k: string) => String(f.get(k) ?? "").trim();
@@ -43,25 +50,62 @@ export function DonateForm({
     if (!v("mobile")) next.mobile = strings.required;
     else if (!mobilePattern.test(v("mobile"))) next.mobile = strings.invalidMobile;
     if (!Number.isFinite(amount) || amount < 1) next.amount = strings.invalidAmount;
+    if (v("email") && !emailPattern.test(v("email"))) next.email = strings.invalidEmail;
     setErrors(next);
-    if (next.name || next.mobile || next.amount) {
-      const id = next.name ? "d-name" : next.mobile ? "d-mobile" : choice === "other" ? "d-other" : `d-amt-${choice}`;
+    if (next.name || next.mobile || next.amount || next.email) {
+      const id = next.name ? "d-name" : next.mobile ? "d-mobile" : next.email ? "d-email" : choice === "other" ? "d-other" : `d-amt-${choice}`;
       document.getElementById(id)?.focus();
       return;
     }
     const purpose = purposes.find((p) => p.value === v("purpose"))?.value ?? purposes[0].value;
+    const ref = makeRef("donation");
+    const mode = method === 0 ? "Bank transfer" : "Cash in person";
     const body = lines([
+      ["Reference", ref],
       ["Name", v("name")],
       ["Phone", v("mobile")],
+      ["Email", v("email")],
       ["Amount", `₹${amount.toLocaleString("en-IN")}`],
       ["Purpose", purpose],
       // Always sent in English, like the purpose, so the foundation reads one language.
-      ["Given by", method === 0 ? "Bank transfer" : "Cash in person"],
+      ["Given by", mode],
       ["Transaction reference (UTR)", method === 0 ? v("reference") : ""],
       ["Note", v("note")],
     ]);
-    const subject = `Donation: ₹${amount.toLocaleString("en-IN")} by ${method === 0 ? "bank transfer" : "cash"} for ${purpose}`;
-    window.location.href = via.current === "email" && to ? mailtoHref(to, subject, body) : whatsappHref(whatsapp, `${subject}\n\n${body}`);
+    const subject = `Donation: ₹${amount.toLocaleString("en-IN")} by ${method === 0 ? "bank transfer" : "cash"} for ${purpose} (${ref})`;
+    const utr = method === 0 ? v("reference") : "";
+
+    setState("sending");
+    try {
+      await recordSubmission("donation", ref, {
+        name: v("name"), phone: v("mobile"), email: v("email"), amount: String(amount), purpose, mode, utr, note: v("note"), lang: locale,
+      });
+    } catch {
+      setState("failed");
+      return;
+    }
+    setState("idle");
+    setDone({
+      ref,
+      sample: sampleReceiptHref(locale, "donation", ref, { n: v("name"), e: v("email"), a: String(amount), p: purpose, md: mode, u: utr }),
+      wa: whatsappHref(whatsapp, `${subject}\n\n${body}`),
+      mail: to ? mailtoHref(to, subject, body) : null,
+    });
+  }
+
+  if (done) {
+    return (
+      <FormDone
+        live={receiptsLive}
+        refNo={done.ref}
+        strings={strings}
+        sampleHref={done.sample}
+        whatsappHref={done.wa}
+        mailHref={done.mail}
+        sendEmail={strings.sendEmail}
+        sendWhatsApp={strings.sendWhatsApp}
+      />
+    );
   }
 
   const err = (k: keyof typeof errors, id: string) =>
@@ -153,6 +197,12 @@ export function DonateForm({
         </div>
       </div>
 
+      <div>
+        <label htmlFor="d-email" className="label">{strings.email}</label>
+        <input id="d-email" name="email" type="email" inputMode="email" autoComplete="email" maxLength={160} aria-invalid={errors.email ? "true" : undefined} aria-describedby={errors.email ? "de-email" : "d-email-hint"} className="field sm:max-w-[420px]" />
+        {errors.email ? err("email", "de-email") : <p id="d-email-hint" className="mt-1.5 text-sm text-ink-soft">{strings.emailHint}</p>}
+      </div>
+
       {method === 0 ? (
         <div>
           <label htmlFor="d-ref" className="label">{strings.reference}</label>
@@ -166,14 +216,13 @@ export function DonateForm({
         <textarea id="d-note" name="note" rows={3} maxLength={1000} className="field resize-y" />
       </div>
 
-      <SendButtons
-        email={to}
-        sendEmail={strings.sendEmail}
-        sendWhatsApp={strings.sendWhatsApp}
-        howEmail={strings.howEmail}
-        howWhatsApp={strings.howWhatsApp}
-        onSend={(w) => { via.current = w; }}
-      />
+      <div>
+        <button type="submit" disabled={state === "sending"} className="btn btn-primary">
+          {state === "sending" ? strings.sending : strings.send}
+        </button>
+        <p className="mt-3 max-w-[60ch] text-sm text-ink-soft">{receiptsLive ? strings.howDirect : to ? strings.howEmail : strings.howWhatsApp}</p>
+        {state === "failed" ? <p role="alert" className="mt-2 text-sm text-[#b3261e]">{strings.failed}</p> : null}
+      </div>
     </form>
   );
 }

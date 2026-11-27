@@ -106,8 +106,8 @@ export default async function Home({ params }: Props) {
               <h1 data-hero-title className="display-xl text-balance [text-shadow:0_2px_18px_rgb(0_0_0/0.45)]"><MaskWords text={h.headline.replace("-", "‑")} /></h1>
               <p data-hero-line className="mx-auto mt-5 max-w-[26ch] pb-1 font-display text-2xl italic leading-snug text-gold-pale">{d.meta.tagline}</p>
               <nav data-hero-line aria-label={h.headline} className="mt-6 flex flex-wrap justify-center gap-2 lg:mt-8 lg:gap-2.5">
-                <Link href={href(locale, "temple")} className="btn btn-primary !min-h-[44px] !px-4 !py-2 text-[0.9rem] lg:!px-5 lg:text-[0.95rem]">{h.ctaExplore}</Link>
-                <Link href={href(locale, "masterPlan")} className="btn btn-quiet !min-h-[44px] bg-[rgb(16_27_41/0.45)] !px-4 !py-2 text-[0.9rem] backdrop-blur-sm lg:!px-5 lg:text-[0.95rem]">{h.ctaPlan}</Link>
+                <Link href={href(locale, "members")} className="btn btn-primary !min-h-[44px] !px-4 !py-2 text-[0.9rem] lg:!px-5 lg:text-[0.95rem]">{h.ctaMember}</Link>
+                <Link href={href(locale, "temple")} className="btn btn-quiet !min-h-[44px] bg-[rgb(16_27_41/0.45)] !px-4 !py-2 text-[0.9rem] backdrop-blur-sm lg:!px-5 lg:text-[0.95rem]">{h.ctaExplore}</Link>
               </nav>
             </div>
           </div>
@@ -173,6 +173,35 @@ export default async function Home({ params }: Props) {
         {/* Morning mist rolls over the temple's base and into the day. */}
         <div data-speed="-0.12" className="pointer-events-none relative z-[5] -mt-24 h-48 md:-mt-40 md:h-64">
           <Mist className="h-full w-full" color="#ead6b6" />
+        </div>
+      </section>
+
+      {/* ── 02b Founding members: the project's first call, in the same warm morning light ── */}
+      <section aria-labelledby="founding" className="relative isolate bg-[#ead6b6] text-ink">
+        <TouchSurface tone="light" />
+        <div className="container-x relative pb-16 pt-14 md:pb-24 md:pt-20">
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_minmax(0,1fr)] lg:items-end lg:gap-16">
+            <div>
+              <p data-reveal className="font-display text-xl italic text-gold">{h.membersLabel}</p>
+              <h2 id="founding" data-reveal className="display-lg mt-3"><MaskWords text={h.membersTitle} /></h2>
+              <p data-reveal className="lede measure mt-6 !text-ink-soft">{h.membersBody}</p>
+              <div data-reveal className="mt-8 flex flex-wrap items-center gap-x-7 gap-y-4">
+                <Link href={href(locale, "members")} className="btn btn-primary">{h.membersCta}</Link>
+                <Link href={href(locale, "donate")} className="text-ink-soft underline decoration-gold/60 underline-offset-4 hover:text-ink">{h.orDonate}</Link>
+              </div>
+            </div>
+            <dl className="grid grid-cols-3 gap-3 sm:gap-5" data-no-reveal>
+              {h.membersStats.map((s) => (
+                <div key={s.label} data-reveal className="rounded-[14px] border border-gold/40 bg-[rgb(251_248_242/0.55)] px-3 py-5 text-center sm:px-5 sm:py-7">
+                  <dt className="sr-only">{s.label}</dt>
+                  <dd>
+                    <span className="tabular block font-display text-[1.7rem] leading-none text-gold sm:text-4xl">{s.value}</span>
+                    <span aria-hidden className="mt-2 block text-[0.8rem] leading-snug text-ink-soft sm:text-sm">{s.label}</span>
+                  </dd>
+                </div>
+              ))}
+            </dl>
+          </div>
         </div>
       </section>
 

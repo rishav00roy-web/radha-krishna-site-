@@ -9,6 +9,8 @@ import { DonateForm } from "@/components/DonateForm";
 import { CopyField } from "@/components/CopyField";
 import { Icon } from "@/components/Icon";
 import { Accordion } from "@/components/anm/Accordion";
+import Link from "next/link";
+import { href } from "@/lib/routes";
 
 type Props = { params: Promise<{ locale: string }> };
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
@@ -81,12 +83,14 @@ export default async function DonatePage({ params }: Props) {
               <DonateForm
                 to={org.email}
                 whatsapp={org.whatsapp}
+                locale={locale}
                 purposes={g.purposes.map((label, i) => ({ label, value: en.donate.purposes[i] }))}
                 strings={{
                   name: g.name, mobile: g.mobile, amount: g.amount, other: g.other, otherLabel: g.otherLabel, purpose: g.purpose,
                   note: g.note, sendEmail: g.sendEmail, sendWhatsApp: g.sendWhatsApp, howEmail: g.howEmail, howWhatsApp: g.howWhatsApp,
                   required: g.required, invalidMobile: g.invalidMobile, invalidAmount: g.invalidAmount,
                   method: g.method, methods: g.methods, reference: g.reference, referenceHint: g.referenceHint,
+                  email: g.email, emailHint: g.emailHint, invalidEmail: g.invalidEmail, ...d.forms,
                 }}
               />
             </div>
@@ -100,6 +104,17 @@ export default async function DonatePage({ params }: Props) {
               <a href={`tel:+91${org.phone}`} className="tabular mt-3 inline-block font-display text-2xl text-gold no-underline hover:underline">{org.phone}</a>
             </div>
           </div>
+        </div>
+      </section>
+
+      {/* Donation is the second way to help; founding membership is the first. */}
+      <section className="on-dark">
+        <div className="container-x flex flex-col items-start gap-6 py-14 md:flex-row md:items-center md:justify-between md:py-16">
+          <div>
+            <h2 className="display-md">{g.moreTitle}</h2>
+            <p className="mt-3 max-w-[54ch] text-forest-soft">{g.moreBody}</p>
+          </div>
+          <Link href={href(locale, "members")} className="btn btn-primary shrink-0">{g.moreCta}</Link>
         </div>
       </section>
     </>
