@@ -33,6 +33,8 @@ var CONFIG = {
   DRIVE_FOLDER: 'GGF receipts',
   SHEET_NAME: 'Register',
   WHATSAPP: '919864522165',
+  // Receipt links look like https://rkpm.org/receipt/GGF-2026-27-0001-K7QD9XW2MA and open the PDF from the site.
+  SITE_URL: 'https://rkpm.org',
 };
 // ──────────────────────────────────────────────────────────────────────────────────────────────
 
@@ -44,7 +46,7 @@ var WA = 'WhatsApp';
 var COLUMNS = [
   'Reference', 'Name', 'Type', 'Phone', 'Email',
   AMOUNT, UTR, TICK, WA, 'Status',
-  'Receipt no.', 'Receipt PDF', 'Receipt sent to', 'Receipt date', 'Acknowledgement', 'Received at',
+  'Receipt no.', 'Receipt link', 'Receipt PDF', 'Receipt sent to', 'Receipt date', 'Acknowledgement', 'Received at',
   'Amount (stated)', 'Mode', 'UTR (stated)', 'Purpose', 'Donor PAN', 'Town or district', 'Wants to visit', 'Note', 'Language',
 ];
 // Older registers used these names; setup() moves their data into the new columns.
@@ -123,9 +125,28 @@ function doPost(e) {
   }
 }
 
-// A browser visit to the web app URL shows that it is running.
-function doGet() {
-  return ContentService.createTextOutput('GGF receipt register is running.' + (CONFIG.DEMO ? ' (DEMO mode)' : ''));
+// The website asks here for a receipt PDF (?r=<link id>), to serve it at rkpm.org/receipt/<link id>.
+// Only ids this script issued are answered; the PDFs stay private in Drive.
+// A plain browser visit shows that the web app is running.
+function doGet(e) {
+  var id = String((e && e.parameter && e.parameter.r) || '').toUpperCase();
+  if (!id) return ContentService.createTextOutput('GGF receipt register is running.' + (CONFIG.DEMO ? ' (DEMO mode)' : ''));
+  // Someone trying many made-up links is shut out: after 20 wrong ones in 10 minutes, every lookup is refused for a while.
+  var cache = CacheService.getScriptCache();
+  var misses = Number(cache.get('link-misses') || 0);
+  if (misses >= 20) return json({ ok: false, busy: true });
+  var fileId = /^[A-Z0-9-]{8,40}-[A-Z0-9]{10}$/.test(id) && PropertiesService.getScriptProperties().getProperty('link-' + id);
+  if (!fileId) { cache.put('link-misses', String(misses + 1), 600); return json({ ok: false }); }
+  var file = DriveApp.getFileById(fileId);
+  return json({ ok: true, name: file.getName(), data: Utilities.base64Encode(file.getBlob().getBytes()) });
+}
+
+/** A link id: the receipt number plus 10 random characters, so links can't be guessed. */
+function newLinkId(number) {
+  var a = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789', s = '';
+  var bytes = Utilities.computeDigest(Utilities.DigestAlgorithm.SHA_256, Utilities.getUuid() + number + Date.now());
+  for (var i = 0; i < 10; i++) s += a[(bytes[i] + 256) % a.length];
+  return number.replace(/\//g, '-') + '-' + s;
 }
 
 // ─────────────────────────────────────── Sheet menu ───────────────────────────────────────
@@ -242,10 +263,12 @@ function issueReceipt(sheet, r) {
     .getAs(MimeType.PDF)
     .setName(number.replace(/\//g, '-') + ' ' + v['Name'] + '.pdf');
   var file = getFolder().createFile(pdf);
-  // Anyone with the link can view this one PDF, so it opens from WhatsApp. The folder stays private.
-  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  // The PDF stays private. The person gets a link on the foundation's own site, which fetches it from here.
+  var linkId = newLinkId(number);
+  PropertiesService.getScriptProperties().setProperty('link-' + linkId, file.getId());
+  var link = CONFIG.SITE_URL.replace(/\/$/, '') + '/receipt/' + linkId;
   var waText = (CONFIG.DEMO ? '[SAMPLE] ' : '') + 'Namaskar ' + v['Name'] + ', thank you. Your receipt ' + number +
-    ' from ' + CONFIG.ORG_NAME + ' for ' + inr(amount) + ' is here: ' + file.getUrl();
+    ' from ' + CONFIG.ORG_NAME + ' for ' + inr(amount) + ' is here: ' + link;
 
   var sentTo = '';
   if (EMAIL_RE.test(String(v['Email']))) {
@@ -257,6 +280,7 @@ function issueReceipt(sheet, r) {
   sheet.getRange(r, COL['Receipt no.']).setValue(number);
   sheet.getRange(r, COL['Receipt date']).setValue(now);
   sheet.getRange(r, COL['Receipt PDF']).setValue(file.getUrl());
+  sheet.getRange(r, COL['Receipt link']).setValue(link);
   sheet.getRange(r, COL['Receipt sent to']).setValue(sentTo ? 'Emailed to ' + sentTo : 'No email: use the WhatsApp link');
   var wa = setWhatsApp(sheet, r, v['Phone'], waText, 'Send receipt on WhatsApp');
   sheet.getRange(r, COL['Status']).setValue('Receipt sent');
@@ -322,36 +346,93 @@ function mailOptions(to, subject, html, attachments) {
 
 // ─────────────────────────────────────── Receipt PDF ───────────────────────────────────────
 
+/** The gold lotus logo (the site mark), small PNG so the receipt needs no outside files. */
+var LOGO_PNG = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAANwAAAB4CAMAAACuCWxLAAAAIGNIUk0AAHomAACAhAAA+gAAAIDoAAB1MAAA6mAAADqYAAAXcJy6UTwAAAAGUExURf///9inWSWpdIgAAAABdFJOUwBA5thmAAAAAWJLR0QAiAUdSAAAAAd0SU1FB+oLGw8kE/XJlI4AAALDSURBVHja7ZhbduQgDESt/W968pOMbfQGPbqP6i+4kOoaYkiuazQajUaj0Wg0Go1Go/+CH51ydROAJrfO1U4AcnCNp6VATq6wNBWI0WVHW4GUXTT0FYAQXjQ0FgjhpeetBXx6+CY4sDxtr9/QaP7b4EfDYXT3oc+GW+keAx8Od1Fwb9/n6B76SYf9VJ12A+5a9+HrUXXaHbhrhcN9LULLRxT1awYWOG2zEDCm6Wv8DUf5XL1i2ZCm7zHKS8/NpQNRJ+BMXTLhsH2Izb5Im6lHNtz762+DM3UooXtcS9DZ66C5fPHqWeCqV40FXAetcGLBDDCCj3z12CT+RRF7NIuMbn4Crh4NSUCE5eEIezXZGgLPa4Jjyjaho7MJu1KcX4rHjclw0uzg8CA6kDEOzoN2ZF2BEW1dh95GfCL/Vox5/GD0fnsOKzozk+TT0AeoqbQU5BZPzSZV3uczFBOCCU1NJQ7RGesBcvAulfg+FJs3yVG49cqkWTqJzZ1DC6eH51+9Ao6uZcgjwqnceGeSjiuB9LQsio1Nf0zKW4StIa6TNYKGzTJHyKSEc5K5Lyv6eV46DduhiEJmH54O7gCa/Y55AI+hE9ki0awliIQinIPs0B/qlp7Aas/tzZSF57aGoaE5fHhOoztKLp7dlYBGpNmhc7CFkZ3CUxv8vQ/iaf6FY4Db65rF9/cItb4HFYXiyZi3Ttgu7LxdRtgSiWhMV+Rbj7jR2wU+u4CMba7eWh57DpmYWe10lywGvAdyG8rAVLn2VUcWDFjNFQZYzRNFWE0RRVidPYaxOm0EZXW20Wg0GgXrKw+5b72f7Ny9OhPuc/UkPMnVizCGrAHfbsC+gCcz9eKLSdKCLzRBKV5K6xq+xJ7ZeNlvM7Ffye9BTtO6D1h857JPc0b3QrIFL654CVpwhHK00BD1aH1SjEaj0Wg0Go1w/QO/yBZhp0Tb5QAAAABJRU5ErkJggg==';
+
+/**
+ * Optional letterhead: put an image named "letterhead" (PNG or JPG, A4 portrait) in the receipts Drive folder,
+ * and every new receipt is printed on it. Without it, the receipt draws its own gold border and header.
+ */
+function letterheadDataUri() {
+  var it = getFolder().getFiles();
+  while (it.hasNext()) {
+    var f = it.next();
+    if (/^letterhead\.(png|jpe?g)$/i.test(f.getName())) {
+      var b = f.getBlob();
+      return 'data:' + b.getContentType() + ';base64,' + Utilities.base64Encode(b.getBytes());
+    }
+  }
+  return '';
+}
+
 function receiptHtml(d) {
+  var INK = '#2a2118', SOFT = '#6b5b48', GOLD = '#b07a35', LINE = '#dcc597', MID = '#101B29', IVORY = '#F2E5D0';
+  var site = CONFIG.SITE_URL.replace(/^https?:\/\//, '').replace(/\/$/, '');
   var blank = '<span style="background:#fff1c7;border:1px dashed #c08a1e;padding:0 4px">to be filled in</span>';
+  var letterhead = letterheadDataUri();
   var row = function (k, val) {
-    return '<tr><td style="color:#6b5b48;padding:7px 14px 7px 0;vertical-align:top;width:34%">' + k + '</td><td style="padding:7px 0">' + val + '</td></tr>';
+    return '<tr><td style="color:' + SOFT + ';padding:9px 16px 9px 0;border-bottom:1px solid #efe4cc;width:36%;vertical-align:top">' + k +
+      '</td><td style="padding:9px 0;border-bottom:1px solid #efe4cc">' + val + '</td></tr>';
   };
-  return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:#2a2118">' +
-    '<div style="border:1px solid #c9a24a;padding:5px;margin:24px"><div style="border:1px solid #e3cf9c;padding:28px 34px;position:relative">' +
-    (CONFIG.DEMO ? '<div style="position:absolute;z-index:0;top:42%;left:0;right:0;text-align:center;font-size:64px;letter-spacing:8px;color:#f8e9e7">SAMPLE · DEMO</div>' : '') +
-    '<div style="position:relative;z-index:1">' +
-    '<div style="text-align:center;border-bottom:1px solid #e3cf9c;padding-bottom:14px">' +
-    '<div style="font-size:26px">' + esc(CONFIG.ORG_NAME) + '</div>' +
-    '<div style="font-size:11px;color:#6b5b48;margin-top:6px">A Section 8 company · ' + esc(CONFIG.ORG_ADDRESS) + '<br>' + esc(CONFIG.ORG_IDS) +
-    (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>' +
-    '<div style="font-size:15px;letter-spacing:3px;margin-top:12px">' + (CONFIG.DEMO ? '<span style="color:#b3261e">SAMPLE RECEIPT · NOT VALID</span>' : 'RECEIPT') + '</div></div>' +
-    '<table style="width:100%;font-size:13px;margin-top:14px"><tr><td>Receipt no. <b>' + esc(d.number) + '</b></td><td style="text-align:right">Date <b>' + fmtDate(d.date) + '</b></td></tr></table>' +
-    '<table style="width:100%;font-size:14px;margin-top:14px;border-collapse:collapse">' +
-    row('Received with thanks from', '<b>' + esc(d.name) + '</b>') +
-    row('Amount', '<b>' + inr(d.amount) + '</b><br><span style="font-size:12px">' + rupeesInWords(d.amount) + '</span>') +
+
+  var header = letterhead
+    // On his letterhead the header is printed in ink, inside the artwork's blank centre.
+    ? '<div style="text-align:center;padding-top:8px"><img src="' + LOGO_PNG + '" width="74" style="display:block;margin:0 auto 8px">' +
+      '<div style="font-size:26px;color:' + INK + '">' + esc(CONFIG.ORG_NAME) + '</div>' +
+      '<div style="font-size:10.5px;color:' + SOFT + ';margin-top:6px;line-height:1.5">A Section 8 company · ' + esc(CONFIG.ORG_ADDRESS) + '<br>' + esc(CONFIG.ORG_IDS) + '</div></div>'
+    : '<div style="background:' + MID + ';color:' + IVORY + ';text-align:center;padding:22px 26px 18px">' +
+      '<img src="' + LOGO_PNG + '" width="78" style="display:block;margin:0 auto 10px">' +
+      '<div style="font-size:27px;letter-spacing:0.5px">' + esc(CONFIG.ORG_NAME) + '</div>' +
+      '<div style="font-size:10.5px;color:#d9c49a;margin-top:7px;line-height:1.55">A Section 8 company · ' + esc(CONFIG.ORG_ADDRESS) + '<br>' + esc(CONFIG.ORG_IDS) + '</div></div>';
+
+  var title = CONFIG.DEMO
+    ? '<div style="text-align:center;margin:20px 0 4px;font-size:15px;letter-spacing:5px;color:' + GOLD + '">SAMPLE RECEIPT</div>' +
+      '<div style="text-align:center;margin:0 auto 4px;font-size:10.5px;color:#b3261e;letter-spacing:1px">DEMO ONLY · NOT A VALID RECEIPT</div>'
+    : '<div style="text-align:center;margin:20px 0 4px;font-size:15px;letter-spacing:6px;color:' + GOLD + '">RECEIPT</div>';
+
+  var meta = '<table style="width:100%;border-collapse:collapse;margin-top:14px;font-size:12.5px"><tr>' +
+    [['Receipt no.', d.number], ['Date', fmtDate(d.date)], ['Reference', d.ref]].map(function (m, i) {
+      return '<td style="border:1px solid ' + LINE + ';padding:9px 12px;' + (i ? 'text-align:center' : '') + '"><div style="color:' + SOFT + ';font-size:10.5px;letter-spacing:1px">' +
+        m[0].toUpperCase() + '</div><div style="font-weight:bold;margin-top:3px">' + esc(m[1]) + '</div></td>';
+    }).join('') + '</tr></table>';
+
+  var amount = '<table style="width:100%;border-collapse:collapse;margin-top:16px"><tr><td style="background:' + IVORY + ';border-left:4px solid ' + GOLD + ';padding:16px 20px">' +
+    '<div style="color:' + SOFT + ';font-size:11px;letter-spacing:1.5px">RECEIVED WITH THANKS FROM</div>' +
+    '<div style="font-size:20px;margin-top:3px">' + esc(d.name) + '</div>' +
+    '<div style="color:' + SOFT + ';font-size:11px;letter-spacing:1.5px;margin-top:12px">THE SUM OF</div>' +
+    '<div style="font-size:30px;color:' + MID + ';margin-top:2px">' + inr(d.amount) + '</div>' +
+    '<div style="font-size:12.5px;color:' + SOFT + ';font-style:italic">' + rupeesInWords(d.amount) + '</div></td></tr></table>';
+
+  var details = '<table style="width:100%;font-size:13.5px;margin-top:14px;border-collapse:collapse">' +
     row('Towards', esc(d.towards) + (d.towards === 'Founding membership' ? ': ' + blank : '')) +
-    row('Mode of payment', esc(d.mode) + (d.utr ? ', UTR ' + esc(d.utr) : '')) +
+    row('Mode of payment', esc(d.mode) + (d.utr ? '<br><span style="font-size:12px;color:' + SOFT + '">UTR ' + esc(d.utr) + '</span>' : '')) +
     (d.pan ? row('Donor PAN', esc(d.pan)) : '') +
-    row('Website reference', esc(d.ref)) +
-    '</table>' +
-    '<table style="width:100%;margin-top:34px;border-top:1px solid #e3cf9c;font-size:11px"><tr>' +
-    '<td style="color:#6b5b48;padding-top:12px;vertical-align:bottom;width:55%">Issued by ' + esc(CONFIG.ORG_NAME) + ' after the payment was confirmed.' +
-    '<br>' + esc(taxLine(d)) + '</td>' +
-    '<td style="text-align:center;padding-top:30px;vertical-align:bottom"><div style="border-top:1px solid #2a2118;width:180px;margin:0 auto 4px"></div>' +
+    '</table>';
+
+  var tax = '<div style="margin-top:16px;padding:10px 14px;border:1px solid ' + LINE + ';font-size:11.5px;color:' + INK + ';line-height:1.5">' + esc(taxLine(d)) + '</div>';
+
+  var sign = '<table style="width:100%;margin-top:34px;font-size:11px"><tr>' +
+    '<td style="color:' + SOFT + ';vertical-align:bottom;width:55%;line-height:1.55">Issued after the payment was confirmed in the foundation\'s account.<br>' +
+    'With gratitude for your support.</td>' +
+    '<td style="text-align:center;vertical-align:bottom"><div style="border-top:1px solid ' + INK + ';width:190px;margin:0 auto 5px"></div>' +
     (CONFIG.SIGNATORY_NAME ? esc(CONFIG.SIGNATORY_NAME) + (CONFIG.SIGNATORY_TITLE ? ', ' + esc(CONFIG.SIGNATORY_TITLE) : '') : 'Authorised signatory: ' + blank) +
-    '<br><span style="color:#6b5b48">For ' + esc(CONFIG.ORG_NAME) + '</span></td></tr></table>' +
-    '</div></div></div></body></html>';
+    '<br><span style="color:' + SOFT + '">For ' + esc(CONFIG.ORG_NAME) + '</span></td></tr></table>';
+
+  var footer = '<div style="margin-top:26px;padding-top:12px;border-top:1px solid ' + LINE + ';text-align:center;font-size:11px;color:' + SOFT + '">' +
+    'Shri Shri Radha-Krishna Prem Mandir (proposed) · <b style="color:' + GOLD + '">' + esc(site) + '</b> · ' + esc(CONFIG.ORG_PHONE) +
+    (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>';
+
+  var body = header + '<div style="padding:' + (letterhead ? '0 8px' : '0 30px 26px') + '">' + title + meta + amount + details + tax + sign + footer + '</div>';
+
+  if (letterhead) {
+    // The artwork fills the page; the text sits inside its blank centre.
+    return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:' + INK + '">' +
+      '<div style="position:relative;width:794px;height:1123px">' +
+      '<img src="' + letterhead + '" style="position:absolute;top:0;left:0;width:794px;height:1123px;z-index:0">' +
+      '<div style="position:relative;z-index:1;padding:150px 120px 0">' + body + '</div></div></body></html>';
+  }
+  return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:' + INK + '">' +
+    '<div style="border:2px solid ' + GOLD + ';padding:4px;margin:18px"><div style="border:1px solid ' + LINE + '">' + body + '</div></div></body></html>';
 }
 
 // ─────────────────────────────────────── Helpers ───────────────────────────────────────

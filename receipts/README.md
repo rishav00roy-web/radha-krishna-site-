@@ -7,7 +7,18 @@ The website's **founding member** form and **donation** form send each submissio
 3. When the money is in the bank (or cash is in hand), staff look at the two **yellow** cells on that row, amount and UTR, which are already filled in from the form, and correct them if needed. Then they tick the **green** box, **③ Tick to send receipt**.
 4. That makes a numbered **PDF receipt**, such as `GGF/2026-27/0001`, saves it in Drive, and emails it if the row has an email. The WhatsApp link changes to **Send receipt on WhatsApp**: one click opens WhatsApp to the person's number with the receipt link typed in. The row turns pale green. If something is missing, the box unticks itself and a message says what to fill in.
 
-To make the WhatsApp link open on the person's phone, each receipt PDF (only that file, not the folder) can be viewed by anyone who has the link.
+## Receipt links on the foundation's own site
+
+The WhatsApp message links to `rkpm.org/receipt/GGF-2026-27-0001-K7QD9XW2MA` (receipt number plus 10 random characters), not to Google Drive.
+
+- The PDFs and the Drive folder stay **private**. Nothing is shared publicly.
+- The website holds **no Google login** and cannot open Drive. It can only ask this script for one receipt by its exact link. The script answers only for links it made itself, and returns only that one PDF.
+- After 20 wrong links in 10 minutes, the script refuses all lookups for 10 minutes, so links can't be guessed.
+- Links work once the site change is live on rkpm.org.
+
+## Letterhead (optional)
+
+Make an A4 portrait image (for example with Gemini: ivory paper, gold lotus border, blank centre), name it `letterhead.png` or `letterhead.jpg`, and put it in the **GGF receipts** Drive folder. Every new receipt is then printed on it. Remove or rename it to go back to the built-in design.
 
 Receipt numbers run from 0001 in each financial year (April to March) and never repeat. Founding-member payments are accepted by bank transfer only. The script also refuses cash of ₹2 lakh or more from one person (section 269ST).
 
