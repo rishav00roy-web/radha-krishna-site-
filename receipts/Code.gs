@@ -4,10 +4,9 @@
  * What it does
  *  1. The website's founding-member and donation forms POST here (doPost). Each one becomes a row.
  *  2. If the person gave an email, an acknowledgement is emailed at once. It says clearly that it is NOT a receipt.
- *  3. When the money is confirmed (bank statement, or cash at the office), staff fill in "Amount received"
- *     (and the UTR for a transfer) on that row, set Status to "Received", select the row and choose
- *     Receipts → Issue receipt for selected row. A numbered PDF receipt is made, saved in Drive,
- *     emailed to the person, and its number and link are written on the row.
+ *  3. When the money is confirmed (bank statement, or cash at the office), staff check the two yellow
+ *     cells on that row (amount and UTR) and tick the green "Send receipt" box. A numbered PDF receipt
+ *     is made, saved in Drive, emailed to the person, and a "Send on WhatsApp" link appears on the row.
  *
  * Setup: see receipts/README.md. Emails are sent from the Google account that owns this script,
  * so it should be the foundation's own account.
@@ -37,12 +36,24 @@ var CONFIG = {
 };
 // ──────────────────────────────────────────────────────────────────────────────────────────────
 
+// The order staff see. The three steps come right after who the person is.
+var AMOUNT = '① Amount received (check bank)';
+var UTR = '② UTR (check bank statement)';
+var TICK = '③ Tick to send receipt';
+var WA = 'WhatsApp';
 var COLUMNS = [
-  'Received at', 'Reference', 'Type', 'Name', 'Phone', 'Email', 'Town or district', 'Wants to visit',
-  'Amount (stated)', 'Purpose', 'Mode', 'UTR (stated)', 'Donor PAN', 'Note', 'Language', 'Acknowledgement',
-  'Status', 'Amount received', 'UTR / reference (confirmed)', 'Receipt no.', 'Receipt date', 'Receipt PDF', 'Receipt sent to',
-  'WhatsApp receipt',
+  'Reference', 'Name', 'Type', 'Phone', 'Email',
+  AMOUNT, UTR, TICK, WA, 'Status',
+  'Receipt no.', 'Receipt PDF', 'Receipt sent to', 'Receipt date', 'Acknowledgement', 'Received at',
+  'Amount (stated)', 'Mode', 'UTR (stated)', 'Purpose', 'Donor PAN', 'Town or district', 'Wants to visit', 'Note', 'Language',
 ];
+// Older registers used these names; setup() moves their data into the new columns.
+var OLD_NAMES = { 'Amount received': AMOUNT, 'UTR / reference (confirmed)': UTR, 'WhatsApp receipt': WA };
+var HEADER_NOTES = {};
+HEADER_NOTES[AMOUNT] = 'Filled in from the form. Change it if the bank or cash amount is different.';
+HEADER_NOTES[UTR] = 'Filled in from the form if the person gave one. Check it against the bank statement. Not needed for cash.';
+HEADER_NOTES[TICK] = 'Tick only when the money is in the bank (or cash is in hand). The receipt is made and emailed at once, and a WhatsApp link appears next to it.';
+HEADER_NOTES[WA] = 'Click to open WhatsApp with the message already typed. Before the receipt it sends a thank-you; after, the receipt.';
 var STATUSES = ['New', 'Contacted', 'Received', 'Receipt sent', 'Not proceeding'];
 var COL = {};
 COLUMNS.forEach(function (c, i) { COL[c] = i + 1; });
@@ -86,10 +97,14 @@ function doPost(e) {
       'Acknowledgement': '',
       'Status': 'New',
     };
+    // Pre-fill the two cells staff check, so most rows need only the tick.
+    row[AMOUNT] = row['Amount (stated)'];
+    row[UTR] = row['UTR (stated)'];
     sheet.appendRow(COLUMNS.map(function (c) { return row[c] === undefined ? '' : row[c]; }));
     var r = sheet.getLastRow();
     // Phone numbers and UTRs stay text (no lost leading zeros, no scientific notation).
     sheet.getRange(r, COL['Phone']).setNumberFormat('@').setValue(row['Phone']);
+    sheet.getRange(r, COL[TICK]).insertCheckboxes();
 
     if (email) {
       try {
@@ -99,8 +114,9 @@ function doPost(e) {
         sheet.getRange(r, COL['Acknowledgement']).setValue('Email failed: ' + err.message);
       }
     } else {
-      sheet.getRange(r, COL['Acknowledgement']).setValue('No email: reply on WhatsApp');
+      sheet.getRange(r, COL['Acknowledgement']).setValue('No email: use the WhatsApp link');
     }
+    setWhatsApp(sheet, r, row['Phone'], ackWhatsAppText(row), 'Send thank-you');
     return json({ ok: true });
   } finally {
     lock.releaseLock();
@@ -117,18 +133,41 @@ function doGet() {
 function onOpen() {
   SpreadsheetApp.getUi()
     .createMenu('Receipts')
-    .addItem('Issue receipt for selected row', 'issueReceiptForSelectedRow')
+    .addItem('Send receipt for selected row', 'issueReceiptForSelectedRow')
     .addSeparator()
     .addItem('Add a test donation row', 'addTestDonation')
-    .addItem('Set up the sheet', 'setup')
+    .addItem('Set up the sheet (run once)', 'setup')
     .addToUi();
 }
 
-/** Creates the Register tab, its headers, the Status dropdown and the Drive folder. Safe to run again. */
+/**
+ * Run once after pasting the code. Names the file, lays out and colours the Register, turns on the
+ * "tick to send receipt" box, and makes the Drive folder. Safe to run again.
+ */
 function setup() {
-  getSheet();
+  var ss = SpreadsheetApp.getActive();
+  if (/^Untitled/i.test(ss.getName())) ss.rename('GGF Receipt Register');
+  var sheet = getSheet();
+  layout(sheet);
   getFolder();
-  SpreadsheetApp.getActive().toast('Register is ready.', 'Receipts', 5);
+  ScriptApp.getProjectTriggers().forEach(function (t) {
+    if (t.getHandlerFunction() === 'onSheetEdit') ScriptApp.deleteTrigger(t);
+  });
+  ScriptApp.newTrigger('onSheetEdit').forSpreadsheet(ss).onEdit().create();
+  ss.toast('Ready. Tick the green box on a row to send its receipt.', 'Receipts', 8);
+}
+
+/** Runs on every edit (installed by setup). Ticking the green box sends that row's receipt. */
+function onSheetEdit(e) {
+  var range = e && e.range;
+  if (!range || range.getSheet().getName() !== CONFIG.SHEET_NAME) return;
+  if (range.getNumRows() !== 1 || range.getNumColumns() !== 1) return;
+  if (range.getColumn() !== COL[TICK] || range.getRow() < 2 || range.getValue() !== true) return;
+  var sheet = range.getSheet();
+  var result = issueReceipt(sheet, range.getRow());
+  if (!result.ok && !result.already) range.setValue(false);
+  range.setNote(result.ok ? '' : result.message);
+  e.source.toast(result.message, result.ok ? 'Receipt sent' : 'Not sent yet', 12);
 }
 
 function issueReceiptForSelectedRow() {
@@ -141,6 +180,7 @@ function issueReceiptForSelectedRow() {
     return;
   }
   var result = issueReceipt(sheet, r);
+  if (result.ok) sheet.getRange(r, COL[TICK]).setValue(true);
   if (!result.whatsapp) { ui.alert(result.message); return; }
   // A small window with a button, because a plain alert cannot hold a link.
   var html = '<div style="font:14px/1.5 Arial,sans-serif;white-space:pre-wrap">' + esc(result.message) + '</div>' +
@@ -158,20 +198,36 @@ function whatsappLink(phone, text) {
   return 'https://wa.me/' + digits + '?text=' + encodeURIComponent(text);
 }
 
+/** Puts a clickable "label" link in the WhatsApp column. Returns the link, or '' if the number can't be used. */
+function setWhatsApp(sheet, r, phone, text, label) {
+  var link = whatsappLink(phone, text);
+  var cell = sheet.getRange(r, COL[WA]);
+  if (link) cell.setFormula('=HYPERLINK("' + link.replace(/"/g, '""') + '","' + label + '")');
+  else cell.setValue('No usable phone number');
+  return link;
+}
+
+function ackWhatsAppText(row) {
+  var member = row['Type'] === 'Founding member';
+  return (CONFIG.DEMO ? '[SAMPLE] ' : '') + 'Namaskar ' + row['Name'] + ', thank you. ' + CONFIG.ORG_NAME + ' has received your ' +
+    (member ? 'founding member registration' : 'donation details') + '. Your reference is ' + row['Reference'] + '. ' +
+    (member ? 'Someone from the foundation will call you soon.' : 'We will send your receipt once the gift reaches our account.');
+}
+
 /** Issues the receipt for one row. Returns { ok, message }. Kept separate from the UI so it can be tested. */
 function issueReceipt(sheet, r) {
   var values = sheet.getRange(r, 1, 1, COLUMNS.length).getValues()[0];
   var v = {};
   COLUMNS.forEach(function (c, i) { v[c] = values[i]; });
 
-  if (v['Receipt no.']) return { ok: false, message: 'This row already has receipt ' + v['Receipt no.'] + '. Nothing was done.' };
-  if (v['Status'] !== 'Received') return { ok: false, message: 'Set Status to "Received" once the money is confirmed, then try again.' };
-  var amount = Math.floor(Number(String(v['Amount received']).replace(/[,\s₹]/g, '')) || 0);
-  if (amount < 1) return { ok: false, message: 'Fill in "Amount received" (the amount confirmed in the bank or in cash).' };
+  if (v['Receipt no.']) return { ok: false, already: true, message: 'This row already has receipt ' + v['Receipt no.'] + '. Nothing was done.' };
+  if (v['Status'] === 'Not proceeding') return { ok: false, message: 'This row is marked "Not proceeding". Change its Status first.' };
+  var amount = Math.floor(Number(String(v[AMOUNT]).replace(/[,\s₹]/g, '')) || 0);
+  if (amount < 1) return { ok: false, message: 'Fill in the yellow "Amount received" cell first, then tick again.' };
   var isMember = v['Type'] === 'Founding member';
   var mode = isMember ? 'Bank transfer' : (v['Mode'] || 'Bank transfer');
-  var utr = String(v['UTR / reference (confirmed)'] || '').trim();
-  if (mode === 'Bank transfer' && !utr) return { ok: false, message: 'Fill in "UTR / reference (confirmed)" from the bank statement.' };
+  var utr = String(v[UTR] || '').trim();
+  if (mode === 'Bank transfer' && !utr) return { ok: false, message: 'Fill in the yellow "UTR" cell from the bank statement, then tick again.' };
   if (mode !== 'Bank transfer' && amount >= 200000) {
     return { ok: false, message: 'Cash of ₹2 lakh or more from one person is not allowed (section 269ST). No receipt was issued.' };
   }
@@ -190,7 +246,6 @@ function issueReceipt(sheet, r) {
   file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
   var waText = (CONFIG.DEMO ? '[SAMPLE] ' : '') + 'Namaskar ' + v['Name'] + ', thank you. Your receipt ' + number +
     ' from ' + CONFIG.ORG_NAME + ' for ' + inr(amount) + ' is here: ' + file.getUrl();
-  var wa = whatsappLink(v['Phone'], waText);
 
   var sentTo = '';
   if (EMAIL_RE.test(String(v['Email']))) {
@@ -202,8 +257,8 @@ function issueReceipt(sheet, r) {
   sheet.getRange(r, COL['Receipt no.']).setValue(number);
   sheet.getRange(r, COL['Receipt date']).setValue(now);
   sheet.getRange(r, COL['Receipt PDF']).setValue(file.getUrl());
-  sheet.getRange(r, COL['Receipt sent to']).setValue(sentTo || 'Not emailed: send it on WhatsApp');
-  if (wa) sheet.getRange(r, COL['WhatsApp receipt']).setFormula('=HYPERLINK("' + wa.replace(/"/g, '""') + '","Send on WhatsApp")');
+  sheet.getRange(r, COL['Receipt sent to']).setValue(sentTo ? 'Emailed to ' + sentTo : 'No email: use the WhatsApp link');
+  var wa = setWhatsApp(sheet, r, v['Phone'], waText, 'Send receipt on WhatsApp');
   sheet.getRange(r, COL['Status']).setValue('Receipt sent');
 
   return {
@@ -212,7 +267,7 @@ function issueReceipt(sheet, r) {
     message: 'Receipt ' + number + ' issued.\n\n' + (sentTo
       ? 'It was emailed to ' + sentTo + ' and saved in Drive.'
       : 'There is no email on this row.') + (wa
-      ? '\n\nTap the button to send it on WhatsApp to ' + v['Phone'] + '. The same link is in the "WhatsApp receipt" column.'
+      ? '\n\nTo send it on WhatsApp, click "Send receipt on WhatsApp" in the WhatsApp column.'
       : '\n\nThe phone number could not be used for WhatsApp. The PDF link is in the "Receipt PDF" column.'),
   };
 }
@@ -222,7 +277,7 @@ function addTestDonation() {
   var me = Session.getActiveUser().getEmail();
   var ref = 'DN-' + Utilities.formatDate(new Date(), 'Asia/Kolkata', 'yyMMdd') + '-TEST';
   doPost({ parameter: { kind: 'donation', ref: ref.slice(0, 10) + randomTail(), name: 'Test Donor', phone: '9864522165', email: me, amount: '1100', purpose: 'Gau seva (gaushala)', mode: 'Bank transfer', utr: '', lang: 'en' } });
-  SpreadsheetApp.getActive().toast('Added a test row' + (me ? ' and emailed the acknowledgement to ' + me : '') + '.', 'Receipts', 6);
+  SpreadsheetApp.getActive().toast('Added a test row' + (me ? ' and emailed the acknowledgement to ' + me : '') + '. Its UTR is blank: type any number in the yellow UTR cell, then tick the green box.', 'Receipts', 10);
 }
 
 // ─────────────────────────────────────── Emails ───────────────────────────────────────
@@ -308,25 +363,79 @@ function taxLine(d) {
   return 'This donation is eligible for deduction under section 80G of the Income Tax Act, 1961. 80G registration: ' + CONFIG.EIGHTY_G_REG + '.';
 }
 
+/** The Register tab, with its columns in the current order (older layouts are converted first). */
 function getSheet() {
   var ss = SpreadsheetApp.getActive();
   var sheet = ss.getSheetByName(CONFIG.SHEET_NAME) || ss.insertSheet(CONFIG.SHEET_NAME, 0);
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(COLUMNS);
-    sheet.getRange(1, 1, 1, COLUMNS.length).setFontWeight('bold').setBackground('#f4eee2');
-    sheet.setFrozenRows(1);
-    var rule = SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).build();
-    sheet.getRange(2, COL['Status'], 1000, 1).setDataValidation(rule);
-    sheet.getRange(2, COL['UTR / reference (confirmed)'], 1000, 1).setNumberFormat('@');
-    sheet.getRange(2, COL['UTR (stated)'], 1000, 1).setNumberFormat('@');
-  }
-  // Registers made before a column was added get its header here.
-  var header = sheet.getRange(1, 1, 1, COLUMNS.length);
-  var have = header.getValues()[0];
-  if (have.join('|') !== COLUMNS.join('|')) {
-    COLUMNS.forEach(function (c, i) { if (!have[i]) sheet.getRange(1, i + 1).setValue(c).setFontWeight('bold').setBackground('#f4eee2'); });
+  var width = Math.max(sheet.getLastColumn(), 1);
+  var have = sheet.getLastRow() ? sheet.getRange(1, 1, 1, width).getValues()[0] : [];
+  if (have.slice(0, COLUMNS.length).join('|') !== COLUMNS.join('|')) {
+    convertLayout(sheet, have);
+    layout(sheet);
   }
   return sheet;
+}
+
+/** Rewrites the tab in the current column order, keeping every row's data (and links) by column name. */
+function convertLayout(sheet, have) {
+  var rows = [];
+  var last = sheet.getLastRow();
+  if (last >= 2 && have.length) {
+    var range = sheet.getRange(2, 1, last - 1, have.length);
+    var values = range.getValues(), formulas = range.getFormulas();
+    rows = values.map(function (vals, i) {
+      var byName = {};
+      have.forEach(function (h, j) {
+        var name = OLD_NAMES[h] || h;
+        if (name) byName[name] = formulas[i][j] || vals[j];
+      });
+      if (!byName[AMOUNT]) byName[AMOUNT] = byName['Amount (stated)'];
+      if (!byName[UTR]) byName[UTR] = byName['UTR (stated)'];
+      return COLUMNS.map(function (c) { return byName[c] === undefined ? '' : byName[c]; });
+    });
+  }
+  sheet.clear();
+  sheet.getRange(1, 1, sheet.getMaxRows(), sheet.getMaxColumns()).clearDataValidations();
+  sheet.getRange(1, 1, 1, COLUMNS.length).setValues([COLUMNS]);
+  if (rows.length) {
+    sheet.getRange(2, COL['Phone'], rows.length, 1).setNumberFormat('@');
+    sheet.getRange(2, 1, rows.length, COLUMNS.length).setValues(rows);
+  }
+}
+
+/** Colours, notes, checkboxes and dropdowns. Safe to run again. */
+function layout(sheet) {
+  var n = 1000;
+  sheet.setFrozenRows(1);
+  sheet.setFrozenColumns(2);
+  sheet.getRange(1, 1, 1, COLUMNS.length).setFontWeight('bold').setBackground('#f4eee2').setWrap(true).setVerticalAlignment('middle');
+  sheet.setRowHeight(1, 46);
+  sheet.getRange(1, COL[AMOUNT], 1, 2).setBackground('#ffe58a');
+  sheet.getRange(1, COL[TICK]).setBackground('#8fd19e');
+  sheet.getRange(1, COL[WA]).setBackground('#c6efce');
+  // Details nobody needs to touch are greyed.
+  sheet.getRange(1, COL['Receipt no.'], 1, COLUMNS.length - COL['Receipt no.'] + 1).setBackground('#ece9e3').setFontColor('#6b5b48');
+  Object.keys(HEADER_NOTES).forEach(function (k) { sheet.getRange(1, COL[k]).setNote(HEADER_NOTES[k]); });
+
+  sheet.getRange(2, COL[AMOUNT], n, 2).setBackground('#fff6cc');
+  sheet.getRange(2, COL[UTR], n, 1).setNumberFormat('@');
+  sheet.getRange(2, COL['UTR (stated)'], n, 1).setNumberFormat('@');
+  sheet.getRange(2, COL[TICK], n, 1).setBackground('#e3f4e6').setHorizontalAlignment('center');
+  // Checkboxes only on rows that exist: an empty checkbox counts as data and would push new rows down.
+  if (sheet.getLastRow() >= 2) sheet.getRange(2, COL[TICK], sheet.getLastRow() - 1, 1).insertCheckboxes();
+  sheet.getRange(2, COL['Status'], n, 1).setDataValidation(SpreadsheetApp.newDataValidation().requireValueInList(STATUSES, true).build());
+
+  // A row whose receipt has gone out turns pale green.
+  var all = sheet.getRange(2, 1, n, COLUMNS.length);
+  var statusCol = String.fromCharCode(64 + COL['Status']);
+  sheet.setConditionalFormatRules([
+    SpreadsheetApp.newConditionalFormatRule().whenFormulaSatisfied('=$' + statusCol + '2="Receipt sent"').setBackground('#e6f4ea').setRanges([all]).build(),
+  ]);
+  sheet.setColumnWidth(COL['Reference'], 130);
+  sheet.setColumnWidth(COL['Name'], 170);
+  sheet.setColumnWidths(COL[AMOUNT], 2, 150);
+  sheet.setColumnWidth(COL[TICK], 110);
+  sheet.setColumnWidth(COL[WA], 190);
 }
 
 function getFolder() {
