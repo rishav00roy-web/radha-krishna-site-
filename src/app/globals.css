@@ -390,3 +390,8 @@ main:has(> .section.on-dark:last-child) + footer .footer-ridge,
 main:has(> .painting) + footer .footer-ridge { display: none; }
 /* The section after a night band starts below its mist, so the mist never sits on its first lines. */
 .section.on-dark + .section { padding-top: calc(clamp(110px, 12vw, 170px) + clamp(1.5rem, 3vw, 3rem)); }
+
+/* Printing the sample receipt: only the receipt itself goes on paper. */
+@media print {
+  footer, .lm-dock, .lm-scrim, .lm-corner { display: none !important; }
+}

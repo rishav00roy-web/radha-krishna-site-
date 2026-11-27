@@ -7,8 +7,7 @@ import { BrandMark } from "./BrandMark";
 import { Embers } from "./Embers";
 import { TouchSurface } from "./painting/TouchSurface";
 
-// Until the founding membership page exists, the call opens the contact page (same as Home).
-const FOUNDING_ROUTE: RouteKey = "contact";
+const FOUNDING_ROUTE: RouteKey = "members";
 
 const links: RouteKey[] = ["temple", "architecture", "masterPlan", "activities", "environment", "journey", "gallery", "location", "organisation", "contact", "donate"];
 

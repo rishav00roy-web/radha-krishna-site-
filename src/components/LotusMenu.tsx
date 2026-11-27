@@ -14,8 +14,7 @@ const links: RouteKey[] = [
   "masterPlan", "journey", "gallery", "location", "organisation",
 ];
 
-// Until the founding membership page exists, the highlighted link opens the contact page.
-const FOUNDING_ROUTE: RouteKey = "contact";
+const FOUNDING_ROUTE: RouteKey = "members";
 
 /**
  * The whole site navigation: one lotus button at the bottom centre.

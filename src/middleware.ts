@@ -4,6 +4,7 @@ import { defaultLocale, isLocale } from "@/i18n/config";
 /** A path without a language goes to the same page in English; the language switcher links to /as and /hi. */
 export function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+  if (pathname.startsWith("/receipt/")) return NextResponse.next(); // receipt PDFs have no language
   if (isLocale(pathname.split("/")[1])) return NextResponse.next();
   const url = req.nextUrl.clone();
   url.pathname = `/${defaultLocale}${pathname === "/" ? "" : pathname}`;
