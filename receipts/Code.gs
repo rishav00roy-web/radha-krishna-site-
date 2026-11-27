@@ -377,8 +377,8 @@ function receiptHtml(d) {
 
   var header = letterhead
     // On his letterhead the header is printed in ink, inside the artwork's blank centre.
-    ? '<div style="text-align:center;padding-top:8px"><img src="' + LOGO_PNG + '" width="74" style="display:block;margin:0 auto 8px">' +
-      '<div style="font-size:26px;color:' + INK + '">' + esc(CONFIG.ORG_NAME) + '</div>' +
+    ? '<div style="text-align:center">' +
+      '<div style="font-size:25px;color:' + INK + '">' + esc(CONFIG.ORG_NAME) + '</div>' +
       '<div style="font-size:10.5px;color:' + SOFT + ';margin-top:6px;line-height:1.5">A Section 8 company · ' + esc(CONFIG.ORG_ADDRESS) + '<br>' + esc(CONFIG.ORG_IDS) + '</div></div>'
     : '<div style="background:' + MID + ';color:' + IVORY + ';text-align:center;padding:22px 26px 18px">' +
       '<img src="' + LOGO_PNG + '" width="78" style="display:block;margin:0 auto 10px">' +
@@ -422,15 +422,29 @@ function receiptHtml(d) {
     'Shri Shri Radha-Krishna Prem Mandir (proposed) · <b style="color:' + GOLD + '">' + esc(site) + '</b> · ' + esc(CONFIG.ORG_PHONE) +
     (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>';
 
-  var body = header + '<div style="padding:' + (letterhead ? '0 8px' : '0 30px 26px') + '">' + title + meta + amount + details + tax + sign + footer + '</div>';
-
   if (letterhead) {
-    // The artwork fills the page; the text sits inside its blank centre.
+    // Fitted to the letterhead artwork (A4 at 794 x 1123): text between the top lotus and the bottom divider,
+    // the signature just above the divider, the site line just below it, clear of the corner peacocks.
+    var lhSign = '<div style="text-align:center;font-size:11px">' +
+      '<div style="border-top:1px solid ' + INK + ';width:210px;margin:0 auto 5px"></div>' +
+      (CONFIG.SIGNATORY_NAME ? esc(CONFIG.SIGNATORY_NAME) + (CONFIG.SIGNATORY_TITLE ? ', ' + esc(CONFIG.SIGNATORY_TITLE) : '') : 'Authorised signatory: ' + blank) +
+      '<br><span style="color:' + SOFT + '">For ' + esc(CONFIG.ORG_NAME) + '</span></div>';
+    var lhFoot = '<div style="text-align:center;font-size:11px;color:' + SOFT + ';line-height:1.6">' +
+      '<b style="color:' + GOLD + ';font-size:12.5px;letter-spacing:1px">' + esc(site) + '</b><br>' + esc(CONFIG.ORG_PHONE) +
+      (CONFIG.ORG_EMAIL ? ' · ' + esc(CONFIG.ORG_EMAIL) : '') + '</div>';
+    var abs = function (top, left, width, html) {
+      return '<div style="position:absolute;z-index:1;top:' + top + 'px;left:' + left + 'px;width:' + width + 'px">' + html + '</div>';
+    };
     return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:' + INK + '">' +
-      '<div style="position:relative;width:794px;height:1123px">' +
+      '<div style="position:relative;width:794px;height:1123px;overflow:hidden">' +
       '<img src="' + letterhead + '" style="position:absolute;top:0;left:0;width:794px;height:1123px;z-index:0">' +
-      '<div style="position:relative;z-index:1;padding:150px 120px 0">' + body + '</div></div></body></html>';
+      abs(196, 92, 610, header + title + meta + amount.replace('background:' + IVORY, 'background:#fbf3e2').replace('margin-top:16px', 'margin-top:24px') + details + tax) +
+      abs(880, 247, 300, lhSign) +
+      abs(976, 247, 300, lhFoot) +
+      '</div></body></html>';
   }
+
+  var body = header + '<div style="padding:0 30px 26px">' + title + meta + amount + details + tax + sign + footer + '</div>';
   return '<html><head><meta charset="utf-8"></head><body style="margin:0;font-family:Georgia,serif;color:' + INK + '">' +
     '<div style="border:2px solid ' + GOLD + ';padding:4px;margin:18px"><div style="border:1px solid ' + LINE + '">' + body + '</div></div></body></html>';
 }
