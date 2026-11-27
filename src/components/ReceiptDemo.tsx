@@ -6,7 +6,7 @@ import { useMemo, useState } from "react";
 import { BrandMark } from "./BrandMark";
 import { inr, rupeesInWords } from "@/lib/amountWords";
 
-type Org = { name: string; address: string; cin: string; pan: string; darpan: string; phone: string; email: string | null };
+type Org = { name: string; address: string; cin: string; pan: string; csr: string; darpan: string; eightyG: string; phone: string; email: string | null };
 
 /** A value the foundation still has to give. Shown highlighted on the demo, so nothing reads as final. */
 function Fill({ children }: { children: React.ReactNode }) {
@@ -33,6 +33,7 @@ export function ReceiptDemo({ org }: { org: Org }) {
   const name = q.get("n") || "Sample Name";
   const email = q.get("e") || "";
   const place = q.get("pl") || "";
+  const donorPan = q.get("pan") || "";
 
   const [amount, setAmount] = useState(String(Number(q.get("a")) > 0 ? Number(q.get("a")) : member ? 100000 : 1100));
   const [mode, setMode] = useState(member ? "Bank transfer" : q.get("md") || "Bank transfer");
@@ -126,7 +127,7 @@ export function ReceiptDemo({ org }: { org: Org }) {
                 <BrandMark size={52} className="text-[#a87a26]" />
                 <p className="font-display text-2xl leading-tight sm:text-3xl">{org.name}</p>
                 <p className="max-w-[48ch] text-xs leading-relaxed text-[#6b5b48]">
-                  A Section 8 company · {org.address}<br />CIN {org.cin} · PAN {org.pan} · NGO Darpan {org.darpan}
+                  A Section 8 company · {org.address}<br />CIN {org.cin} · PAN {org.pan} · CSR Reg. {org.csr} · NGO Darpan {org.darpan}
                 </p>
                 <p className="mt-1 rounded-full border border-[#b3261e] px-3 py-0.5 text-xs font-semibold tracking-[0.14em] text-[#b3261e]">SAMPLE RECEIPT · NOT VALID</p>
               </header>
@@ -142,12 +143,18 @@ export function ReceiptDemo({ org }: { org: Org }) {
                 <dt className="text-[#6b5b48]">Towards</dt>
                 <dd>{member ? <>Founding membership: <Fill>what this payment covers</Fill></> : (q.get("p") || "Wherever it is most needed")}</dd>
                 <dt className="text-[#6b5b48]">Mode of payment</dt><dd>{mode}{mode === "Bank transfer" && utr ? <>, UTR <span className="tabular">{utr}</span></> : null}</dd>
+                {donorPan ? <><dt className="text-[#6b5b48]">Donor PAN</dt><dd className="tabular">{donorPan}</dd></> : null}
                 <dt className="text-[#6b5b48]">Website reference</dt><dd className="tabular">{ref}</dd>
               </dl>
 
               <footer className="relative mt-10 flex flex-wrap items-end justify-between gap-6 border-t border-[rgb(201_162_74/0.5)] pt-6 text-sm">
                 <p className="max-w-[40ch] text-xs leading-relaxed text-[#6b5b48]">
-                  Issued by {org.name} after the payment was confirmed. Tax status: <Fill>80G line only if the foundation holds 80G</Fill>.
+                  Issued by {org.name} after the payment was confirmed.{" "}
+                  {member
+                    ? "This is a founding-member payment, not a donation, and is not eligible for deduction under section 80G."
+                    : mode !== "Bank transfer" && amt > 2000
+                      ? "Cash donations above ₹2,000 are not eligible for deduction under section 80G."
+                      : `This donation is eligible for deduction under section 80G of the Income Tax Act, 1961. 80G registration: ${org.eightyG}.`}
                 </p>
                 <div className="text-center">
                   <div className="mx-auto h-10 w-44 border-b border-[#2a2118]" />

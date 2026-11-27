@@ -8,7 +8,7 @@ import { FormDone, type DoneStrings } from "./FormDone";
 import { emailPattern } from "./MemberForm";
 
 type Strings = DoneStrings & {
-  email: string; emailHint: string; invalidEmail: string; send: string; sending: string; howDirect: string; failed: string;
+  email: string; emailHint: string; invalidEmail: string; pan: string; panHint: string; invalidPan: string; send: string; sending: string; howDirect: string; failed: string;
   name: string; mobile: string; amount: string; other: string; otherLabel: string; purpose: string;
   note: string; sendEmail: string; sendWhatsApp: string; howEmail: string; howWhatsApp: string;
   required: string; invalidMobile: string; invalidAmount: string;
@@ -35,7 +35,7 @@ export function DonateForm({
 }) {
   const [choice, setChoice] = useState<string>(String(presets[1]));
   const [method, setMethod] = useState<0 | 1>(0);
-  const [errors, setErrors] = useState<Partial<Record<"name" | "mobile" | "amount" | "email", string>>>({});
+  const [errors, setErrors] = useState<Partial<Record<"name" | "mobile" | "amount" | "email" | "pan", string>>>({});
   const [state, setState] = useState<"idle" | "sending" | "failed">("idle");
   const [done, setDone] = useState<null | { ref: string; sample: string; wa: string; mail: string | null }>(null);
   const otherRef = useRef<HTMLInputElement>(null);
@@ -51,9 +51,11 @@ export function DonateForm({
     else if (!mobilePattern.test(v("mobile"))) next.mobile = strings.invalidMobile;
     if (!Number.isFinite(amount) || amount < 1) next.amount = strings.invalidAmount;
     if (v("email") && !emailPattern.test(v("email"))) next.email = strings.invalidEmail;
+    const pan = v("pan").toUpperCase();
+    if (pan && !/^[A-Z]{5}[0-9]{4}[A-Z]$/.test(pan)) next.pan = strings.invalidPan;
     setErrors(next);
-    if (next.name || next.mobile || next.amount || next.email) {
-      const id = next.name ? "d-name" : next.mobile ? "d-mobile" : next.email ? "d-email" : choice === "other" ? "d-other" : `d-amt-${choice}`;
+    if (next.name || next.mobile || next.amount || next.email || next.pan) {
+      const id = next.name ? "d-name" : next.mobile ? "d-mobile" : next.email ? "d-email" : next.pan ? "d-pan" : choice === "other" ? "d-other" : `d-amt-${choice}`;
       document.getElementById(id)?.focus();
       return;
     }
@@ -65,6 +67,7 @@ export function DonateForm({
       ["Name", v("name")],
       ["Phone", v("mobile")],
       ["Email", v("email")],
+      ["PAN (for 80G)", pan],
       ["Amount", `₹${amount.toLocaleString("en-IN")}`],
       ["Purpose", purpose],
       // Always sent in English, like the purpose, so the foundation reads one language.
@@ -78,7 +81,7 @@ export function DonateForm({
     setState("sending");
     try {
       await recordSubmission("donation", ref, {
-        name: v("name"), phone: v("mobile"), email: v("email"), amount: String(amount), purpose, mode, utr, note: v("note"), lang: locale,
+        name: v("name"), phone: v("mobile"), email: v("email"), amount: String(amount), purpose, mode, utr, pan, note: v("note"), lang: locale,
       });
     } catch {
       setState("failed");
@@ -87,7 +90,7 @@ export function DonateForm({
     setState("idle");
     setDone({
       ref,
-      sample: sampleReceiptHref(locale, "donation", ref, { n: v("name"), e: v("email"), a: String(amount), p: purpose, md: mode, u: utr }),
+      sample: sampleReceiptHref(locale, "donation", ref, { n: v("name"), e: v("email"), a: String(amount), p: purpose, md: mode, u: utr, pan }),
       wa: whatsappHref(whatsapp, `${subject}\n\n${body}`),
       mail: to ? mailtoHref(to, subject, body) : null,
     });
@@ -201,6 +204,12 @@ export function DonateForm({
         <label htmlFor="d-email" className="label">{strings.email}</label>
         <input id="d-email" name="email" type="email" inputMode="email" autoComplete="email" maxLength={160} aria-invalid={errors.email ? "true" : undefined} aria-describedby={errors.email ? "de-email" : "d-email-hint"} className="field sm:max-w-[420px]" />
         {errors.email ? err("email", "de-email") : <p id="d-email-hint" className="mt-1.5 text-sm text-ink-soft">{strings.emailHint}</p>}
+      </div>
+
+      <div>
+        <label htmlFor="d-pan" className="label">{strings.pan}</label>
+        <input id="d-pan" name="pan" autoComplete="off" autoCapitalize="characters" maxLength={10} aria-invalid={errors.pan ? "true" : undefined} aria-describedby={errors.pan ? "de-pan" : "d-pan-hint"} className="field tabular uppercase sm:max-w-[240px]" />
+        {errors.pan ? err("pan", "de-pan") : <p id="d-pan-hint" className="mt-1.5 text-sm text-ink-soft">{strings.panHint}</p>}
       </div>
 
       {method === 0 ? (

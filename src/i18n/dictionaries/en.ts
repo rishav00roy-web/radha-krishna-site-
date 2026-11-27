@@ -296,6 +296,7 @@ export const en = {
     faqTitle: "Questions about giving",
     faq: [
       { q: "Will I get a receipt?", a: "Yes. Once your gift reaches the foundation's account, or is handed over at its office, the foundation sends you an official numbered receipt. Give your email or WhatsApp number in the form so it knows where to send it." },
+      { q: "Is my donation tax-deductible?", a: "Yes. Gousamuh Gramaya Foundation is registered under section 80G, so donations by bank transfer, and cash gifts up to ₹2,000, are eligible. Give your PAN in the form so it can be printed on your receipt." },
       { q: "Is any payment taken on this website?", a: "No. This page only shows how to give. Money goes straight to the foundation's bank account, or by hand at its office." },
       { q: "What should I write as the transfer remark?", a: "Your name and the purpose, for example “Gau seva”, so the foundation can recognise your gift." },
       { q: "How will the foundation know I gave?", a: "Send your name, amount and transaction reference with the form on this page, by email or WhatsApp." },
@@ -321,6 +322,9 @@ export const en = {
     email: "Email for your receipt (optional)",
     emailHint: "The receipt is sent here. Without an email, it comes on WhatsApp.",
     invalidEmail: "Check the email address.",
+    pan: "Your PAN, for 80G (optional)",
+    panHint: "Needed if you want to claim the 80G tax deduction. It is printed on your receipt.",
+    invalidPan: "Enter a PAN like ABCDE1234F.",
     moreTitle: "Want to do more?",
     moreBody: "Fifty founding members are helping to begin the temple and a farming community around it, and housing two families each.",
     moreCta: "About founding membership",

@@ -8,6 +8,7 @@ import { href } from "@/lib/routes";
 import { PageIntro } from "@/components/PageIntro";
 import { Icon } from "@/components/Icon";
 import { MemberForm } from "@/components/MemberForm";
+import { Registrations } from "@/components/Registrations";
 import type { IconKey } from "@/lib/types";
 
 type Props = { params: Promise<{ locale: string }> };
@@ -159,6 +160,7 @@ export default async function FoundingMembersPage({ params }: Props) {
               />
             </div>
             <p className="mt-8 border-t border-line pt-5 text-sm text-ink-soft">{m.honesty}</p>
+            <Registrations dict={d} org={org} className="mt-8" />
           </div>
         </div>
       </section>

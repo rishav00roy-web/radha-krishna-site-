@@ -9,6 +9,7 @@ import { DonateForm } from "@/components/DonateForm";
 import { CopyField } from "@/components/CopyField";
 import { Icon } from "@/components/Icon";
 import { Accordion } from "@/components/anm/Accordion";
+import { Registrations } from "@/components/Registrations";
 import Link from "next/link";
 import { href } from "@/lib/routes";
 
@@ -90,7 +91,7 @@ export default async function DonatePage({ params }: Props) {
                   note: g.note, sendEmail: g.sendEmail, sendWhatsApp: g.sendWhatsApp, howEmail: g.howEmail, howWhatsApp: g.howWhatsApp,
                   required: g.required, invalidMobile: g.invalidMobile, invalidAmount: g.invalidAmount,
                   method: g.method, methods: g.methods, reference: g.reference, referenceHint: g.referenceHint,
-                  email: g.email, emailHint: g.emailHint, invalidEmail: g.invalidEmail, ...d.forms,
+                  email: g.email, emailHint: g.emailHint, invalidEmail: g.invalidEmail, pan: g.pan, panHint: g.panHint, invalidPan: g.invalidPan, ...d.forms,
                 }}
               />
             </div>
@@ -103,6 +104,7 @@ export default async function DonatePage({ params }: Props) {
               <p className="mt-2 text-ink-soft">{g.talkBody}</p>
               <a href={`tel:+91${org.phone}`} className="tabular mt-3 inline-block font-display text-2xl text-gold no-underline hover:underline">{org.phone}</a>
             </div>
+            <Registrations dict={d} org={org} className="mt-6" />
           </div>
         </div>
       </section>

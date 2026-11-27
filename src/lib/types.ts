@@ -94,6 +94,8 @@ export type Organisation = {
   pan: string;
   csr: string;
   darpan: string;
+  /** 80G registration reference printed on donation receipts. */
+  eighty_g: string;
   address: string;
   phone: string;
   email: string | null;

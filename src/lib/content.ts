@@ -197,6 +197,9 @@ export const organisation: Organisation = {
   pan: "AALCG8370M",
   csr: "CSR00091344",
   darpan: "AS/2025/0586563",
+  // Rishav, 2026-11-27: GGF holds 80G and its 80G reference is the PAN. If the 80G approval letter
+  // (Form 10AC) gives a longer registration number, put that here: receipts print this value.
+  eighty_g: "AALCG8370M",
   address: "Horucharai Ali, Pulibor, P.O. Probotia, Jorhat – 785006, Assam, India",
   phone: "9864522165",
   // PLACEHOLDER: replace with the foundation's real address. Contact and donation forms send to it.

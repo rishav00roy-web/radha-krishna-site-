@@ -21,11 +21,14 @@ var CONFIG = {
   ORG_NAME: 'Gousamuh Gramaya Foundation',
   ORG_ADDRESS: 'Horucharai Ali, Pulibor, P.O. Probotia, Jorhat – 785006, Assam, India',
   ORG_PHONE: '9864522165',
-  ORG_IDS: 'CIN U72200AS2025NPL027736 · PAN AALCG8370M · NGO Darpan AS/2025/0586563',
+  ORG_IDS: 'CIN U72200AS2025NPL027736 · PAN AALCG8370M · CSR Reg. CSR00091344 · NGO Darpan AS/2025/0586563',
   ORG_EMAIL: '',            // TO FILL: the foundation's email, used as reply-to and printed on receipts
   SIGNATORY_NAME: '',       // TO FILL: who signs receipts, e.g. the CEO's name
   SIGNATORY_TITLE: '',      // TO FILL: their title
-  EIGHTY_G_LINE: '',        // TO FILL ONLY IF GGF HOLDS 80G: the exact line with its 80G number. Leave empty otherwise.
+  // GGF holds 80G; its 80G reference is the PAN (Rishav, 2026-11-27). If the 80G approval (Form 10AC) gives a
+  // longer registration number, put it here. Printed on donation receipts only, never on founding-member receipts,
+  // and not on cash gifts above ₹2,000 (those do not qualify).
+  EIGHTY_G_REG: 'AALCG8370M',
   MEMBER_PAYMENT_FOR: '',   // TO FILL: what a founding member's payment to GGF covers (e.g. "site development")
   RECEIPT_PREFIX: 'GGF',    // receipt numbers look like GGF/2026-27/0001 (GGF/DEMO/... while DEMO is true)
   DRIVE_FOLDER: 'GGF receipts',
@@ -36,7 +39,7 @@ var CONFIG = {
 
 var COLUMNS = [
   'Received at', 'Reference', 'Type', 'Name', 'Phone', 'Email', 'Town or district', 'Wants to visit',
-  'Amount (stated)', 'Purpose', 'Mode', 'UTR (stated)', 'Note', 'Language', 'Acknowledgement',
+  'Amount (stated)', 'Purpose', 'Mode', 'UTR (stated)', 'Donor PAN', 'Note', 'Language', 'Acknowledgement',
   'Status', 'Amount received', 'UTR / reference (confirmed)', 'Receipt no.', 'Receipt date', 'Receipt PDF', 'Receipt sent to',
 ];
 var STATUSES = ['New', 'Contacted', 'Received', 'Receipt sent', 'Not proceeding'];
@@ -76,6 +79,7 @@ function doPost(e) {
       'Purpose': clip(p.purpose, 80),
       'Mode': clip(p.mode, 40),
       'UTR (stated)': clip(p.utr, 40),
+      'Donor PAN': /^[A-Z]{5}[0-9]{4}[A-Z]$/.test(clip(p.pan, 10).toUpperCase()) ? clip(p.pan, 10).toUpperCase() : '',
       'Note': clip(p.note, 1000),
       'Language': clip(p.lang, 4),
       'Acknowledgement': '',
@@ -160,7 +164,7 @@ function issueReceipt(sheet, r) {
   var now = new Date();
   var number = nextReceiptNumber(now);
   var data = {
-    number: number, date: now, name: v['Name'], amount: amount, mode: mode, utr: utr, ref: v['Reference'],
+    number: number, date: now, name: v['Name'], amount: amount, mode: mode, utr: utr, ref: v['Reference'], pan: v['Donor PAN'], member: isMember,
     towards: isMember ? ('Founding membership' + (CONFIG.MEMBER_PAYMENT_FOR ? ': ' + CONFIG.MEMBER_PAYMENT_FOR : '')) : (v['Purpose'] || 'Wherever it is most needed'),
   };
   var pdf = Utilities.newBlob(receiptHtml(data), MimeType.HTML, 'receipt.html')
@@ -259,11 +263,12 @@ function receiptHtml(d) {
     row('Amount', '<b>' + inr(d.amount) + '</b><br><span style="font-size:12px">' + rupeesInWords(d.amount) + '</span>') +
     row('Towards', esc(d.towards) + (d.towards === 'Founding membership' ? ': ' + blank : '')) +
     row('Mode of payment', esc(d.mode) + (d.utr ? ', UTR ' + esc(d.utr) : '')) +
+    (d.pan ? row('Donor PAN', esc(d.pan)) : '') +
     row('Website reference', esc(d.ref)) +
     '</table>' +
     '<table style="width:100%;margin-top:34px;border-top:1px solid #e3cf9c;font-size:11px"><tr>' +
     '<td style="color:#6b5b48;padding-top:12px;vertical-align:bottom;width:55%">Issued by ' + esc(CONFIG.ORG_NAME) + ' after the payment was confirmed.' +
-    (CONFIG.EIGHTY_G_LINE ? '<br>' + esc(CONFIG.EIGHTY_G_LINE) : '') + '</td>' +
+    '<br>' + esc(taxLine(d)) + '</td>' +
     '<td style="text-align:center;padding-top:30px;vertical-align:bottom"><div style="border-top:1px solid #2a2118;width:180px;margin:0 auto 4px"></div>' +
     (CONFIG.SIGNATORY_NAME ? esc(CONFIG.SIGNATORY_NAME) + (CONFIG.SIGNATORY_TITLE ? ', ' + esc(CONFIG.SIGNATORY_TITLE) : '') : 'Authorised signatory: ' + blank) +
     '<br><span style="color:#6b5b48">For ' + esc(CONFIG.ORG_NAME) + '</span></td></tr></table>' +
@@ -271,6 +276,13 @@ function receiptHtml(d) {
 }
 
 // ─────────────────────────────────────── Helpers ───────────────────────────────────────
+
+/** The 80G line for a receipt. Founding-member payments are not donations; cash gifts above ₹2,000 do not qualify. */
+function taxLine(d) {
+  if (d.member) return 'This is a founding-member payment, not a donation, and is not eligible for deduction under section 80G.';
+  if (d.mode !== 'Bank transfer' && d.amount > 2000) return 'Cash donations above ₹2,000 are not eligible for deduction under section 80G.';
+  return 'This donation is eligible for deduction under section 80G of the Income Tax Act, 1961. 80G registration: ' + CONFIG.EIGHTY_G_REG + '.';
+}
 
 function getSheet() {
   var ss = SpreadsheetApp.getActive();

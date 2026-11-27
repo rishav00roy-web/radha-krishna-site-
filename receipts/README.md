@@ -39,7 +39,7 @@ At the top of `Code.gs`:
 |---|---|
 | `ORG_EMAIL` | The foundation's email, used for replies and printed on receipts. Also replace `info@example.org` in `src/lib/content.ts`. |
 | `SIGNATORY_NAME`, `SIGNATORY_TITLE` | Who signs receipts. |
-| `EIGHTY_G_LINE` | **Only if GGF holds 80G:** the exact line with its 80G number. Leave it empty otherwise, and receipts make no tax claim. |
+| `EIGHTY_G_REG` | Set to GGF's PAN, which is its 80G reference. If the 80G approval letter (Form 10AC) gives a longer registration number, use that. It is printed on donation receipts only. Founding-member receipts say they are not 80G-eligible, and so do cash gifts above ₹2,000. |
 | `MEMBER_PAYMENT_FOR` | What a founding member's payment to GGF covers. If members pay the land sellers directly, GGF only receipts what it receives itself. |
 | `DEMO` | Set it to `false` when ready. Real numbering then starts at 0001. |
 

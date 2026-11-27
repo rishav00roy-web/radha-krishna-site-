@@ -14,7 +14,7 @@ export default function ReceiptDemoPage() {
   return (
     <Suspense>
       <ReceiptDemo
-        org={{ name: org.name, address: org.address, cin: org.cin, pan: org.pan, darpan: org.darpan, phone: org.phone, email: org.email }}
+        org={{ name: org.name, address: org.address, cin: org.cin, pan: org.pan, csr: org.csr, darpan: org.darpan, eightyG: org.eighty_g, phone: org.phone, email: org.email }}
       />
     </Suspense>
   );
