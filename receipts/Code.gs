@@ -41,6 +41,7 @@ var COLUMNS = [
   'Received at', 'Reference', 'Type', 'Name', 'Phone', 'Email', 'Town or district', 'Wants to visit',
   'Amount (stated)', 'Purpose', 'Mode', 'UTR (stated)', 'Donor PAN', 'Note', 'Language', 'Acknowledgement',
   'Status', 'Amount received', 'UTR / reference (confirmed)', 'Receipt no.', 'Receipt date', 'Receipt PDF', 'Receipt sent to',
+  'WhatsApp receipt',
 ];
 var STATUSES = ['New', 'Contacted', 'Received', 'Receipt sent', 'Not proceeding'];
 var COL = {};
@@ -140,7 +141,21 @@ function issueReceiptForSelectedRow() {
     return;
   }
   var result = issueReceipt(sheet, r);
-  ui.alert(result.message);
+  if (!result.whatsapp) { ui.alert(result.message); return; }
+  // A small window with a button, because a plain alert cannot hold a link.
+  var html = '<div style="font:14px/1.5 Arial,sans-serif;white-space:pre-wrap">' + esc(result.message) + '</div>' +
+    '<p style="margin-top:18px"><a href="' + esc(result.whatsapp) + '" target="_blank" ' +
+    'style="background:#1f8f4e;color:#fff;padding:10px 16px;border-radius:6px;text-decoration:none;font:bold 14px Arial,sans-serif">Send on WhatsApp</a></p>';
+  ui.showModalDialog(HtmlService.createHtmlOutput(html).setWidth(420).setHeight(260), 'Receipt issued');
+}
+
+/** A wa.me link that opens WhatsApp to this phone number with the receipt message typed in. Empty if the number is unusable. */
+function whatsappLink(phone, text) {
+  var digits = String(phone || '').replace(/\D/g, '');
+  if (digits.length === 11 && digits.charAt(0) === '0') digits = digits.slice(1);
+  if (digits.length === 10) digits = '91' + digits;
+  if (digits.length < 11 || digits.length > 15) return '';
+  return 'https://wa.me/' + digits + '?text=' + encodeURIComponent(text);
 }
 
 /** Issues the receipt for one row. Returns { ok, message }. Kept separate from the UI so it can be tested. */
@@ -171,6 +186,11 @@ function issueReceipt(sheet, r) {
     .getAs(MimeType.PDF)
     .setName(number.replace(/\//g, '-') + ' ' + v['Name'] + '.pdf');
   var file = getFolder().createFile(pdf);
+  // Anyone with the link can view this one PDF, so it opens from WhatsApp. The folder stays private.
+  file.setSharing(DriveApp.Access.ANYONE_WITH_LINK, DriveApp.Permission.VIEW);
+  var waText = (CONFIG.DEMO ? '[SAMPLE] ' : '') + 'Namaskar ' + v['Name'] + ', thank you. Your receipt ' + number +
+    ' from ' + CONFIG.ORG_NAME + ' for ' + inr(amount) + ' is here: ' + file.getUrl();
+  var wa = whatsappLink(v['Phone'], waText);
 
   var sentTo = '';
   if (EMAIL_RE.test(String(v['Email']))) {
@@ -182,14 +202,18 @@ function issueReceipt(sheet, r) {
   sheet.getRange(r, COL['Receipt no.']).setValue(number);
   sheet.getRange(r, COL['Receipt date']).setValue(now);
   sheet.getRange(r, COL['Receipt PDF']).setValue(file.getUrl());
-  sheet.getRange(r, COL['Receipt sent to']).setValue(sentTo || 'Not emailed: share the PDF on WhatsApp');
+  sheet.getRange(r, COL['Receipt sent to']).setValue(sentTo || 'Not emailed: send it on WhatsApp');
+  if (wa) sheet.getRange(r, COL['WhatsApp receipt']).setFormula('=HYPERLINK("' + wa.replace(/"/g, '""') + '","Send on WhatsApp")');
   sheet.getRange(r, COL['Status']).setValue('Receipt sent');
 
   return {
     ok: true,
+    whatsapp: wa,
     message: 'Receipt ' + number + ' issued.\n\n' + (sentTo
       ? 'It was emailed to ' + sentTo + ' and saved in Drive.'
-      : 'There is no email on this row, so send the PDF on WhatsApp to ' + v['Phone'] + '. Its link is in the "Receipt PDF" column.'),
+      : 'There is no email on this row.') + (wa
+      ? '\n\nTap the button to send it on WhatsApp to ' + v['Phone'] + '. The same link is in the "WhatsApp receipt" column.'
+      : '\n\nThe phone number could not be used for WhatsApp. The PDF link is in the "Receipt PDF" column.'),
   };
 }
 
@@ -295,6 +319,12 @@ function getSheet() {
     sheet.getRange(2, COL['Status'], 1000, 1).setDataValidation(rule);
     sheet.getRange(2, COL['UTR / reference (confirmed)'], 1000, 1).setNumberFormat('@');
     sheet.getRange(2, COL['UTR (stated)'], 1000, 1).setNumberFormat('@');
+  }
+  // Registers made before a column was added get its header here.
+  var header = sheet.getRange(1, 1, 1, COLUMNS.length);
+  var have = header.getValues()[0];
+  if (have.join('|') !== COLUMNS.join('|')) {
+    COLUMNS.forEach(function (c, i) { if (!have[i]) sheet.getRange(1, i + 1).setValue(c).setFontWeight('bold').setBackground('#f4eee2'); });
   }
   return sheet;
 }

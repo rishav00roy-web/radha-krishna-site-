@@ -8,7 +8,7 @@ The website's **founding member** form and **donation** form send each submissio
    - fill in **Amount received** and the **UTR**
    - set **Status** to `Received`
    - choose **Receipts → Issue receipt for selected row**
-4. That makes a numbered **PDF receipt**, such as `GGF/2026-27/0001`, and saves it in a Drive folder. If the row has an email, it is emailed there. If not, the sheet says to share the PDF on WhatsApp. The receipt number and the PDF link are written back on the row.
+4. That makes a numbered **PDF receipt**, such as `GGF/2026-27/0001`, and saves it in a Drive folder. If the row has an email, it is emailed there. The receipt number and the PDF link are written back on the row. A **Send on WhatsApp** button also appears: one tap opens WhatsApp to the person's number with the receipt link typed in, ready to send. The same link is kept in the **WhatsApp receipt** column. To make that link open on their phone, each receipt PDF (only that file, not the folder) can be viewed by anyone who has the link.
 
 Receipt numbers run from 0001 in each financial year (April to March) and never repeat. Founding-member payments are accepted by bank transfer only. The script also refuses cash of ₹2 lakh or more from one person (section 269ST).
 
