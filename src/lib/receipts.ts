@@ -10,7 +10,7 @@
 import type { Locale } from "@/i18n/config";
 
 const DEFAULT_ENDPOINT =
-  "https://script.google.com/macros/s/AKfycbw0afidnlWL_MzXVcwuai4Sv5xlwSpCuQ_Zc74mtZcwomRxjOQ01kkdseQjsSp0jAjAVA/exec";
+  "https://script.google.com/macros/s/AKfycbzbhxHl1IP3WM4jDC-fr_nKD1f80U7b47XnvZR-30NkazT-3pZRdh9dMn8sKfd3mKToNg/exec";
 
 export const receiptsEndpoint = (process.env.NEXT_PUBLIC_RECEIPTS_ENDPOINT || DEFAULT_ENDPOINT).trim();
 export const receiptsLive = receiptsEndpoint.startsWith("https://");
